@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.so
+
+# Virtual env
+venv/
+.env/
+.env*/
+.envrc
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+*.log
+
+*/migrations/__pycache__/
+# Volitelné, pokud nechceš verzovat migrace:
+# *migrations/*
+
+# Static & media
+static/
+staticfiles/
+media/
+uploads/
+
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# VSCode
+.vscode/
+
+# Pip / Build
+pip-log.txt
+pip-delete-this-directory.txt
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Node (tailwind / js build)
+node_modules/
+npm-debug.log
+yarn-error.log
