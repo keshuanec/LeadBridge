@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Nový lead{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2>Nový lead</h2>
+
+    {# Globální chyby formuláře (např. z clean()) #}
+    {% if form.non_field_errors %}
+        <div style="color: red; margin-bottom: 10px;">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div style="margin-bottom: 10px;">
+            <label for="{{ form.client_name.id_for_label }}">Jméno klienta</label><br>
+            {{ form.client_name }}
+            {% if form.client_name.errors %}
+                <div style="color: red;">{{ form.client_name.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            <label for="{{ form.client_phone.id_for_label }}">Telefon klienta</label><br>
+            {{ form.client_phone }}
+            {% if form.client_phone.errors %}
+                <div style="color: red;">{{ form.client_phone.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            <label for="{{ form.client_email.id_for_label }}">E-mail klienta</label><br>
+            {{ form.client_email }}
+            {% if form.client_email.errors %}
+                <div style="color: red;">{{ form.client_email.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            <label for="{{ form.advisor.id_for_label }}">Poradce</label><br>
+
+            {% if form.single_advisor %}
+                <strong>
+                    {{ form.single_advisor.get_full_name|default:form.single_advisor.username }}
+                </strong>
+                {{ form.advisor }} {# hidden input s ID poradce #}
+                <br>
+                <small>Tento poradce je ti přiřazen automaticky.</small>
+            {% else %}
+                {{ form.advisor }}
+                <br>
+                <small>Můžeš nechat prázdné a doplnit poradce později.</small>
+            {% endif %}
+
+            {% if form.advisor.errors %}
+                <div style="color: red;">{{ form.advisor.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            <label for="{{ form.referrer.id_for_label }}">Doporučitel</label><br>
+            {# u doporučitele je referrer hidden, u poradce select #}
+            {{ form.referrer }}
+            {% if form.referrer.errors %}
+                <div style="color: red;">{{ form.referrer.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            <label for="{{ form.description.id_for_label }}">Poznámka</label><br>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div style="color: red;">{{ form.description.errors }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit">Uložit lead</button>
+    </form>
+</div>
+{% endblock %}

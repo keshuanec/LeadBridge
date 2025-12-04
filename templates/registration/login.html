@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Přihlášení{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 400px; margin: 40px auto;">
+    <h2>Přihlášení</h2>
+
+    {% if form.errors %}
+        <p>Uživatelské jméno nebo heslo není správné.</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            <label for="{{ form.username.id_for_label }}">Uživatelské jméno</label><br>
+            {{ form.username }}
+        </div>
+        <div style="margin-top: 8px;">
+            <label for="{{ form.password.id_for_label }}">Heslo</label><br>
+            {{ form.password }}
+        </div>
+        <div style="margin-top: 12px;">
+            <button type="submit">Přihlásit se</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Moje leady{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Moje leady</h2>
+
+    {% if can_create_leads %}
+        <p>
+            <a href="{% url 'lead_create' %}">+ Nový lead</a>
+        </p>
+    {% endif %}
+
+    {% if leads %}
+        <table>
+            <thead>
+            <tr>
+                <th>Klient</th>
+                <th>Doporučitel</th>
+                <th>Poradce</th>
+                <th>Stav komunikace</th>
+                <th>Stav provize</th>
+                <th>Vytvořeno</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for lead in leads %}
+                <tr>
+                    <td>
+                        {{ lead.client_name }}<br>
+                        {% if lead.client_phone %}
+                            <small>{{ lead.client_phone }}</small><br>
+                        {% endif %}
+                        {% if lead.client_email %}
+                            <small>{{ lead.client_email }}</small>
+                        {% endif %}
+                    </td>
+                    <td>{{ lead.referrer }}</td>
+                    <td>{{ lead.advisor|default:"—" }}</td>
+                    <td><span class="badge">{{ lead.get_communication_status_display }}</span></td>
+                    <td><span class="badge">{{ lead.get_commission_status_display }}</span></td>
+                    <td>{{ lead.created_at|date:"d.m.Y H:i" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nemáš zatím žádné leady.</p>
+    {% endif %}
+</div>
+{% endblock %}

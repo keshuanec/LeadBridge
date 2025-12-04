@@ -10,15 +10,25 @@ class UserAdmin(BaseUserAdmin):
         ("LeadBridge role", {"fields": ("role",)}),
     )
 
+    # Tohle je formulář pro VYTVOŘENÍ uživatele
+    add_fieldsets = BaseUserAdmin.add_fieldsets + (
+        ("LeadBridge role", {
+            "classes": ("wide",),
+            "fields": ("role",),
+        }),
+    )
+
     list_display = ("username", "email", "first_name", "last_name", "role", "is_staff")
     list_filter = ("role", "is_staff", "is_superuser", "is_active")
 
 
 @admin.register(ReferrerProfile)
 class ReferrerProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "manager")
+    list_display = ("user", "manager", "get_advisors")
     list_filter = ("manager",)
     search_fields = ("user__username", "user__first_name", "user__last_name")
     filter_horizontal = ("advisors",)
 
-
+    def get_advisors(self, obj):
+        return ", ".join([advisor.username for advisor in obj.advisors.all()]) or "—"
+    get_advisors.short_description = "Poradci"

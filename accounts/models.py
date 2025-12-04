@@ -54,5 +54,15 @@ class ReferrerProfile(models.Model):
         help_text="Poradci, ze kterých může tento doporučitel vybírat při zakládání leadu.",
     )
 
+    last_chosen_advisor = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="preferred_by_referrers",
+        limit_choices_to={"role": User.Role.ADVISOR},
+        verbose_name="Naposledy zvolený poradce",
+    )
+
     def __str__(self):
         return f"Profil doporučitele: {self.user}"
