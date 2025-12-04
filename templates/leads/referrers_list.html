@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Doporučitelé{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Doporučitelé</h2>
+
+    {% if referrer_profiles %}
+        <table>
+            <thead>
+            <tr>
+                <th>Doporučitel</th>
+                <th>Manažer</th>
+                <th>Poradci</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for profile in referrer_profiles %}
+                <tr>
+                    <td>{{ profile.user.get_full_name|default:profile.user.username }}</td>
+                    <td>
+                        {% if profile.manager %}
+                            {{ profile.manager.get_full_name|default:profile.manager.username }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% for advisor in profile.advisors.all %}
+                            {{ advisor.get_full_name|default:advisor.username }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            —
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Zatím tu nejsou žádní doporučitelé.</p>
+    {% endif %}
+</div>
+{% endblock %}

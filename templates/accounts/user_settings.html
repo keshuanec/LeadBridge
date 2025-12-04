@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Nastavení uživatele{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2>Nastavení uživatele</h2>
+    <p><strong>Uživatelské jméno:</strong> {{ user.username }}</p>
+    <p><strong>Jméno:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+    <p><strong>E-mail:</strong> {{ user.email }}</p>
+    <p><strong>Role:</strong> {{ user.get_role_display }}</p>
+
+    <p style="margin-top: 16px; font-size: 14px;">
+        Sem později můžeme doplnit změnu hesla, úpravu profilu, notifikace atd.
+    </p>
+</div>
+{% endblock %}

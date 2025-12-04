@@ -97,3 +97,33 @@ def lead_create(request):
 
 
     return render(request, "leads/lead_form.html", context)
+
+@login_required
+def deals_list(request):
+    # Placeholder – později sem dáme skutečné obchody
+    return render(request, "leads/deals_list.html")
+
+@login_required
+def referrers_list(request):
+    user: User = request.user
+
+    # Vidí jen poradce, manažer doporučitelů a admin
+    if not (user.role in [User.Role.ADVISOR, User.Role.REFERRER_MANAGER] or user.is_superuser):
+        return HttpResponseForbidden("Nemáš oprávnění zobrazit doporučitele.")
+
+    from accounts.models import ReferrerProfile
+
+    queryset = ReferrerProfile.objects.select_related("user", "manager").prefetch_related("advisors")
+
+    # Poradce vidí jen „svoje“ doporučitele
+    if user.role == User.Role.ADVISOR and not user.is_superuser:
+        queryset = queryset.filter(advisors=user)
+
+    # Manažer vidí svoje doporučitele
+    if user.role == User.Role.REFERRER_MANAGER and not user.is_superuser:
+        queryset = queryset.filter(manager=user)
+
+    context = {
+        "referrer_profiles": queryset,
+    }
+    return render(request, "leads/referrers_list.html", context)
