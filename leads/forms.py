@@ -1,7 +1,7 @@
 from django import forms
-from .models import Lead
 from django.contrib.auth import get_user_model
 from accounts.models import ReferrerProfile
+from .models import Lead, LeadNote
 
 User = get_user_model()
 
@@ -96,3 +96,12 @@ class LeadForm(forms.ModelForm):
             )
 
             self.fields["referrer"].queryset = referrers_qs
+
+class LeadNoteForm(forms.ModelForm):
+    class Meta:
+        model = LeadNote
+        fields = ["text"]
+        labels = {"text": "Poznámka"}
+        widgets = {
+            "text": forms.Textarea(attrs={"rows": 3}),
+        }

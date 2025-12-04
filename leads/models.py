@@ -1,5 +1,5 @@
-from django.db import models
 from django.conf import settings
+from django.db import models
 
 
 class Lead(models.Model):
@@ -73,3 +73,66 @@ class Lead(models.Model):
 
     def __str__(self):
         return f"{self.client_name} – {self.referrer}"
+
+
+class LeadNote(models.Model):
+    lead = models.ForeignKey(
+        Lead,
+        on_delete=models.CASCADE,
+        related_name="notes",
+        verbose_name="Lead",
+    )
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="lead_notes",
+        verbose_name="Autor",
+    )
+    text = models.TextField("Text poznámky")
+    created_at = models.DateTimeField("Vytvořeno", auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Poznámka k {self.lead} ({self.created_at})"
+
+
+class LeadHistory(models.Model):
+    class EventType(models.TextChoices):
+        CREATED = "CREATED", "Lead založen"
+        NOTE_ADDED = "NOTE_ADDED", "Přidána poznámka"
+        UPDATED = "UPDATED", "Lead upraven"
+        MEETING_SCHEDULED = "MEETING_SCHEDULED", "Domluvena schůzka"
+        DEAL_CREATED = "DEAL_CREATED", "Založen obchod"
+        STATUS_CHANGED = "STATUS_CHANGED", "Změna stavu"
+
+    lead = models.ForeignKey(
+        Lead,
+        on_delete=models.CASCADE,
+        related_name="history",
+        verbose_name="Lead",
+    )
+    event_type = models.CharField(
+        "Typ události",
+        max_length=32,
+        choices=EventType.choices,
+    )
+    description = models.TextField("Popis události", blank=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="lead_history_events",
+        verbose_name="Uživatel",
+    )
+    created_at = models.DateTimeField("Čas události", auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.get_event_type_display()} – {self.lead} ({self.created_at})"

@@ -28,7 +28,9 @@
             {% for lead in leads %}
                 <tr>
                     <td>
-                        {{ lead.client_name }}<br>
+                        <a href="{% url 'lead_detail' lead.pk %}">
+                            {{ lead.client_name }}
+                        </a><br>
                         {% if lead.client_phone %}
                             <small>{{ lead.client_phone }}</small><br>
                         {% endif %}

@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Detail leadu{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>{{ lead.client_name }}</h2>
+
+    <p>
+        <strong>Doporučitel:</strong>
+        {{ lead.referrer.get_full_name|default:lead.referrer.username }}<br>
+
+        <strong>Poradce:</strong>
+        {% if lead.advisor %}
+            {{ lead.advisor.get_full_name|default:lead.advisor.username }}
+        {% else %}
+            —
+        {% endif %}<br>
+
+        <strong>Stav leadu:</strong>
+        {{ lead.get_communication_status_display }}<br>
+
+        <strong>Telefon:</strong> {{ lead.client_phone|default:"—" }}<br>
+        <strong>E-mail:</strong> {{ lead.client_email|default:"—" }}<br>
+
+        <strong>Poznámka:</strong><br>
+        {{ lead.description|linebreaksbr|default:"(bez poznámky)" }}
+    </p>
+
+    <p style="font-size: 13px; color: #666;">
+        Vloženo: {{ lead.created_at|date:"d.m.Y H:i" }}<br>
+        {% if lead.updated_at and lead.updated_at != lead.created_at %}
+            Naposledy upraveno: {{ lead.updated_at|date:"d.m.Y H:i" }}<br>
+        {% endif %}
+    </p>
+
+    <p style="font-size: 13px; color: #666;">
+        Vloženo: {{ lead.created_at|date:"d.m.Y H:i" }}<br>
+        {% if lead.updated_at and lead.updated_at != lead.created_at %}
+            Naposledy upraveno: {{ lead.updated_at|date:"d.m.Y H:i" }}<br>
+        {% endif %}
+    </p>
+
+    <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px;">
+        <a href="#" style="padding:6px 10px;border-radius:4px;background:#eee;text-decoration:none;font-size:13px;">
+            UPRAVIT KLIENTA
+        </a>
+
+        {% if can_schedule_meeting %}
+            <a href="#" style="padding:6px 10px;border-radius:4px;background:#eee;text-decoration:none;font-size:13px;">
+                DOMLUVIT SCHŮZKU
+            </a>
+        {% endif %}
+
+        {% if can_create_deal %}
+            <a href="{% url 'deals_list' %}" style="padding:6px 10px;border-radius:4px;background:#eee;text-decoration:none;font-size:13px;">
+                ZALOŽIT OBCHOD
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card" id="note-form">
+    <h3>Přidat poznámku</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ note_form.text }}
+        {% if note_form.text.errors %}
+            <div style="color:red;">{{ note_form.text.errors }}</div>
+        {% endif %}
+        <div style="margin-top:8px;">
+            <button type="submit">Přidat poznámku</button>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <h3>Poznámky</h3>
+    {% if notes %}
+        <ul style="list-style:none;padding-left:0;">
+            {% for note in notes %}
+                <li style="margin-bottom:10px;border-bottom:1px solid #eee;padding-bottom:6px;">
+                    <div style="font-size:13px;color:#666;">
+                        {{ note.created_at|date:"d.m.Y H:i" }}
+                        – {{ note.author.get_full_name|default:note.author.username|default:"(neznámý uživatel)" }}
+                    </div>
+                    <div>{{ note.text|linebreaksbr }}</div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Žádné poznámky.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h3>Historie leadu</h3>
+    {% if history %}
+        <ul style="list-style:none;padding-left:0;font-size:13px;">
+            {% for event in history %}
+                <li style="margin-bottom:6px;">
+                    <strong>{{ event.created_at|date:"d.m.Y H:i" }}</strong>
+                    – {{ event.get_event_type_display }}
+                    {% if event.user %}
+                        ({{ event.user.get_full_name|default:event.user.username }})
+                    {% endif %}
+                    {% if event.description %}
+                        – {{ event.description }}
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Zatím žádné záznamy v historii.</p>
+    {% endif %}
+</div>
+{% endblock %}

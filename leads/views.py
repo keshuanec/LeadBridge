@@ -4,10 +4,32 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponseForbidden
 from accounts.models import ReferrerProfile
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Lead, LeadNote, LeadHistory
+from .forms import LeadForm, LeadNoteForm
 
 
-from .models import Lead
-from .forms import LeadForm
+
+
+
+def get_lead_for_user_or_404(user, pk: int) -> Lead:
+    qs = Lead.objects.select_related("referrer", "advisor")
+
+    if user.is_superuser or user.role == User.Role.ADMIN:
+        return get_object_or_404(qs, pk=pk)
+    elif user.role == User.Role.ADVISOR:
+        return get_object_or_404(qs, pk=pk, advisor=user)
+    elif user.role == User.Role.REFERRER:
+        return get_object_or_404(qs, pk=pk, referrer=user)
+    elif user.role == User.Role.REFERRER_MANAGER:
+        return get_object_or_404(
+            qs,
+            pk=pk,
+            referrer__referrer_profile__manager=user,
+        )
+    else:
+        raise HttpResponseForbidden("Nemáš oprávnění zobrazit tento lead.")
+
 
 User = get_user_model()
 
@@ -65,6 +87,13 @@ def lead_create(request):
                 lead.advisor = user
 
             lead.save()
+            # Zalogujeme vytvoření leadu
+            LeadHistory.objects.create(
+                lead=lead,
+                event_type=LeadHistory.EventType.CREATED,
+                user=user,
+                description="Lead založen.",
+            )
 
             # 🔽 Pokud je to doporučitel a má vybraného poradce, zapamatujeme si ho
             if user.role == User.Role.REFERRER and lead.advisor_id:
@@ -99,6 +128,48 @@ def lead_create(request):
     return render(request, "leads/lead_form.html", context)
 
 @login_required
+def lead_detail(request, pk: int):
+    user: User = request.user
+    lead = get_lead_for_user_or_404(user, pk)
+
+    notes = lead.notes.select_related("author")
+    history = lead.history.select_related("user")
+
+    can_schedule_meeting = user.role == User.Role.ADVISOR or user.is_superuser
+    can_create_deal = user.role == User.Role.ADVISOR or user.is_superuser
+
+    if request.method == "POST":
+        # Přidání poznámky
+        note_form = LeadNoteForm(request.POST)
+        if note_form.is_valid():
+            note = note_form.save(commit=False)
+            note.lead = lead
+            note.author = user
+            note.save()
+
+            LeadHistory.objects.create(
+                lead=lead,
+                event_type=LeadHistory.EventType.NOTE_ADDED,
+                user=user,
+                description="Přidána poznámka.",
+            )
+
+            return redirect("lead_detail", pk=lead.pk)
+    else:
+        note_form = LeadNoteForm()
+
+    context = {
+        "lead": lead,
+        "notes": notes,
+        "history": history,
+        "note_form": note_form,
+        "can_schedule_meeting": can_schedule_meeting,
+        "can_create_deal": can_create_deal,
+    }
+    return render(request, "leads/lead_detail.html", context)
+
+
+@login_required
 def deals_list(request):
     # Placeholder – později sem dáme skutečné obchody
     return render(request, "leads/deals_list.html")
@@ -127,3 +198,5 @@ def referrers_list(request):
         "referrer_profiles": queryset,
     }
     return render(request, "leads/referrers_list.html", context)
+
+
