@@ -5,10 +5,15 @@ from django.db import models
 class Lead(models.Model):
     class CommunicationStatus(models.TextChoices):
         NEW = "NEW", "Nový"
-        IN_CONTACT = "IN_CONTACT", "V kontaktu"
-        MEETING = "MEETING", "Schůzka domluvena"
-        WON = "WON", "Uzavřeno"
-        LOST = "LOST", "Ztraceno"
+        MEETING = "MEETING", "Domluvená schůzka"
+        SEARCHING_PROPERTY = "SEARCHING_PROPERTY", "Hledá nemovitost"
+        WAITING_FOR_CLIENT = "WAITING_FOR_CLIENT", "Čekání na klienta"
+        FAILED = "FAILED", "Neúspěšný"
+
+        # tyto stavy budou nastavovány automaticky ze sekce Obchody
+        DEAL_CREATED = "DEAL_CREATED", "Založen obchod"
+        COMMISSION_PAID = "COMMISSION_PAID", "Provize vyplacena"
+
 
     class CommissionStatus(models.TextChoices):
         NOT_APPLICABLE = "NA", "Nevztahuje se"

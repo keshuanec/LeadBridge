@@ -176,7 +176,7 @@ def lead_edit(request, pk: int):
     # Zatím necháme stejné role jako pro prohlížení.
 
     # Uložíme si původní hodnoty pro log změn
-    tracked_fields = ["client_name", "client_phone", "client_email", "description"]
+    tracked_fields = ["client_name", "client_phone", "client_email", "description", "communication_status"]
     old_values = {field: getattr(lead, field) for field in tracked_fields}
 
     if request.method == "POST":
@@ -199,7 +199,11 @@ def lead_edit(request, pk: int):
                 "client_phone": "Telefon",
                 "client_email": "E-mail",
                 "description": "Poznámka",
+                "communication_status": "Stav leadu",
             }
+
+            status_changed = False
+            status_labels = dict(Lead.CommunicationStatus.choices)
 
             for field in tracked_fields:
                 old = old_values[field]
@@ -208,17 +212,25 @@ def lead_edit(request, pk: int):
                     # U poznámky nedává smysl vypisovat celý text
                     if field == "description":
                         changes.append("Změněna hlavní poznámka.")
+                    elif field == "communication_status":
+                        old_label = status_labels.get(old, old or "—")
+                        new_label = status_labels.get(new, new or "—")
+                        changes.append(f"Změněn stav leadu: {old_label} → {new_label}")
+                        status_changed = True
                     else:
                         changes.append(f"Změněno {labels[field]}: {old or '—'} → {new or '—'}")
 
-            description = "; ".join(changes) if changes else "Lead upraven."
-
-            LeadHistory.objects.create(
-                lead=updated_lead,
-                event_type=LeadHistory.EventType.UPDATED,
-                user=user,
-                description=description,
-            )
+            if changes:
+                LeadHistory.objects.create(
+                    lead=updated_lead,
+                    event_type=(
+                        LeadHistory.EventType.STATUS_CHANGED
+                        if status_changed
+                        else LeadHistory.EventType.UPDATED
+                    ),
+                    user=user,
+                    description="; ".join(changes),
+                )
 
             return redirect("lead_detail", pk=updated_lead.pk)
     else:

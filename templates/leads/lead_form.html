@@ -62,12 +62,20 @@
             {% endif %}
         </div>
 
-        <div style="margin-bottom: 10px;">
+               <div style="margin-bottom: 10px;">
             <label for="{{ form.referrer.id_for_label }}">Doporučitel</label><br>
             {# u doporučitele je referrer hidden, u poradce select #}
             {{ form.referrer }}
             {% if form.referrer.errors %}
                 <div style="color: red;">{{ form.referrer.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div style="margin-bottom: 10px;">
+            <label for="{{ form.communication_status.id_for_label }}">Stav leadu</label><br>
+            {{ form.communication_status }}
+            {% if form.communication_status.errors %}
+                <div style="color: red;">{{ form.communication_status.errors }}</div>
             {% endif %}
         </div>
 
@@ -78,6 +86,7 @@
                 <div style="color: red;">{{ form.description.errors }}</div>
             {% endif %}
         </div>
+
 
         <button type="submit">
             {% if is_edit %}Uložit změny{% else %}Uložit lead{% endif %}
