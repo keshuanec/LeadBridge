@@ -44,7 +44,7 @@
         <div style="margin-bottom: 10px;">
             <label for="{{ form.advisor.id_for_label }}">Poradce</label><br>
 
-            {% if form.single_advisor %}
+           {% if form.single_advisor %}
                 <strong>
                     {{ form.single_advisor.get_full_name|default:form.single_advisor.username }}
                 </strong>
@@ -54,7 +54,7 @@
             {% else %}
                 {{ form.advisor }}
                 <br>
-                <small>Můžeš nechat prázdné a doplnit poradce později.</small>
+                <small>Vyber poradce, který bude lead obsluhovat.</small>
             {% endif %}
 
             {% if form.advisor.errors %}
@@ -62,15 +62,20 @@
             {% endif %}
         </div>
 
-               <div style="margin-bottom: 10px;">
-            <label for="{{ form.referrer.id_for_label }}">Doporučitel</label><br>
-            {# u doporučitele je referrer hidden, u poradce select #}
+        {% if user.role != "REFERRER" %}
+            <div style="margin-bottom: 10px;"><label for="{{ form.referrer.id_for_label }}">Doporučitel</label><br>
             {{ form.referrer }}
             {% if form.referrer.errors %}
                 <div style="color: red;">{{ form.referrer.errors }}</div>
             {% endif %}
         </div>
 
+        {% else %}
+            {# referrer pole neupravuje, jen skrytý input #}
+            {{ form.referrer }}
+        {% endif %}
+
+        {% if user.role == "ADVISOR" %}
         <div style="margin-bottom: 10px;">
             <label for="{{ form.communication_status.id_for_label }}">Stav leadu</label><br>
             {{ form.communication_status }}
@@ -78,6 +83,10 @@
                 <div style="color: red;">{{ form.communication_status.errors }}</div>
             {% endif %}
         </div>
+        {% else %}
+            {# ostatní role stav neupravují, jen skrytý input #}
+            {{ form.communication_status }}
+        {% endif %}
 
         {% if is_edit %}
             <div id="extra-note-wrapper" style="margin-bottom: 10px; display: none;">

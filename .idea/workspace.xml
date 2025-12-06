@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2c1eb26d-4562-4c7b-90c9-a2b40a90094c" name="Changes" comment="state of lead change">
+    <list default="true" id="2c1eb26d-4562-4c7b-90c9-a2b40a90094c" name="Changes" comment="state of lead change js">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/leads/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/leads/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leads/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/leads/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/leads/lead_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/leads/lead_detail.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/leads/lead_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/leads/lead_form.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -138,7 +136,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765025294690</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="state of lead change js">
+      <option name="closed" value="true" />
+      <created>1765027027026</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1765027027026</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -147,6 +153,7 @@
     <MESSAGE value="navbar nastavení" />
     <MESSAGE value="lead detail setup" />
     <MESSAGE value="state of lead change" />
-    <option name="LAST_COMMIT_MESSAGE" value="state of lead change" />
+    <MESSAGE value="state of lead change js" />
+    <option name="LAST_COMMIT_MESSAGE" value="state of lead change js" />
   </component>
 </project>

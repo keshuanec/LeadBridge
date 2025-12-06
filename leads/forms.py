@@ -46,7 +46,9 @@ class LeadForm(forms.ModelForm):
         self.fields["referrer"].queryset = User.objects.filter(role=User.Role.REFERRER)
 
         # Poradce není povinný – může se doplnit později
-        self.fields["advisor"].required = False
+        self.fields["advisor"].required = True
+        self.fields["advisor"].empty_label = None
+
 
         # ----- STAV LEADU -----
 
@@ -81,8 +83,8 @@ class LeadForm(forms.ModelForm):
             # nastavíme queryset (i kdyby byl prázdný nebo s jedním)
             self.fields["advisor"].queryset = advisors_qs
 
-            # přesně jeden poradce -> u NOVÉHO leadu skryj select, předvyplň, zobraz jméno
-            if advisors_qs.count() == 1 and not instance:
+            # přesně jeden poradce -> skryj select, předvyplň, zobraz jméno
+            if advisors_qs.count() == 1:
                 advisor = advisors_qs.first()
                 self.fields["advisor"].initial = advisor
                 self.fields["advisor"].widget = forms.HiddenInput()
