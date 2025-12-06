@@ -211,7 +211,7 @@ def lead_edit(request, pk: int):
                 if old != new:
                     # U poznámky nedává smysl vypisovat celý text
                     if field == "description":
-                        changes.append("Změněna hlavní poznámka.")
+                        changes.append("Změněn popis situace.")
                     elif field == "communication_status":
                         old_label = status_labels.get(old, old or "—")
                         new_label = status_labels.get(new, new or "—")
@@ -221,6 +221,21 @@ def lead_edit(request, pk: int):
                         changes.append(f"Změněno {labels[field]}: {old or '—'} → {new or '—'}")
 
             if changes:
+                # Pokud poradce přidal extra poznámku, uložíme ji jako LeadNote
+                extra_note = form.cleaned_data.get("extra_note")
+                if extra_note:
+                    LeadNote.objects.create(
+                        lead=updated_lead,
+                        author=user,
+                        text=extra_note,
+                    )
+                    # vytvoříme log události NOTE_ADDED
+                    LeadHistory.objects.create(
+                        lead=updated_lead,
+                        event_type=LeadHistory.EventType.NOTE_ADDED,
+                        user=user,
+                        description=f"Přidána poznámka ke změně stavu.",
+                    )
                 LeadHistory.objects.create(
                     lead=updated_lead,
                     event_type=(

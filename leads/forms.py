@@ -25,8 +25,14 @@ class LeadForm(forms.ModelForm):
             "advisor": "Poradce",
             "referrer": "Doporučitel (makléř)",
             "communication_status": "Stav leadu",
-            "description": "Poznámka",
+            "description": "Popis situace",
         }
+
+    extra_note = forms.CharField(
+        label="Poznámka ke změně stavu",
+        widget=forms.Textarea(attrs={"rows": 3}),
+        required=False,
+    )
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)

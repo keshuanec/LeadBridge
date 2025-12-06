@@ -79,8 +79,20 @@
             {% endif %}
         </div>
 
+        {% if is_edit %}
+            <div id="extra-note-wrapper" style="margin-bottom: 10px; display: none;">
+                <label for="{{ form.extra_note.id_for_label }}">Poznámka ke změně stavu</label><br>
+                    {{ form.extra_note }}
+                    {% if form.extra_note.errors %}
+                        <div style="color:red;">{{ form.extra_note.errors }}</div>
+                    {% endif %}
+                <small>Volitelné – pokud vyplníš, uloží se jako běžná poznámka.</small>
+            </div>
+        {% endif %}
+
+
         <div style="margin-bottom: 10px;">
-            <label for="{{ form.description.id_for_label }}">Poznámka</label><br>
+            <label for="{{ form.description.id_for_label }}">Popis situace</label><br>
             {{ form.description }}
             {% if form.description.errors %}
                 <div style="color: red;">{{ form.description.errors }}</div>
@@ -93,4 +105,26 @@
         </button>
     </form>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const statusField = document.getElementById("{{ form.communication_status.id_for_label }}");
+    const wrapper = document.getElementById("extra-note-wrapper");
+
+    if (!statusField || !wrapper) return;
+
+    const originalValue = "{{ form.initial.communication_status|default_if_none:'' }}";
+
+    function checkStatus() {
+        if (statusField.value && statusField.value !== originalValue) {
+            wrapper.style.display = "block";
+        } else {
+            wrapper.style.display = "none";
+        }
+    }
+
+    statusField.addEventListener("change", checkStatus);
+    checkStatus(); // pro jistotu spustíme hned při načtení
+});
+</script>
 {% endblock %}
