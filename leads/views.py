@@ -1,6 +1,5 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponseForbidden
 from accounts.models import ReferrerProfile
@@ -125,7 +124,7 @@ def lead_create(request):
             print(form.errors)  # jen pro vývoj, pak smaž
 
 
-    return render(request, "leads/lead_form.html", context)
+    return render(request, "leads/lead_form.html", {"form": form, "is_edit": False})
 
 @login_required
 def lead_detail(request, pk: int):
@@ -167,6 +166,65 @@ def lead_detail(request, pk: int):
         "can_create_deal": can_create_deal,
     }
     return render(request, "leads/lead_detail.html", context)
+
+@login_required
+def lead_edit(request, pk: int):
+    user: User = request.user
+    lead = get_lead_for_user_or_404(user, pk)
+
+    # Tady můžeš případně zpřísnit, kdo smí editovat (např. jen poradce/referrer/admin).
+    # Zatím necháme stejné role jako pro prohlížení.
+
+    # Uložíme si původní hodnoty pro log změn
+    tracked_fields = ["client_name", "client_phone", "client_email", "description"]
+    old_values = {field: getattr(lead, field) for field in tracked_fields}
+
+    if request.method == "POST":
+        form = LeadForm(request.POST, user=user, instance=lead)
+        if form.is_valid():
+            updated_lead = form.save(commit=False)
+
+            # Bezpečnostní zajištění referrer/advisor podle role
+            if user.role == User.Role.REFERRER:
+                updated_lead.referrer = user
+            elif user.role == User.Role.ADVISOR:
+                updated_lead.advisor = user
+
+            updated_lead.save()
+
+            # Zjistíme, co se změnilo
+            changes = []
+            labels = {
+                "client_name": "Jméno klienta",
+                "client_phone": "Telefon",
+                "client_email": "E-mail",
+                "description": "Poznámka",
+            }
+
+            for field in tracked_fields:
+                old = old_values[field]
+                new = getattr(updated_lead, field)
+                if old != new:
+                    # U poznámky nedává smysl vypisovat celý text
+                    if field == "description":
+                        changes.append("Změněna hlavní poznámka.")
+                    else:
+                        changes.append(f"Změněno {labels[field]}: {old or '—'} → {new or '—'}")
+
+            description = "; ".join(changes) if changes else "Lead upraven."
+
+            LeadHistory.objects.create(
+                lead=updated_lead,
+                event_type=LeadHistory.EventType.UPDATED,
+                user=user,
+                description=description,
+            )
+
+            return redirect("lead_detail", pk=updated_lead.pk)
+    else:
+        form = LeadForm(user=user, instance=lead)
+
+    return render(request, "leads/lead_form.html", {"form": form, "lead": lead, "is_edit": True})
 
 
 @login_required

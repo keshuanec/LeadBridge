@@ -6,6 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="2c1eb26d-4562-4c7b-90c9-a2b40a90094c" name="Changes" comment="lead detail setup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leads/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/leads/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/leads/lead_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/leads/lead_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/leads/lead_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/leads/lead_form.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,18 +31,18 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "keshuanec"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;keshuanec&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/keshuanec/LeadBridge.git",
-    "accountId": "9069aa0c-660d-42e8-bab6-bca7c50699ae"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/keshuanec/LeadBridge.git&quot;,
+    &quot;accountId&quot;: &quot;9069aa0c-660d-42e8-bab6-bca7c50699ae&quot;
   }
-}]]></component>
+}</component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -58,7 +61,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "lead__detail",
+    "git-widget-placeholder": "lead__edit",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>

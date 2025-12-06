@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Nový lead{% endblock %}
+{% block title %}{% if is_edit %}Upravit klienta{% else %}Nový lead{% endif %}{% endblock %}
 
 {% block content %}
 <div class="card" style="max-width: 600px; margin: 0 auto;">
-    <h2>Nový lead</h2>
+    <h2>{% if is_edit %}Upravit klienta{% else %}Nový lead{% endif %}</h2>
+
 
     {# Globální chyby formuláře (např. z clean()) #}
     {% if form.non_field_errors %}
@@ -78,7 +79,9 @@
             {% endif %}
         </div>
 
-        <button type="submit">Uložit lead</button>
+        <button type="submit">
+            {% if is_edit %}Uložit změny{% else %}Uložit lead{% endif %}
+        </button>
     </form>
 </div>
 {% endblock %}
