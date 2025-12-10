@@ -116,14 +116,6 @@ def lead_create(request):
         "is_referrer": user.role == User.Role.REFERRER,
     }
 
-    if request.method == "POST":
-        form = LeadForm(request.POST, user=user)
-        if form.is_valid():
-            ...
-        else:
-            print(form.errors)  # jen pro vývoj, pak smaž
-
-
     return render(request, "leads/lead_form.html", {"form": form, "is_edit": False})
 
 @login_required

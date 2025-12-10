@@ -140,12 +140,39 @@ class LeadForm(forms.ModelForm):
             if current_status and current_status not in manual_status_codes:
                 self.fields["communication_status"].disabled = True
 
+# =========================
+        #  ROLE: MANAŽER DOPORUČITELŮ
         # =========================
-        #  JINÉ ROLE (manager, admin, ...)
+        elif user.role == User.Role.REFERRER_MANAGER:
+            # doporučitelé, které tento manažer řídí
+            managed_profiles = ReferrerProfile.objects.filter(manager=user).select_related("user")
+            referrer_ids = managed_profiles.values_list("user_id", flat=True)
+
+            referrers_qs = User.objects.filter(
+                id__in=referrer_ids,
+                role=User.Role.REFERRER,
+            )
+
+            self.fields["referrer"].queryset = referrers_qs
+
+            # poradci přidělení těmto doporučitelům (přes M2M advisors)
+            advisor_ids = managed_profiles.values_list("advisors__id", flat=True)
+            advisors_qs = User.objects.filter(
+                id__in=advisor_ids,
+                role=User.Role.ADVISOR,
+            ).distinct()
+
+            self.fields["advisor"].queryset = advisors_qs
+
+            # Stav leadu manažer zatím nemění – necháme hidden:
+            self.fields["communication_status"].widget = forms.HiddenInput()
+
+        # =========================
+        #  JINÉ ROLE (admin atd.)
         # =========================
         else:
-            # Zatím jim stav schováme – můžeme to později zpřesnit
             self.fields["communication_status"].widget = forms.HiddenInput()
+
 
 class LeadNoteForm(forms.ModelForm):
     class Meta:
