@@ -168,7 +168,7 @@ def lead_edit(request, pk: int):
     # Zatím necháme stejné role jako pro prohlížení.
 
     # Uložíme si původní hodnoty pro log změn
-    tracked_fields = ["client_name", "client_phone", "client_email", "description", "communication_status"]
+    tracked_fields = ["client_name", "client_phone", "client_email", "description", "communication_status", "advisor"]
     old_values = {field: getattr(lead, field) for field in tracked_fields}
 
     if request.method == "POST":
@@ -192,6 +192,7 @@ def lead_edit(request, pk: int):
                 "client_email": "E-mail",
                 "description": "Poznámka",
                 "communication_status": "Stav leadu",
+                "advisor": "Poradce",
             }
 
             status_changed = False
