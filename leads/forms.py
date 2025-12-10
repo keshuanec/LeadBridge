@@ -76,7 +76,7 @@ class LeadForm(forms.ModelForm):
         if user.role == User.Role.REFERRER:
             advisors_qs = User.objects.filter(role=User.Role.ADVISOR)
 
-            profile = getattr(user, "referrer_profile", None)
+            profile: ReferrerProfile | None = getattr(user, "referrer_profile", None)
             if profile and profile.advisors.exists():
                 advisors_qs = profile.advisors.all()
 
@@ -89,6 +89,11 @@ class LeadForm(forms.ModelForm):
                 self.fields["advisor"].initial = advisor
                 self.fields["advisor"].widget = forms.HiddenInput()
                 self.single_advisor = advisor
+
+            # více poradců -> zkusíme předvyplnit posledně zvoleného
+            elif advisors_qs.count() > 1 and profile and profile.last_chosen_advisor:
+                if advisors_qs.filter(pk=profile.last_chosen_advisor_id).exists():
+                    self.fields["advisor"].initial = profile.last_chosen_advisor
 
             # referrer = přihlášený uživatel, pole schováme
             self.fields["referrer"].widget = forms.HiddenInput()
