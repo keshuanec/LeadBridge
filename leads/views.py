@@ -70,7 +70,7 @@ def my_leads(request):
     leads_qs = leads_qs.select_related("referrer", "advisor").order_by("-created_at")
 
     # Tady přidáme info, kdo může vytvářet leady
-    can_create_leads = user.role in [User.Role.REFERRER, User.Role.ADVISOR]
+    can_create_leads = user.role in [User.Role.REFERRER, User.Role.ADVISOR, User.Role.OFFICE]
 
     context = {
         "leads": leads_qs,
@@ -83,7 +83,7 @@ def my_leads(request):
 def lead_create(request):
     user: User = request.user
 
-    if user.role not in (User.Role.REFERRER, User.Role.ADVISOR):
+    if user.role not in (User.Role.REFERRER, User.Role.ADVISOR, User.Role.OFFICE):
         return HttpResponseForbidden("Nemáš oprávnění vytvářet leady.")
 
     if request.method == "POST":
