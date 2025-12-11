@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.conf import settings
+
 
 
 class User(AbstractUser):
@@ -8,6 +10,7 @@ class User(AbstractUser):
         ADVISOR = "ADVISOR", "Poradce"
         REFERRER = "REFERRER", "Doporučitel"
         REFERRER_MANAGER = "REFERRER_MANAGER", "Manažer doporučitelů"
+        OFFICE = "OFFICE", "Kancelář"
 
     role = models.CharField(
         max_length=32,
@@ -66,3 +69,48 @@ class ReferrerProfile(models.Model):
 
     def __str__(self):
         return f"Profil doporučitele: {self.user}"
+
+
+class Office(models.Model):
+    """
+    Realitní kancelář (nadřazený subjekt nad manažery doporučitelů).
+    """
+    name = models.CharField("Název kanceláře", max_length=255)
+
+    # volitelné: vlastník / admin kanceláře
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="owned_offices",
+        limit_choices_to={"role": User.Role.OFFICE},
+        verbose_name="Uživatel kanceláře",
+    )
+
+    def __str__(self):
+        return self.name
+
+class ManagerProfile(models.Model):
+    """
+    Rozšíření pro manažera doporučitelů.
+    Umožňuje nám přiřadit manažera ke kanceláři.
+    """
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="manager_profile",
+        limit_choices_to={"role": User.Role.REFERRER_MANAGER},
+        verbose_name="Manažer",
+    )
+    office = models.ForeignKey(
+        Office,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="managers",
+        verbose_name="Kancelář",
+    )
+
+    def __str__(self):
+        return f"Profil manažera: {self.user}"
