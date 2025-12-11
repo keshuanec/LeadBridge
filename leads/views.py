@@ -26,6 +26,12 @@ def get_lead_for_user_or_404(user, pk: int) -> Lead:
             pk=pk,
             referrer__referrer_profile__manager=user,
         )
+    elif user.role == User.Role.OFFICE:
+        return get_object_or_404(
+            qs,
+            pk=pk,
+            referrer__referrer_profile__manager__manager_profile__office__owner=user,
+        )
     else:
         raise HttpResponseForbidden("Nemáš oprávnění zobrazit tento lead.")
 
@@ -54,6 +60,12 @@ def my_leads(request):
         leads_qs = Lead.objects.filter(
             referrer__referrer_profile__manager=user
         ).distinct()
+    elif user.role == User.Role.OFFICE:
+        # Kancelář: leady všech doporučitelů pod všemi jejími manažery
+        leads_qs = Lead.objects.filter(
+            referrer__referrer_profile__manager__manager_profile__office__owner=user
+        ).distinct()
+
 
     leads_qs = leads_qs.select_related("referrer", "advisor").order_by("-created_at")
 

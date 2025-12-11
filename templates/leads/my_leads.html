@@ -48,7 +48,11 @@
             </tbody>
         </table>
     {% else %}
-        <p>Nemáš zatím žádné leady.</p>
+        {% if user.role == "OFFICE" %}
+            <p>Vaše kancelář zatím nemá žádné leady.</p>
+        {% else %}
+            <p>Nemáš zatím žádné leady.</p>
+        {% endif %}
     {% endif %}
 </div>
 {% endblock %}
