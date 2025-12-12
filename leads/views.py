@@ -54,17 +54,21 @@ def my_leads(request):
     if user.is_superuser or user.role == User.Role.ADMIN:
         # Admin vidí všechno
         leads_qs = Lead.objects.all()
+
     elif user.role == User.Role.ADVISOR:
         # Poradce: leady, kde je přiřazen jako advisor
         leads_qs = Lead.objects.filter(advisor=user)
+
     elif user.role == User.Role.REFERRER:
         # Doporučitel: leady, které sám zadal
         leads_qs = Lead.objects.filter(referrer=user)
+
     elif user.role == User.Role.REFERRER_MANAGER:
         # Manažer doporučitelů: leady všech jeho doporučitelů
         leads_qs = Lead.objects.filter(
             referrer__referrer_profile__manager=user
         ).distinct()
+
     elif user.role == User.Role.OFFICE:
         # Kancelář: leady všech doporučitelů pod jejími manažery + leady, kde je sama doporučitel
         leads_qs = Lead.objects.filter(
@@ -72,18 +76,48 @@ def my_leads(request):
             | Q(referrer=user)
         ).distinct()
 
+    # optimalizace – načteme referrera, poradce a manažera
     leads_qs = leads_qs.select_related(
         "referrer",
         "advisor",
         "referrer__referrer_profile__manager",
-    ).order_by("-created_at")
+    )
 
-    # Tady přidáme info, kdo může vytvářet leady
+    # ===== ŘAZENÍ =====
+    sort = request.GET.get("sort") or "created_at"
+    direction = request.GET.get("dir") or "desc"
+
+    sort_mapping = {
+        "client": ["client_name"],
+        "referrer": ["referrer__last_name", "referrer__first_name", "referrer__username"],
+        "advisor": ["advisor__last_name", "advisor__first_name", "advisor__username"],
+        "comm_status": ["communication_status"],
+        "commission": ["commission_status"],
+        "created_at": ["created_at"],
+        # "manager": ["referrer__referrer_profile__manager__last_name", ...] můžeš doplnit později
+    }
+
+    if sort not in sort_mapping:
+        sort = "created_at"
+
+    if direction not in ["asc", "desc"]:
+        direction = "desc"
+
+    order_fields = sort_mapping[sort]
+    if direction == "desc":
+        order_by = ["-" + f for f in order_fields]
+    else:
+        order_by = order_fields
+
+    leads_qs = leads_qs.order_by(*order_by)
+
     can_create_leads = user.role in [User.Role.REFERRER, User.Role.ADVISOR, User.Role.OFFICE]
 
     context = {
         "leads": leads_qs,
         "can_create_leads": can_create_leads,
+        "current_sort": sort,
+        "current_dir": direction,
     }
     return render(request, "leads/my_leads.html", context)
 

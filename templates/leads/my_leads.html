@@ -15,17 +15,72 @@
     {% if leads %}
         <table>
             <thead>
-            <tr>
-                <th>Klient</th>
-                <th>Doporučitel</th>
-                <th>Poradce</th>
-                {% if user.role == "OFFICE" or user.role == "ADVISOR" %}
-                    <th>Manažer</th>
-                {% endif %}
-                <th>Stav komunikace</th>
-                <th>Stav provize</th>
-                <th>Vytvořeno</th>
-            </tr>
+                <tr>
+                    <th>
+                        <a href="?sort=client&dir={% if current_sort == 'client' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                            Klient
+                            {% if current_sort == 'client' %}
+                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+
+                    <th>
+                        <a href="?sort=referrer&dir={% if current_sort == 'referrer' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                            Doporučitel
+                            {% if current_sort == 'referrer' %}
+                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+
+                    <th>
+                        <a href="?sort=advisor&dir={% if current_sort == 'advisor' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                            Poradce
+                            {% if current_sort == 'advisor' %}
+                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+
+                    {% if user.role == "OFFICE" or user.role == "ADVISOR" %}
+                        <th>
+                            <a href="?sort=manager&dir={% if current_sort == 'manager' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                                Manažer
+                                {% if current_sort == 'manager' %}
+                                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
+                    {% endif %}
+
+                    <th>
+                        <a href="?sort=comm_status&dir={% if current_sort == 'comm_status' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                            Stav komunikace
+                            {% if current_sort == 'comm_status' %}
+                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+
+                    <th>
+                        <a href="?sort=commission&dir={% if current_sort == 'commission' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                            Stav provize
+                            {% if current_sort == 'commission' %}
+                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+
+                    <th>
+                        <a href="?sort=created_at&dir={% if current_sort == 'created_at' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                            Vytvořeno
+                            {% if current_sort == 'created_at' %}
+                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                </tr>
             </thead>
             <tbody>
             {% for lead in leads %}
