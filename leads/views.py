@@ -6,6 +6,7 @@ from accounts.models import ReferrerProfile
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Lead, LeadNote, LeadHistory
 from .forms import LeadForm, LeadNoteForm
+from django.db.models import Q
 
 
 
@@ -28,10 +29,14 @@ def get_lead_for_user_or_404(user, pk: int) -> Lead:
         )
     elif user.role == User.Role.OFFICE:
         return get_object_or_404(
-            qs,
+            qs.filter(
+                Q(referrer__referrer_profile__manager__manager_profile__office__owner=user)
+                | Q(referrer=user)
+            ),
             pk=pk,
-            referrer__referrer_profile__manager__manager_profile__office__owner=user,
         )
+
+
     else:
         raise HttpResponseForbidden("Nemáš oprávnění zobrazit tento lead.")
 
@@ -61,9 +66,10 @@ def my_leads(request):
             referrer__referrer_profile__manager=user
         ).distinct()
     elif user.role == User.Role.OFFICE:
-        # Kancelář: leady všech doporučitelů pod všemi jejími manažery
+        # Kancelář: leady všech doporučitelů pod jejími manažery + leady, kde je sama doporučitel
         leads_qs = Lead.objects.filter(
-            referrer__referrer_profile__manager__manager_profile__office__owner=user
+            Q(referrer__referrer_profile__manager__manager_profile__office__owner=user)
+            | Q(referrer=user)
         ).distinct()
 
 

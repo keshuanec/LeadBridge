@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth import get_user_model
 from accounts.models import ReferrerProfile
 from .models import Lead, LeadNote
+from django.db.models import Q
+
 
 User = get_user_model()
 
@@ -140,7 +142,7 @@ class LeadForm(forms.ModelForm):
             if current_status and current_status not in manual_status_codes:
                 self.fields["communication_status"].disabled = True
 
-# =========================
+        # =========================
         #  ROLE: MANAŽER DOPORUČITELŮ
         # =========================
         elif user.role == User.Role.REFERRER_MANAGER:
@@ -165,6 +167,55 @@ class LeadForm(forms.ModelForm):
             self.fields["advisor"].queryset = advisors_qs
 
             # Stav leadu manažer zatím nemění – necháme hidden:
+            self.fields["communication_status"].widget = forms.HiddenInput()
+
+        # =========================
+        #  ROLE: KANCELÁŘ
+        # =========================
+
+        elif user.role == User.Role.OFFICE:
+
+            # doporučitelé pod manažery této kanceláře
+
+            referrer_profiles = ReferrerProfile.objects.filter(
+
+                manager__manager_profile__office__owner=user
+
+            ).select_related("user")
+
+            referrer_ids = referrer_profiles.values_list("user_id", flat=True)
+
+            # referrery = doporučitelé pod kanceláří + kancelář sama
+
+            referrers_qs = User.objects.filter(
+
+                Q(id__in=referrer_ids, role=User.Role.REFERRER) | Q(id=user.id)
+
+            ).distinct()
+
+            self.fields["referrer"].queryset = referrers_qs
+
+            # při zakládání nového leadu předvyplníme referrer = kancelář
+
+            if not instance:
+                self.fields["referrer"].initial = user
+
+            # poradci, kteří jsou přiřazeni k těmto doporučitelům
+
+            advisor_ids = referrer_profiles.values_list("advisors__id", flat=True)
+
+            advisors_qs = User.objects.filter(
+
+                id__in=advisor_ids,
+
+                role=User.Role.ADVISOR,
+
+            ).distinct()
+
+            self.fields["advisor"].queryset = advisors_qs
+
+            # stav leadu kancelář zatím nemění
+
             self.fields["communication_status"].widget = forms.HiddenInput()
 
         # =========================
