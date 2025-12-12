@@ -91,10 +91,14 @@ def my_leads(request):
         "client": ["client_name"],
         "referrer": ["referrer__last_name", "referrer__first_name", "referrer__username"],
         "advisor": ["advisor__last_name", "advisor__first_name", "advisor__username"],
+        "manager": [
+            "referrer__referrer_profile__manager__last_name",
+            "referrer__referrer_profile__manager__first_name",
+            "referrer__referrer_profile__manager__username",
+        ],
         "comm_status": ["communication_status"],
         "commission": ["commission_status"],
         "created_at": ["created_at"],
-        # "manager": ["referrer__referrer_profile__manager__last_name", ...] můžeš doplnit později
     }
 
     if sort not in sort_mapping:
