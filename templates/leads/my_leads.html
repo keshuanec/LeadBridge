@@ -19,6 +19,9 @@
                 <th>Klient</th>
                 <th>Doporučitel</th>
                 <th>Poradce</th>
+                {% if user.role == "OFFICE" or user.role == "ADVISOR" %}
+                    <th>Manažer</th>
+                {% endif %}
                 <th>Stav komunikace</th>
                 <th>Stav provize</th>
                 <th>Vytvořeno</th>
@@ -40,6 +43,13 @@
                     </td>
                     <td>{{ lead.referrer }}</td>
                     <td>{{ lead.advisor|default:"—" }}</td>
+
+                    {% if user.role == "OFFICE" or user.role == "ADVISOR" %}
+                        <td>
+                            {{ lead.referrer_manager|default:"—" }}
+                        </td>
+                    {% endif %}
+
                     <td><span class="badge">{{ lead.get_communication_status_display }}</span></td>
                     <td><span class="badge">{{ lead.get_commission_status_display }}</span></td>
                     <td>{{ lead.created_at|date:"d.m.Y H:i" }}</td>

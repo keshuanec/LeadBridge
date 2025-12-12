@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.db import models
+from accounts.models import ReferrerProfile
+
 
 
 class Lead(models.Model):
@@ -75,6 +77,17 @@ class Lead(models.Model):
         null=True,
         blank=True,
     )
+
+    @property
+    def referrer_manager(self):
+        """
+        Vrátí manažera doporučitele (pokud existuje), jinak None.
+        Bezpečné i pro leady, kde není ReferrerProfile.
+        """
+        try:
+            return self.referrer.referrer_profile.manager
+        except (ReferrerProfile.DoesNotExist, AttributeError):
+            return None
 
     def __str__(self):
         return f"{self.client_name} – {self.referrer}"

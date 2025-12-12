@@ -22,7 +22,8 @@ class User(AbstractUser):
     # Sem můžeme později přidávat další společné údaje (telefon, firma atd.)
 
     def __str__(self):
-        return f"{self.username} ({self.get_role_display()})"
+        return self.get_full_name() or self.username
+
 
 class ReferrerProfile(models.Model):
     """

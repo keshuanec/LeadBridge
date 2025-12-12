@@ -72,8 +72,11 @@ def my_leads(request):
             | Q(referrer=user)
         ).distinct()
 
-
-    leads_qs = leads_qs.select_related("referrer", "advisor").order_by("-created_at")
+    leads_qs = leads_qs.select_related(
+        "referrer",
+        "advisor",
+        "referrer__referrer_profile__manager",
+    ).order_by("-created_at")
 
     # Tady přidáme info, kdo může vytvářet leady
     can_create_leads = user.role in [User.Role.REFERRER, User.Role.ADVISOR, User.Role.OFFICE]
