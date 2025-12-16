@@ -115,12 +115,25 @@ def my_leads(request):
         leads_qs = leads_qs.filter(advisor_id=current_advisor)
 
     if "manager" in allowed and current_manager:
-        leads_qs = leads_qs.filter(referrer__referrer_profile__manager_id=current_manager)
+        if current_manager == "__none__":
+            leads_qs = leads_qs.filter(
+                Q(referrer__referrer_profile__manager__isnull=True) |
+                Q(referrer__referrer_profile__isnull=True)
+            )
+        else:
+            leads_qs = leads_qs.filter(referrer__referrer_profile__manager_id=current_manager)
 
     if "office" in allowed and current_office:
-        leads_qs = leads_qs.filter(
-            referrer__referrer_profile__manager__manager_profile__office_id=current_office
-        )
+        if current_office == "__none__":
+            leads_qs = leads_qs.filter(
+                Q(referrer__referrer_profile__manager__manager_profile__office__isnull=True) |
+                Q(referrer__referrer_profile__manager__isnull=True) |
+                Q(referrer__referrer_profile__isnull=True)
+            )
+        else:
+            leads_qs = leads_qs.filter(
+                referrer__referrer_profile__manager__manager_profile__office_id=current_office
+            )
 
     # ===== ŘAZENÍ =====
     sort = request.GET.get("sort") or "created_at"
@@ -134,6 +147,9 @@ def my_leads(request):
             "referrer__referrer_profile__manager__last_name",
             "referrer__referrer_profile__manager__first_name",
             "referrer__referrer_profile__manager__username",
+        ],
+        "office": [
+            "referrer__referrer_profile__manager__manager_profile__office__name",
         ],
         "comm_status": ["communication_status"],
         "commission": ["commission_status"],

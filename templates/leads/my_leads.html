@@ -56,6 +56,7 @@
             <label style="font-size:12px; display:block;">Manažer</label>
             <select name="manager">
                 <option value="">– všichni –</option>
+                <option value="__none__" {% if current_manager == "__none__" %}selected{% endif %}>— bez manažera —</option>
                 {% for m in manager_options %}
                     <option value="{{ m.id }}" {% if current_manager == m.id|stringformat:"s" %}selected{% endif %}>{{ m }}</option>
                 {% endfor %}
@@ -68,6 +69,7 @@
             <label style="font-size:12px; display:block;">Kancelář</label>
             <select name="office">
                 <option value="">– všechny –</option>
+                <option value="__none__" {% if current_office == "__none__" %}selected{% endif %}>— bez kanceláře —</option>
                 {% for o in office_options %}
                     <option value="{{ o.id }}" {% if current_office == o.id|stringformat:"s" %}selected{% endif %}>{{ o.name }}</option>
                 {% endfor %}
