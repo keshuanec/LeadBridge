@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2c1eb26d-4562-4c7b-90c9-a2b40a90094c" name="Changes" comment="sorting finishing">
+    <list default="true" id="2c1eb26d-4562-4c7b-90c9-a2b40a90094c" name="Changes" comment="filter with none posibility">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leads/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/leads/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/leads/my_leads.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/leads/my_leads.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -227,7 +226,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765551179211</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="filter with none posibility">
+      <option name="closed" value="true" />
+      <created>1765894846254</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1765894846254</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -243,6 +250,7 @@
     <MESSAGE value="office and advisor view - visibility of manager" />
     <MESSAGE value="sorting" />
     <MESSAGE value="sorting finishing" />
-    <option name="LAST_COMMIT_MESSAGE" value="sorting finishing" />
+    <MESSAGE value="filter with none posibility" />
+    <option name="LAST_COMMIT_MESSAGE" value="filter with none posibility" />
   </component>
 </project>

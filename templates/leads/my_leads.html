@@ -7,15 +7,14 @@
     <h2>Moje leady</h2>
 
     {% if can_create_leads %}
-    <p>
-        <a href="{% url 'lead_create' %}">+ Nový lead</a>
-    </p>
+        <p>
+            <a href="{% url 'lead_create' %}">+ Nový lead</a>
+        </p>
     {% endif %}
 
-    {% if leads %}
-    <form method="get" style="margin-bottom:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
-
-        {% if "status" in allowed %}
+{# Filtry #}
+<form method="get" style="margin-bottom:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+    {% if "status" in allowed %}
         <div>
             <label style="font-size:12px; display:block;">Stav</label>
             <select name="status">
@@ -25,9 +24,9 @@
                 {% endfor %}
             </select>
         </div>
-        {% endif %}
+    {% endif %}
 
-        {% if "referrer" in allowed %}
+    {% if "referrer" in allowed %}
         <div>
             <label style="font-size:12px; display:block;">Doporučitel</label>
             <select name="referrer">
@@ -37,9 +36,9 @@
                 {% endfor %}
             </select>
         </div>
-        {% endif %}
+    {% endif %}
 
-        {% if "advisor" in allowed %}
+    {% if "advisor" in allowed %}
         <div>
             <label style="font-size:12px; display:block;">Poradce</label>
             <select name="advisor">
@@ -49,9 +48,9 @@
                 {% endfor %}
             </select>
         </div>
-        {% endif %}
+    {% endif %}
 
-        {% if "manager" in allowed %}
+    {% if "manager" in allowed %}
         <div>
             <label style="font-size:12px; display:block;">Manažer</label>
             <select name="manager">
@@ -62,9 +61,9 @@
                 {% endfor %}
             </select>
         </div>
-        {% endif %}
+    {% endif %}
 
-        {% if "office" in allowed %}
+    {% if "office" in allowed %}
         <div>
             <label style="font-size:12px; display:block;">Kancelář</label>
             <select name="office">
@@ -75,15 +74,17 @@
                 {% endfor %}
             </select>
         </div>
-        {% endif %}
+    {% endif %}
 
-        <input type="hidden" name="sort" value="{{ current_sort }}">
-        <input type="hidden" name="dir" value="{{ current_dir }}">
+    <input type="hidden" name="sort" value="{{ current_sort }}">
+    <input type="hidden" name="dir" value="{{ current_dir }}">
 
-        <button type="submit">Filtrovat</button>
-        <a href="{% url 'my_leads' %}">Zrušit filtry</a>
-    </form>
+    <button type="submit">Filtrovat</button>
+    <a href="{% url 'my_leads' %}">Zrušit filtry</a>
+</form>
 
+{# Výsledky #}
+{% if leads %}
     <table>
         <thead>
         <tr>
@@ -202,11 +203,15 @@
         </tbody>
     </table>
     {% else %}
-    {% if user.role == "OFFICE" %}
-    <p>Vaše kancelář zatím nemá žádné leady.</p>
+    {% if qs_keep or current_status or current_referrer or current_advisor or current_manager or current_office %}
+        <p>Pro zvolené filtry nebyly nalezeny žádné leady.</p>
     {% else %}
-    <p>Nemáš zatím žádné leady.</p>
+        {% if user.role == "OFFICE" %}
+            <p>Vaše kancelář zatím nemá žádné leady.</p>
+        {% else %}
+            <p>Nemáš zatím žádné leady.</p>
+        {% endif %}
     {% endif %}
-    {% endif %}
+{% endif %}
 </div>
 {% endblock %}
