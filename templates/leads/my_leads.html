@@ -123,6 +123,18 @@
             </th>
             {% endif %}
 
+            {% if user.role == "ADVISOR" %}
+            <th>
+                <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=office&dir={% if current_sort == 'office' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                    Kancelář
+                    {% if current_sort == 'office' %}
+                        {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            {% endif %}
+
+
             <th>
                 <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=comm_status&dir={% if current_sort == 'comm_status' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                     Stav komunikace
@@ -173,6 +185,12 @@
                 {{ lead.referrer_manager|default:"—" }}
             </td>
             {% endif %}
+            {% if user.role == "ADVISOR" %}
+            <td>
+                {{ lead.referrer.referrer_profile.manager.manager_profile.office.name|default:"—" }}
+            </td>
+            {% endif %}
+
 
             <td><span class="badge">{{ lead.get_communication_status_display }}</span></td>
             <td><span class="badge">{{ lead.get_commission_status_display }}</span></td>
