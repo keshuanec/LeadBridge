@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 from accounts.models import ReferrerProfile
+from django.utils import timezone
+
 
 
 
@@ -77,6 +79,9 @@ class Lead(models.Model):
         null=True,
         blank=True,
     )
+
+    meeting_at = models.DateTimeField("Datum a čas schůzky", null=True, blank=True)
+    meeting_note = models.TextField("Poznámka ke schůzce", blank=True)
 
     @property
     def referrer_manager(self):

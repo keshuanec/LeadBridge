@@ -233,3 +233,22 @@ class LeadNoteForm(forms.ModelForm):
         widgets = {
             "text": forms.Textarea(attrs={"rows": 3}),
         }
+
+class LeadMeetingForm(forms.ModelForm):
+    class Meta:
+        model = Lead
+        fields = ["meeting_at", "meeting_note"]
+        labels = {
+            "meeting_at": "Datum a čas schůzky",
+            "meeting_note": "Poznámka",
+        }
+        widgets = {
+            "meeting_at": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "meeting_note": forms.Textarea(attrs={"rows": 3}),
+        }
+
+    def clean_meeting_at(self):
+        value = self.cleaned_data["meeting_at"]
+        if value is None:
+            raise forms.ValidationError("Vyber datum a čas schůzky.")
+        return value

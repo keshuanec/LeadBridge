@@ -47,9 +47,7 @@
         </a>
 
         {% if can_schedule_meeting %}
-            <a href="#" style="padding:6px 10px;border-radius:4px;background:#eee;text-decoration:none;font-size:13px;">
-                DOMLUVIT SCHŮZKU
-            </a>
+            <a href="{% url 'lead_schedule_meeting' lead.pk %}" title="Domluvit schůzku">📅 Domluvit schůzku</a>
         {% endif %}
 
         {% if can_create_deal %}

@@ -5,13 +5,10 @@ from django.http import HttpResponseForbidden
 from accounts.models import ReferrerProfile, Office
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Lead, LeadNote, LeadHistory
-from .forms import LeadForm, LeadNoteForm
+from .forms import LeadForm, LeadNoteForm, LeadMeetingForm
 from django.db.models import Q
 from django.utils.http import urlencode
-
-
-
-
+from django.utils import timezone
 
 
 def get_lead_for_user_or_404(user, pk: int) -> Lead:
@@ -443,4 +440,49 @@ def referrers_list(request):
     }
     return render(request, "leads/referrers_list.html", context)
 
+@login_required
+def lead_schedule_meeting(request, pk: int):
+    user: User = request.user
+    lead = get_lead_for_user_or_404(user, pk)
 
+    # jen poradce (a admin/superuser)
+    if not (user.is_superuser or user.role == User.Role.ADMIN or user.role == User.Role.ADVISOR):
+        return HttpResponseForbidden("Nemáš oprávnění domluvit schůzku.")
+
+    if request.method == "POST":
+        form = LeadMeetingForm(request.POST, instance=lead)
+        if form.is_valid():
+            lead = form.save(commit=False)
+
+            # změna stavu
+            lead.communication_status = Lead.CommunicationStatus.MEETING
+            lead.save(update_fields=["meeting_at", "meeting_note", "communication_status", "updated_at"])
+
+            # historie
+            when = timezone.localtime(lead.meeting_at).strftime("%d.%m.%Y %H:%M") if lead.meeting_at else "—"
+            LeadHistory.objects.create(
+                lead=lead,
+                event_type=LeadHistory.EventType.MEETING_SCHEDULED,
+                user=user,
+                description=f"Domluvena schůzka na {when}.",
+            )
+
+            # pokud chceš mít poznámku i v seznamu poznámek (doporučuji)
+            if lead.meeting_note:
+                LeadNote.objects.create(
+                    lead=lead,
+                    author=user,
+                    text=f"Schůzka: {lead.meeting_note}",
+                )
+                LeadHistory.objects.create(
+                    lead=lead,
+                    event_type=LeadHistory.EventType.NOTE_ADDED,
+                    user=user,
+                    description="Přidána poznámka ke schůzce.",
+                )
+
+            return redirect("lead_detail", pk=lead.pk)
+    else:
+        form = LeadMeetingForm(instance=lead)
+
+    return render(request, "leads/lead_meeting_form.html", {"lead": lead, "form": form})
