@@ -2,11 +2,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.http import HttpResponseForbidden
-from accounts.models import ReferrerProfile
+from accounts.models import ReferrerProfile, Office
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Lead, LeadNote, LeadHistory
 from .forms import LeadForm, LeadNoteForm
 from django.db.models import Q
+from django.utils.http import urlencode
+
 
 
 
@@ -52,36 +54,73 @@ def my_leads(request):
     leads_qs = Lead.objects.none()
 
     if user.is_superuser or user.role == User.Role.ADMIN:
-        # Admin vidí všechno
         leads_qs = Lead.objects.all()
 
     elif user.role == User.Role.ADVISOR:
-        # Poradce: leady, kde je přiřazen jako advisor
         leads_qs = Lead.objects.filter(advisor=user)
 
     elif user.role == User.Role.REFERRER:
-        # Doporučitel: leady, které sám zadal
         leads_qs = Lead.objects.filter(referrer=user)
 
     elif user.role == User.Role.REFERRER_MANAGER:
-        # Manažer doporučitelů: leady všech jeho doporučitelů
         leads_qs = Lead.objects.filter(
             referrer__referrer_profile__manager=user
         ).distinct()
 
     elif user.role == User.Role.OFFICE:
-        # Kancelář: leady všech doporučitelů pod jejími manažery + leady, kde je sama doporučitel
         leads_qs = Lead.objects.filter(
             Q(referrer__referrer_profile__manager__manager_profile__office__owner=user)
             | Q(referrer=user)
         ).distinct()
+
+    # --- base queryset (na options do filtrů) ---
+    base_leads_qs = leads_qs
 
     # optimalizace – načteme referrera, poradce a manažera
     leads_qs = leads_qs.select_related(
         "referrer",
         "advisor",
         "referrer__referrer_profile__manager",
+        "referrer__referrer_profile__manager__manager_profile__office",
     )
+
+    # ===== Filtry povolené podle role =====
+    allowed_filters = {
+        User.Role.REFERRER: {"status", "advisor"},
+        User.Role.REFERRER_MANAGER: {"status", "referrer", "advisor"},
+        User.Role.OFFICE: {"status", "referrer", "manager", "advisor"},
+        User.Role.ADVISOR: {"status", "referrer", "manager", "office"},
+    }
+
+    if user.is_superuser or user.role == User.Role.ADMIN:
+        allowed = {"status", "referrer", "advisor", "manager", "office"}
+    else:
+        allowed = allowed_filters.get(user.role, set())
+
+    # ===== Čtení filtrů z GET =====
+    current_status = request.GET.get("status") or ""
+    current_referrer = request.GET.get("referrer") or ""
+    current_advisor = request.GET.get("advisor") or ""
+    current_manager = request.GET.get("manager") or ""
+    current_office = request.GET.get("office") or ""
+
+    # ===== Aplikace filtrů (jen povolené) =====
+    if "status" in allowed and current_status:
+        leads_qs = leads_qs.filter(communication_status=current_status)
+
+    if "referrer" in allowed and current_referrer:
+        leads_qs = leads_qs.filter(referrer_id=current_referrer)
+
+    if "advisor" in allowed and current_advisor:
+        leads_qs = leads_qs.filter(advisor_id=current_advisor)
+
+    if "manager" in allowed and current_manager:
+        leads_qs = leads_qs.filter(referrer__referrer_profile__manager_id=current_manager)
+
+    if "office" in allowed and current_office:
+        leads_qs = leads_qs.filter(
+            referrer__referrer_profile__manager__manager_profile__office_id=current_office
+        )
 
     # ===== ŘAZENÍ =====
     sort = request.GET.get("sort") or "created_at"
@@ -103,17 +142,53 @@ def my_leads(request):
 
     if sort not in sort_mapping:
         sort = "created_at"
-
     if direction not in ["asc", "desc"]:
         direction = "desc"
 
     order_fields = sort_mapping[sort]
-    if direction == "desc":
-        order_by = ["-" + f for f in order_fields]
-    else:
-        order_by = order_fields
+    leads_qs = leads_qs.order_by(*([("-" + f) for f in order_fields] if direction == "desc" else order_fields))
 
-    leads_qs = leads_qs.order_by(*order_by)
+    # ===== Options do filtrů (vždy jen z base_leads_qs) =====
+    status_choices = Lead.CommunicationStatus.choices
+
+    referrer_options = User.objects.none()
+    advisor_options = User.objects.none()
+    manager_options = User.objects.none()
+    office_options = Office.objects.none()
+
+    if "referrer" in allowed:
+        ref_ids = base_leads_qs.values_list("referrer_id", flat=True).distinct()
+        referrer_options = User.objects.filter(id__in=ref_ids)
+
+    if "advisor" in allowed:
+        adv_ids = base_leads_qs.values_list("advisor_id", flat=True).distinct()
+        advisor_options = User.objects.filter(id__in=[x for x in adv_ids if x])
+
+    if "manager" in allowed:
+        mgr_ids = base_leads_qs.values_list("referrer__referrer_profile__manager_id", flat=True).distinct()
+        manager_options = User.objects.filter(id__in=[x for x in mgr_ids if x])
+
+    if "office" in allowed:
+        off_ids = base_leads_qs.values_list(
+            "referrer__referrer_profile__manager__manager_profile__office_id",
+            flat=True
+        ).distinct()
+        office_options = Office.objects.filter(id__in=[x for x in off_ids if x])
+
+    # ===== Zachování filtrů při řazení (klik na sloupce) =====
+    keep_params = {}
+    if "status" in allowed and current_status:
+        keep_params["status"] = current_status
+    if "referrer" in allowed and current_referrer:
+        keep_params["referrer"] = current_referrer
+    if "advisor" in allowed and current_advisor:
+        keep_params["advisor"] = current_advisor
+    if "manager" in allowed and current_manager:
+        keep_params["manager"] = current_manager
+    if "office" in allowed and current_office:
+        keep_params["office"] = current_office
+
+    qs_keep = urlencode(keep_params)
 
     can_create_leads = user.role in [User.Role.REFERRER, User.Role.ADVISOR, User.Role.OFFICE]
 
@@ -122,6 +197,22 @@ def my_leads(request):
         "can_create_leads": can_create_leads,
         "current_sort": sort,
         "current_dir": direction,
+
+        # filtry
+        "allowed": allowed,
+        "status_choices": status_choices,
+        "referrer_options": referrer_options,
+        "advisor_options": advisor_options,
+        "manager_options": manager_options,
+        "office_options": office_options,
+
+        "current_status": current_status,
+        "current_referrer": current_referrer,
+        "current_advisor": current_advisor,
+        "current_manager": current_manager,
+        "current_office": current_office,
+
+        "qs_keep": qs_keep,
     }
     return render(request, "leads/my_leads.html", context)
 

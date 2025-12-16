@@ -7,117 +7,186 @@
     <h2>Moje leady</h2>
 
     {% if can_create_leads %}
-        <p>
-            <a href="{% url 'lead_create' %}">+ Nový lead</a>
-        </p>
+    <p>
+        <a href="{% url 'lead_create' %}">+ Nový lead</a>
+    </p>
     {% endif %}
 
     {% if leads %}
-        <table>
-            <thead>
-                <tr>
-                    <th>
-                        <a href="?sort=client&dir={% if current_sort == 'client' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
-                            Klient
-                            {% if current_sort == 'client' %}
-                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
-                            {% endif %}
-                        </a>
-                    </th>
+    <form method="get" style="margin-bottom:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
 
-                    <th>
-                        <a href="?sort=referrer&dir={% if current_sort == 'referrer' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
-                            Doporučitel
-                            {% if current_sort == 'referrer' %}
-                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
-                            {% endif %}
-                        </a>
-                    </th>
-
-                    <th>
-                        <a href="?sort=advisor&dir={% if current_sort == 'advisor' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
-                            Poradce
-                            {% if current_sort == 'advisor' %}
-                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
-                            {% endif %}
-                        </a>
-                    </th>
-
-                    {% if user.role == "OFFICE" or user.role == "ADVISOR" %}
-                        <th>
-                            <a href="?sort=manager&dir={% if current_sort == 'manager' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
-                                Manažer
-                                {% if current_sort == 'manager' %}
-                                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
-                                {% endif %}
-                            </a>
-                        </th>
-                    {% endif %}
-
-                    <th>
-                        <a href="?sort=comm_status&dir={% if current_sort == 'comm_status' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
-                            Stav komunikace
-                            {% if current_sort == 'comm_status' %}
-                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
-                            {% endif %}
-                        </a>
-                    </th>
-
-                    <th>
-                        <a href="?sort=commission&dir={% if current_sort == 'commission' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
-                            Stav provize
-                            {% if current_sort == 'commission' %}
-                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
-                            {% endif %}
-                        </a>
-                    </th>
-
-                    <th>
-                        <a href="?sort=created_at&dir={% if current_sort == 'created_at' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
-                            Vytvořeno
-                            {% if current_sort == 'created_at' %}
-                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
-                            {% endif %}
-                        </a>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for lead in leads %}
-                <tr>
-                    <td>
-                        <a href="{% url 'lead_detail' lead.pk %}">
-                            {{ lead.client_name }}
-                        </a><br>
-                        {% if lead.client_phone %}
-                            <small>{{ lead.client_phone }}</small><br>
-                        {% endif %}
-                        {% if lead.client_email %}
-                            <small>{{ lead.client_email }}</small>
-                        {% endif %}
-                    </td>
-                    <td>{{ lead.referrer }}</td>
-                    <td>{{ lead.advisor|default:"—" }}</td>
-
-                    {% if user.role == "OFFICE" or user.role == "ADVISOR" %}
-                        <td>
-                            {{ lead.referrer_manager|default:"—" }}
-                        </td>
-                    {% endif %}
-
-                    <td><span class="badge">{{ lead.get_communication_status_display }}</span></td>
-                    <td><span class="badge">{{ lead.get_commission_status_display }}</span></td>
-                    <td>{{ lead.created_at|date:"d.m.Y H:i" }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        {% if user.role == "OFFICE" %}
-            <p>Vaše kancelář zatím nemá žádné leady.</p>
-        {% else %}
-            <p>Nemáš zatím žádné leady.</p>
+        {% if "status" in allowed %}
+        <div>
+            <label style="font-size:12px; display:block;">Stav</label>
+            <select name="status">
+                <option value="">– všechny –</option>
+                {% for code, label in status_choices %}
+                    <option value="{{ code }}" {% if current_status == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
         {% endif %}
+
+        {% if "referrer" in allowed %}
+        <div>
+            <label style="font-size:12px; display:block;">Doporučitel</label>
+            <select name="referrer">
+                <option value="">– všichni –</option>
+                {% for r in referrer_options %}
+                    <option value="{{ r.id }}" {% if current_referrer == r.id|stringformat:"s" %}selected{% endif %}>{{ r }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
+        {% if "advisor" in allowed %}
+        <div>
+            <label style="font-size:12px; display:block;">Poradce</label>
+            <select name="advisor">
+                <option value="">– všichni –</option>
+                {% for a in advisor_options %}
+                    <option value="{{ a.id }}" {% if current_advisor == a.id|stringformat:"s" %}selected{% endif %}>{{ a }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
+        {% if "manager" in allowed %}
+        <div>
+            <label style="font-size:12px; display:block;">Manažer</label>
+            <select name="manager">
+                <option value="">– všichni –</option>
+                {% for m in manager_options %}
+                    <option value="{{ m.id }}" {% if current_manager == m.id|stringformat:"s" %}selected{% endif %}>{{ m }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
+        {% if "office" in allowed %}
+        <div>
+            <label style="font-size:12px; display:block;">Kancelář</label>
+            <select name="office">
+                <option value="">– všechny –</option>
+                {% for o in office_options %}
+                    <option value="{{ o.id }}" {% if current_office == o.id|stringformat:"s" %}selected{% endif %}>{{ o.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
+        <input type="hidden" name="sort" value="{{ current_sort }}">
+        <input type="hidden" name="dir" value="{{ current_dir }}">
+
+        <button type="submit">Filtrovat</button>
+        <a href="{% url 'my_leads' %}">Zrušit filtry</a>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>
+                <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=client&dir={% if current_sort == 'client' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                    Klient
+                    {% if current_sort == 'client' %}
+                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                    {% endif %}
+                </a>
+            </th>
+
+            <th>
+                <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=referrer&dir={% if current_sort == 'referrer' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                    Doporučitel
+                    {% if current_sort == 'referrer' %}
+                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                    {% endif %}
+                </a>
+            </th>
+
+            <th>
+                <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=advisor&dir={% if current_sort == 'advisor' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                    Poradce
+                    {% if current_sort == 'advisor' %}
+                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                    {% endif %}
+                </a>
+            </th>
+
+            {% if user.role == "OFFICE" or user.role == "ADVISOR" %}
+            <th>
+                <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=manager&dir={% if current_sort == 'manager' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                    Manažer
+                    {% if current_sort == 'manager' %}
+                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            {% endif %}
+
+            <th>
+                <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=comm_status&dir={% if current_sort == 'comm_status' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                    Stav komunikace
+                    {% if current_sort == 'comm_status' %}
+                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                    {% endif %}
+                </a>
+            </th>
+
+            <th>
+                <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=commission&dir={% if current_sort == 'commission' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                    Stav provize
+                    {% if current_sort == 'commission' %}
+                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                    {% endif %}
+                </a>
+            </th>
+
+            <th>
+                <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=created_at&dir={% if current_sort == 'created_at' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                    Vytvořeno
+                    {% if current_sort == 'created_at' %}
+                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                    {% endif %}
+                </a>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for lead in leads %}
+        <tr>
+            <td>
+                <a href="{% url 'lead_detail' lead.pk %}">
+                    {{ lead.client_name }}
+                </a><br>
+                {% if lead.client_phone %}
+                <small>{{ lead.client_phone }}</small><br>
+                {% endif %}
+                {% if lead.client_email %}
+                <small>{{ lead.client_email }}</small>
+                {% endif %}
+            </td>
+            <td>{{ lead.referrer }}</td>
+            <td>{{ lead.advisor|default:"—" }}</td>
+
+            {% if user.role == "OFFICE" or user.role == "ADVISOR" %}
+            <td>
+                {{ lead.referrer_manager|default:"—" }}
+            </td>
+            {% endif %}
+
+            <td><span class="badge">{{ lead.get_communication_status_display }}</span></td>
+            <td><span class="badge">{{ lead.get_commission_status_display }}</span></td>
+            <td>{{ lead.created_at|date:"d.m.Y H:i" }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    {% if user.role == "OFFICE" %}
+    <p>Vaše kancelář zatím nemá žádné leady.</p>
+    {% else %}
+    <p>Nemáš zatím žádné leady.</p>
+    {% endif %}
     {% endif %}
 </div>
 {% endblock %}
