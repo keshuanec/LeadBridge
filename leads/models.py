@@ -159,3 +159,83 @@ class LeadHistory(models.Model):
 
     def __str__(self):
         return f"{self.get_event_type_display()} – {self.lead} ({self.created_at})"
+
+
+class Deal(models.Model):
+    class Bank(models.TextChoices):
+        CS = "CS", "Česká spořitelna"
+        CSOB_HB = "CSOB_HB", "ČSOB Hypoteční banka"
+        KB = "KB", "Komerční banka"
+        MBANK = "MBANK", "mBank"
+        OBERBANK = "OBERBANK", "Oberbank"
+        RB = "RB", "Raiffeisenbank"
+        UCB = "UCB", "Unicredit bank"
+        SSCS = "SSCS", "Stavební spořitelna České spořitelny"
+        MP = "MP", "Modrá pyramida"
+        CSOB_SS = "CSOB_SS", "ČSOB stavební spořitelna"
+        RB_SS = "RB_SS", "Raiffeisen stavební spořitelna"
+
+    class PropertyType(models.TextChoices):
+        OWN = "OWN", "Vlastní"
+        OTHER = "OTHER", "Cizí"
+
+    class DealStatus(models.TextChoices):
+        REQUEST_IN_BANK = "REQUEST_IN_BANK", "Žádost v bance"
+        WAITING_FOR_APPRAISAL = "WAITING_FOR_APPRAISAL", "Čekání na odhad"
+        PREP_APPROVAL = "PREP_APPROVAL", "Příprava schvalování"
+        APPROVAL = "APPROVAL", "Schvalování"
+        SIGN_PLANNING = "SIGN_PLANNING", "Plánování podpisu"
+        SIGNED = "SIGNED", "Podepsaná smlouva"
+        SIGNED_NO_PROPERTY = "SIGNED_NO_PROPERTY", "Podepsaná smlouva bez nemovitosti"
+        DRAWN = "DRAWN", "Načerpáno"
+
+    class CommissionStatus(models.TextChoices):
+        PENDING = "PENDING", "Čekání na provizi"
+        READY = "READY", "Provize připravená"
+        PAID = "PAID", "Provize vyplacená"
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    lead = models.OneToOneField(
+        "Lead",
+        on_delete=models.PROTECT,
+        related_name="deal",
+        verbose_name="Lead",
+    )
+
+    # kopie klienta v okamžiku založení obchodu (ať se to historicky nemění)
+    client_name = models.CharField("Jméno klienta", max_length=255)
+    client_phone = models.CharField("Telefon klienta", max_length=50, blank=True)
+    client_email = models.EmailField("E-mail klienta", blank=True)
+
+    loan_amount = models.PositiveBigIntegerField("Výše úvěru (Kč)")
+    bank = models.CharField("Banka", max_length=32, choices=Bank.choices)
+    property_type = models.CharField("Nemovitost", max_length=16, choices=PropertyType.choices)
+
+    status = models.CharField(
+        "Stav obchodu",
+        max_length=32,
+        choices=DealStatus.choices,
+        default=DealStatus.REQUEST_IN_BANK,
+    )
+
+    # provize – zatím ručně/blank, výpočet doděláme později
+    commission_total = models.PositiveIntegerField("Provize celkem (Kč)", null=True, blank=True)
+    commission_referrer = models.PositiveIntegerField("Provize makléř (Kč)", null=True, blank=True)
+    commission_manager = models.PositiveIntegerField("Provize manažer (Kč)", null=True, blank=True)
+    commission_office = models.PositiveIntegerField("Provize kancelář (Kč)", null=True, blank=True)
+
+    commission_status = models.CharField(
+        "Stav provize",
+        max_length=16,
+        choices=CommissionStatus.choices,
+        default=CommissionStatus.PENDING,
+    )
+
+    # při PAID zobrazíme checkboxy – které části byly vyplaceny
+    paid_referrer = models.BooleanField("Vyplacen makléř", default=False)
+    paid_manager = models.BooleanField("Vyplacen manažer", default=False)
+    paid_office = models.BooleanField("Vyplacena kancelář", default=False)
+
+    def __str__(self):
+        return f"Obchod – {self.client_name} ({self.get_status_display()})"
