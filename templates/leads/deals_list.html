@@ -1,10 +1,97 @@
 {% extends "base.html" %}
-
 {% block title %}Obchody{% endblock %}
 
 {% block content %}
 <div class="card">
     <h2>Obchody</h2>
-    <p>Zatím tu nic není – obchody teprve nadefinujeme.</p>
+
+    {% if deals %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Stav obchodu</th>
+                    <th>Klient</th>
+                    <th>Výše úvěru</th>
+
+                    <th>Provize celkem</th>
+                    <th>Provize makléř</th>
+
+                    {% if user.role == "REFERRER_MANAGER" or user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+                        <th>Provize manažer</th>
+                    {% endif %}
+
+                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+                        <th>Provize kancelář</th>
+                    {% endif %}
+
+                    {% if user.role == "REFERRER_MANAGER" or user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+                        <th>Doporučitel</th>
+                    {% endif %}
+
+                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+                        <th>Manažer</th>
+                    {% endif %}
+
+                    {% if user.role == "ADVISOR" or user.is_superuser %}
+                        <th>Kancelář</th>
+                    {% endif %}
+
+                    <th>Vytvořeno</th>
+                    <th>Stav provize</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for d in deals %}
+                <tr>
+                    <td><span class="badge">{{ d.get_status_display }}</span></td>
+                    <td>{{ d.client_name }}</td>
+                    <td>{{ d.loan_amount }}</td>
+
+                    <td>{{ d.commission_total|default:"—" }}</td>
+                    <td>{{ d.commission_referrer|default:"—" }}</td>
+
+                    {% if user.role == "REFERRER_MANAGER" or user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+                        <td>{{ d.commission_manager|default:"—" }}</td>
+                    {% endif %}
+
+                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+                        <td>{{ d.commission_office|default:"—" }}</td>
+                    {% endif %}
+
+                    {% if user.role == "REFERRER_MANAGER" or user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+                        <td>{{ d.referrer_name }}</td>
+                    {% endif %}
+
+                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+                        <td>{{ d.manager_name|default:"—" }}</td>
+                    {% endif %}
+
+                    {% if user.role == "ADVISOR" or user.is_superuser %}
+                        <td>{{ d.office_name|default:"—" }}</td>
+                    {% endif %}
+
+                    <td>{{ d.created_at|date:"d.m.Y H:i" }}</td>
+
+                    <td>
+                        {{ d.get_commission_status_display }}
+                        {% if d.commission_status == "PAID" %}
+                            <div style="font-size:12px; margin-top:4px;">
+                                <label><input type="checkbox" disabled {% if d.paid_referrer %}checked{% endif %}> makléř</label>
+                                {% if d.manager_name %}
+                                    <label style="margin-left:8px;"><input type="checkbox" disabled {% if d.paid_manager %}checked{% endif %}> manažer</label>
+                                {% endif %}
+                                {% if d.office_name %}
+                                    <label style="margin-left:8px;"><input type="checkbox" disabled {% if d.paid_office %}checked{% endif %}> kancelář</label>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Zatím nemáte žádné obchody.</p>
+    {% endif %}
 </div>
 {% endblock %}

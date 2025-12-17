@@ -4,8 +4,8 @@ from django.urls import reverse
 from django.http import HttpResponseForbidden
 from accounts.models import ReferrerProfile, Office
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Lead, LeadNote, LeadHistory
-from .forms import LeadForm, LeadNoteForm, LeadMeetingForm
+from .models import Lead, LeadNote, LeadHistory, Deal
+from .forms import LeadForm, LeadNoteForm, LeadMeetingForm, DealCreateForm
 from django.db.models import Q
 from django.utils.http import urlencode
 from django.utils import timezone
@@ -412,8 +412,50 @@ def lead_edit(request, pk: int):
 
 @login_required
 def deals_list(request):
-    # Placeholder – později sem dáme skutečné obchody
-    return render(request, "leads/deals_list.html")
+    user: User = request.user
+
+    qs = Deal.objects.select_related(
+        "lead",
+        "lead__referrer",
+        "lead__advisor",
+        "lead__referrer__referrer_profile__manager",
+        "lead__referrer__referrer_profile__manager__manager_profile__office",
+    )
+
+    # přístup stejně jako leady (podle leadu)
+    if user.is_superuser or user.role == User.Role.ADMIN:
+        pass
+    elif user.role == User.Role.ADVISOR:
+        qs = qs.filter(lead__advisor=user)
+    elif user.role == User.Role.REFERRER:
+        qs = qs.filter(lead__referrer=user)
+    elif user.role == User.Role.REFERRER_MANAGER:
+        qs = qs.filter(lead__referrer__referrer_profile__manager=user).distinct()
+    elif user.role == User.Role.OFFICE:
+        qs = qs.filter(
+            Q(lead__referrer__referrer_profile__manager__manager_profile__office__owner=user)
+            | Q(lead__referrer=user)
+        ).distinct()
+    else:
+        return HttpResponseForbidden("Nemáš oprávnění zobrazit obchody.")
+
+    qs = qs.order_by("-created_at")
+
+    # pro šablonu si připravíme helper hodnoty (bez rizika padání v template)
+    deals = []
+    for d in qs:
+        rp = getattr(d.lead.referrer, "referrer_profile", None)
+        manager = getattr(rp, "manager", None) if rp else None
+        office = getattr(getattr(manager, "manager_profile", None), "office", None) if manager else None
+
+        d.referrer_name = str(d.lead.referrer)
+        d.manager_name = str(manager) if manager else None
+        d.office_name = office.name if office else None
+        d.advisor_name = str(d.lead.advisor) if d.lead.advisor else None
+        deals.append(d)
+
+    return render(request, "leads/deals_list.html", {"deals": deals})
+
 
 @login_required
 def referrers_list(request):
@@ -535,3 +577,52 @@ def overview(request):
         "deals_placeholder": deals_placeholder,
     }
     return render(request, "leads/overview.html", context)
+
+@login_required
+def deal_create_from_lead(request, pk: int):
+    user: User = request.user
+    lead = get_lead_for_user_or_404(user, pk)
+
+    # jen poradce (+ admin/superuser)
+    if not (user.is_superuser or user.role == User.Role.ADMIN or user.role == User.Role.ADVISOR):
+        return HttpResponseForbidden("Nemáš oprávnění založit obchod.")
+
+    # pokud už obchod existuje, pošli rovnou do seznamu nebo detailu (zatím do seznamu)
+    if hasattr(lead, "deal"):
+        return redirect("deals_list")
+
+    if request.method == "POST":
+        form = DealCreateForm(request.POST, lead=lead)
+        if form.is_valid():
+            deal = form.save(commit=False)
+            deal.lead = lead
+
+            # kopie klienta z leadu (protože pole jsou disabled)
+            deal.client_name = lead.client_name
+            deal.client_phone = lead.client_phone
+            deal.client_email = lead.client_email
+            deal.save()
+
+            # Lead -> stav Založen obchod
+            lead.communication_status = Lead.CommunicationStatus.DEAL_CREATED
+            lead.save(update_fields=["communication_status", "updated_at"])
+
+            # historie
+            LeadHistory.objects.create(
+                lead=lead,
+                event_type=LeadHistory.EventType.DEAL_CREATED,
+                user=user,
+                description="Založen obchod.",
+            )
+            LeadHistory.objects.create(
+                lead=lead,
+                event_type=LeadHistory.EventType.STATUS_CHANGED,
+                user=user,
+                description="Změněn stav leadu: → Založen obchod",
+            )
+
+            return redirect("deals_list")
+    else:
+        form = DealCreateForm(lead=lead)
+
+    return render(request, "leads/deal_form.html", {"lead": lead, "form": form})

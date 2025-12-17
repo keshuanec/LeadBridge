@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from accounts.models import ReferrerProfile
-from .models import Lead, LeadNote
+from .models import Lead, LeadNote, Deal
 from django.db.models import Q
 
 
@@ -252,3 +252,32 @@ class LeadMeetingForm(forms.ModelForm):
         if value is None:
             raise forms.ValidationError("Vyber datum a čas schůzky.")
         return value
+
+
+class DealCreateForm(forms.ModelForm):
+    class Meta:
+        model = Deal
+        fields = ["client_name", "client_phone", "client_email", "loan_amount", "bank", "property_type"]
+        labels = {
+            "client_name": "Jméno klienta",
+            "client_phone": "Telefon",
+            "client_email": "E-mail",
+            "loan_amount": "Výše úvěru",
+            "bank": "Banka",
+            "property_type": "Nemovitost",
+        }
+
+    def __init__(self, *args, **kwargs):
+        lead = kwargs.pop("lead", None)
+        super().__init__(*args, **kwargs)
+
+        # klientské údaje jen jako „předvyplněné“ – můžeš je dát readonly
+        if lead is not None and not self.instance.pk:
+            self.fields["client_name"].initial = lead.client_name
+            self.fields["client_phone"].initial = lead.client_phone
+            self.fields["client_email"].initial = lead.client_email
+
+        # pokud chceš zakázat editaci klienta v dealu:
+        self.fields["client_name"].disabled = True
+        self.fields["client_phone"].disabled = True
+        self.fields["client_email"].disabled = True

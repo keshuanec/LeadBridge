@@ -9,4 +9,5 @@ urlpatterns = [
     path("<int:pk>/meeting/", views.lead_schedule_meeting, name="lead_schedule_meeting"),
     path("deals/", views.deals_list, name="deals_list"),
     path("referrers/", views.referrers_list, name="referrers_list"),
+    path("<int:pk>/deal/new/", views.deal_create_from_lead, name="deal_create_from_lead"),
 ]
