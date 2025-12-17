@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Přehled{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Přehled</h2>
+
+    <h3>Domluvené schůzky</h3>
+    {% if meetings %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Termín</th>
+                    <th>Klient</th>
+                    <th>Doporučitel</th>
+                    <th>Poradce</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for lead in meetings %}
+                <tr>
+                    <td>{{ lead.meeting_at|date:"d.m.Y H:i" }}</td>
+                    <td><a href="{% url 'lead_detail' lead.pk %}">{{ lead.client_name }}</a></td>
+                    <td>{{ lead.referrer }}</td>
+                    <td>{{ lead.advisor|default:"—" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Žádné schůzky.</p>
+    {% endif %}
+
+    <hr style="margin:16px 0; border:none; border-top:1px solid #eee;">
+
+    <h3>Nově vložené leady</h3>
+    {% if new_leads %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Klient</th>
+                    <th>Doporučitel</th>
+                    <th>Poradce</th>
+                    <th>Vytvořeno</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for lead in new_leads %}
+                <tr>
+                    <td><a href="{% url 'lead_detail' lead.pk %}">{{ lead.client_name }}</a></td>
+                    <td>{{ lead.referrer }}</td>
+                    <td>{{ lead.advisor|default:"—" }}</td>
+                    <td>{{ lead.created_at|date:"d.m.Y H:i" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Žádné nové leady.</p>
+    {% endif %}
+
+    <hr style="margin:16px 0; border:none; border-top:1px solid #eee;">
+
+    <h3>Běžící obchody</h3>
+    <p>Zatím nemáme implementováno. (Placeholder)</p>
+</div>
+{% endblock %}

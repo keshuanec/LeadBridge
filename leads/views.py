@@ -486,3 +486,52 @@ def lead_schedule_meeting(request, pk: int):
         form = LeadMeetingForm(instance=lead)
 
     return render(request, "leads/lead_meeting_form.html", {"lead": lead, "form": form})
+
+
+@login_required
+def overview(request):
+    user: User = request.user
+
+    # Vezmeme stejný "base" přístup jako v my_leads
+    leads_qs = Lead.objects.none()
+
+    if user.is_superuser or user.role == User.Role.ADMIN:
+        leads_qs = Lead.objects.all()
+    elif user.role == User.Role.ADVISOR:
+        leads_qs = Lead.objects.filter(advisor=user)
+    elif user.role == User.Role.REFERRER:
+        leads_qs = Lead.objects.filter(referrer=user)
+    elif user.role == User.Role.REFERRER_MANAGER:
+        leads_qs = Lead.objects.filter(referrer__referrer_profile__manager=user).distinct()
+    elif user.role == User.Role.OFFICE:
+        leads_qs = Lead.objects.filter(
+            Q(referrer__referrer_profile__manager__manager_profile__office__owner=user) | Q(referrer=user)
+        ).distinct()
+
+    leads_qs = leads_qs.select_related(
+        "referrer",
+        "advisor",
+        "referrer__referrer_profile__manager",
+        "referrer__referrer_profile__manager__manager_profile__office",
+    )
+
+    # 1) Schůzky – jen leady se schůzkou (ať už jsou ve stavu MEETING nebo i později, pokud chceš)
+    meetings = (
+        leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING, meeting_at__isnull=False)
+    )
+
+    # 2) Nové leady – pouze stav NEW
+    new_leads = (
+        leads_qs.filter(communication_status=Lead.CommunicationStatus.NEW)
+        .order_by("-created_at")[:20]
+    )
+
+    # 3) Obchody – placeholder
+    deals_placeholder = True
+
+    context = {
+        "meetings": meetings,
+        "new_leads": new_leads,
+        "deals_placeholder": deals_placeholder,
+    }
+    return render(request, "leads/overview.html", context)
