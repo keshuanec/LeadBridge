@@ -22,16 +22,16 @@
 
         <strong>Telefon:</strong> {{ lead.client_phone|default:"—" }}<br>
         <strong>E-mail:</strong> {{ lead.client_email|default:"—" }}<br>
+        {% if lead.meeting_at %}
+            <p><strong>Termín schůzky:</strong>
+                {{ lead.meeting_at|date:"d.m.Y H:i" }}
+            </p>
+        {% else %}
+        <br>
+        {% endif %}
 
         <strong>Popis situace:</strong><br>
         {{ lead.description|linebreaksbr|default:"(bez popisu)" }}
-    </p>
-
-    <p style="font-size: 13px; color: #666;">
-        Vloženo: {{ lead.created_at|date:"d.m.Y H:i" }}<br>
-        {% if lead.updated_at and lead.updated_at != lead.created_at %}
-            Naposledy upraveno: {{ lead.updated_at|date:"d.m.Y H:i" }}<br>
-        {% endif %}
     </p>
 
     <p style="font-size: 13px; color: #666;">
