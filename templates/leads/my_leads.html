@@ -38,7 +38,8 @@
         </div>
     {% endif %}
 
-    {% if "advisor" in allowed %}
+    {# Poradce: zobrazit jen pokud je povolený filtrem a zároveň dává smysl sloupec #}
+    {% if "advisor" in allowed and show_advisor_col %}
         <div>
             <label style="font-size:12px; display:block;">Poradce</label>
             <select name="advisor">
@@ -97,6 +98,7 @@
                 </a>
             </th>
 
+            {% if show_referrer_col %}
             <th>
                 <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=referrer&dir={% if current_sort == 'referrer' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                     Doporučitel
@@ -105,7 +107,9 @@
                     {% endif %}
                 </a>
             </th>
+            {% endif %}
 
+            {% if show_advisor_col %}
             <th>
                 <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=advisor&dir={% if current_sort == 'advisor' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                     Poradce
@@ -114,8 +118,9 @@
                     {% endif %}
                 </a>
             </th>
+            {% endif %}
 
-            {% if user.role == "OFFICE" or user.role == "ADVISOR" %}
+            {% if show_manager_col %}
             <th>
                 <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=manager&dir={% if current_sort == 'manager' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                     Manažer
@@ -126,7 +131,7 @@
             </th>
             {% endif %}
 
-            {% if user.role == "ADVISOR" %}
+            {% if show_office_col %}
             <th>
                 <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=office&dir={% if current_sort == 'office' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                     Kancelář
@@ -136,7 +141,6 @@
                 </a>
             </th>
             {% endif %}
-
 
             <th>
                 <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=comm_status&dir={% if current_sort == 'comm_status' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
@@ -180,20 +184,26 @@
                 <small>{{ lead.client_email }}</small>
                 {% endif %}
             </td>
-            <td>{{ lead.referrer }}</td>
-            <td>{{ lead.advisor|default:"—" }}</td>
 
-            {% if user.role == "OFFICE" or user.role == "ADVISOR" %}
+            {% if show_referrer_col %}
+            <td>{{ lead.referrer }}</td>
+            {% endif %}
+
+            {% if show_advisor_col %}
+            <td>{{ lead.advisor|default:"—" }}</td>
+            {% endif %}
+
+            {% if show_manager_col %}
             <td>
                 {{ lead.referrer_manager|default:"—" }}
             </td>
             {% endif %}
-            {% if user.role == "ADVISOR" %}
+
+            {% if show_office_col %}
             <td>
                 {{ lead.referrer.referrer_profile.manager.manager_profile.office.name|default:"—" }}
             </td>
             {% endif %}
-
 
             <td><span class="badge">{{ lead.get_communication_status_display }}</span></td>
             <td><span class="badge">{{ lead.get_commission_status_display }}</span></td>

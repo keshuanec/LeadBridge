@@ -87,6 +87,16 @@ def my_leads(request):
     # --- base queryset (na options do filtrů) ---
     base_leads_qs = leads_qs
 
+    # pouze pro doporučitele: má smysl ukazovat sloupec/filtr poradce jen když existuje více poradců
+    referrer_has_multiple_advisors = False
+    if user.role == User.Role.REFERRER:
+        advisor_ids = (
+            base_leads_qs.exclude(advisor__isnull=True)
+            .values_list("advisor_id", flat=True)
+            .distinct()
+        )
+        referrer_has_multiple_advisors = advisor_ids.count() > 1
+
     # optimalizace – načteme referrera, poradce a manažera
     leads_qs = leads_qs.select_related(
         "referrer",
@@ -107,6 +117,9 @@ def my_leads(request):
         allowed = {"status", "referrer", "advisor", "manager", "office"}
     else:
         allowed = allowed_filters.get(user.role, set())
+
+    if user.role == User.Role.REFERRER and not referrer_has_multiple_advisors:
+        allowed.discard("advisor")
 
     # ===== Čtení filtrů z GET =====
     current_status = request.GET.get("status") or ""
@@ -219,6 +232,16 @@ def my_leads(request):
 
     can_create_leads = user.role in [User.Role.REFERRER, User.Role.ADVISOR, User.Role.OFFICE]
 
+    is_admin_like = user.is_superuser or user.role == User.Role.ADMIN
+    show_referrer_col = is_admin_like or user.role in (User.Role.REFERRER_MANAGER, User.Role.OFFICE, User.Role.ADVISOR)
+    show_manager_col = is_admin_like or user.role in (User.Role.OFFICE, User.Role.ADVISOR)
+    show_office_col = is_admin_like or user.role in (User.Role.ADVISOR,)
+    show_advisor_col = (
+            is_admin_like
+            or user.role == User.Role.ADVISOR
+            or (user.role == User.Role.REFERRER and referrer_has_multiple_advisors)
+    )
+
     context = {
         "leads": leads_qs,
         "can_create_leads": can_create_leads,
@@ -238,6 +261,11 @@ def my_leads(request):
         "current_advisor": current_advisor,
         "current_manager": current_manager,
         "current_office": current_office,
+
+        "show_referrer_col": show_referrer_col,
+        "show_manager_col": show_manager_col,
+        "show_office_col": show_office_col,
+        "show_advisor_col": show_advisor_col,
 
         "qs_keep": qs_keep,
     }
