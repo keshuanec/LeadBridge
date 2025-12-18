@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2c1eb26d-4562-4c7b-90c9-a2b40a90094c" name="Changes" comment="clockable deal detail">
+    <list default="true" id="2c1eb26d-4562-4c7b-90c9-a2b40a90094c" name="Changes" comment="provision paid badge">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/leads/overview.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/leads/overview.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leadbridge/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/leadbridge/settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -403,7 +402,15 @@
       <option name="project" value="LOCAL" />
       <updated>1766067809770</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="provision paid badge">
+      <option name="closed" value="true" />
+      <created>1766068892147</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1766068892147</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -430,6 +437,7 @@
     <MESSAGE value="deal detail setup" />
     <MESSAGE value="clockable deal detail" />
     <MESSAGE value="overview update" />
-    <option name="LAST_COMMIT_MESSAGE" value="overview update" />
+    <MESSAGE value="provision paid badge" />
+    <option name="LAST_COMMIT_MESSAGE" value="provision paid badge" />
   </component>
 </project>
