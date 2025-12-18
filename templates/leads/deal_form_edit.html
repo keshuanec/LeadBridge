@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Upravit obchod{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 700px; margin: 0 auto;">
+    <h2>Upravit obchod – {{ deal.client_name }}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div style="margin-bottom:10px;">
+            <label>{{ form.client_name.label }}</label><br>{{ form.client_name }}
+        </div>
+        <div style="margin-bottom:10px;">
+            <label>{{ form.client_phone.label }}</label><br>{{ form.client_phone }}
+        </div>
+        <div style="margin-bottom:10px;">
+            <label>{{ form.client_email.label }}</label><br>{{ form.client_email }}
+        </div>
+
+        <hr style="margin:16px 0; border:none; border-top:1px solid #eee;">
+
+        <div style="margin-bottom:10px;">
+            <label>{{ form.loan_amount.label }}</label><br>{{ form.loan_amount }}
+        </div>
+        <div style="margin-bottom:10px;">
+            <label>{{ form.bank.label }}</label><br>{{ form.bank }}
+        </div>
+        <div style="margin-bottom:10px;">
+            <label>{{ form.property_type.label }}</label><br>{{ form.property_type }}
+        </div>
+        <div style="margin-bottom:10px;">
+            <label>{{ form.status.label }}</label><br>{{ form.status }}
+        </div>
+
+        <button type="submit">Uložit změny</button>
+        <a href="{% url 'deal_detail' deal.pk %}" style="margin-left:10px;">Zrušit</a>
+    </form>
+</div>
+{% endblock %}

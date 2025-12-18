@@ -5,7 +5,7 @@ from django.http import HttpResponseForbidden
 from accounts.models import ReferrerProfile, Office
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Lead, LeadNote, LeadHistory, Deal
-from .forms import LeadForm, LeadNoteForm, LeadMeetingForm, DealCreateForm
+from .forms import LeadForm, LeadNoteForm, LeadMeetingForm, DealCreateForm, DealEditForm
 from django.db.models import Q
 from django.utils.http import urlencode
 from django.utils import timezone
@@ -38,6 +38,20 @@ def get_lead_for_user_or_404(user, pk: int) -> Lead:
 
     else:
         raise HttpResponseForbidden("Nemáš oprávnění zobrazit tento lead.")
+
+def get_deal_for_user_or_404(user, pk: int) -> Deal:
+    qs = Deal.objects.select_related(
+        "lead",
+        "lead__referrer",
+        "lead__advisor",
+        "lead__referrer__referrer_profile__manager",
+        "lead__referrer__referrer_profile__manager__manager_profile__office",
+    )
+
+    deal = get_object_or_404(qs, pk=pk)
+    # práva řešíme přes lead (už máš get_lead_for_user_or_404)
+    _ = get_lead_for_user_or_404(user, deal.lead_id)
+    return deal
 
 
 User = get_user_model()
@@ -626,3 +640,221 @@ def deal_create_from_lead(request, pk: int):
         form = DealCreateForm(lead=lead)
 
     return render(request, "leads/deal_form.html", {"lead": lead, "form": form})
+
+
+@login_required
+def deal_detail(request, pk: int):
+    user: User = request.user
+    deal = get_deal_for_user_or_404(user, pk)
+    lead = deal.lead
+
+    # poznámky a historie jsou z leadu
+    notes = lead.notes.select_related("author")
+    history = lead.history.select_related("user")
+
+    # role-based viditelnost údajů
+    show_referrer = user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR, User.Role.REFERRER_MANAGER, User.Role.OFFICE]
+    show_manager = user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR, User.Role.OFFICE]
+    show_office = user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR]
+
+    # provize celkem vidí všichni kromě doporučitele
+    show_commission_total = user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR, User.Role.REFERRER_MANAGER, User.Role.OFFICE]
+
+    # tlačítka vyplácení: jen poradce + admin
+    can_manage_commission = user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR]
+
+    # informace o manager/office (kvůli ikonám)
+    rp = getattr(lead.referrer, "referrer_profile", None)
+    manager = getattr(rp, "manager", None) if rp else None
+    office = getattr(getattr(manager, "manager_profile", None), "office", None) if manager else None
+
+    has_manager = manager is not None
+    has_office = office is not None
+
+    # přidání poznámky (LeadNote)
+    if request.method == "POST":
+        note_form = LeadNoteForm(request.POST)
+        if note_form.is_valid():
+            note = note_form.save(commit=False)
+            note.lead = lead
+            note.author = user
+            note.save()
+
+            LeadHistory.objects.create(
+                lead=lead,
+                event_type=LeadHistory.EventType.NOTE_ADDED,
+                user=user,
+                description="Přidána poznámka (z detailu obchodu).",
+            )
+            return redirect("deal_detail", pk=deal.pk)
+    else:
+        note_form = LeadNoteForm()
+
+    context = {
+        "deal": deal,
+        "lead": lead,
+        "notes": notes,
+        "history": history,
+        "note_form": note_form,
+
+        "show_referrer": show_referrer,
+        "show_manager": show_manager,
+        "show_office": show_office,
+        "show_commission_total": show_commission_total,
+        "can_manage_commission": can_manage_commission,
+        "has_manager": has_manager,
+        "has_office": has_office,
+    }
+    return render(request, "leads/deal_detail.html", context)
+
+
+@login_required
+def deal_commission_ready(request, pk: int):
+    if request.method != "POST":
+        return HttpResponseForbidden("Použij POST.")
+
+    user: User = request.user
+    deal = get_deal_for_user_or_404(user, pk)
+
+    if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR]):
+        return HttpResponseForbidden("Nemáš oprávnění měnit provizi.")
+
+    if deal.commission_status != Deal.CommissionStatus.READY:
+        deal.commission_status = Deal.CommissionStatus.READY
+        deal.save(update_fields=["commission_status"])
+
+        LeadHistory.objects.create(
+            lead=deal.lead,
+            event_type=LeadHistory.EventType.UPDATED,
+            user=user,
+            description="Provize nastavena na: připravená k vyplacení.",
+        )
+
+    return redirect("deal_detail", pk=deal.pk)
+
+
+@login_required
+def deal_commission_paid(request, pk: int, part: str):
+    if request.method != "POST":
+        return HttpResponseForbidden("Použij POST.")
+
+    user: User = request.user
+    deal = get_deal_for_user_or_404(user, pk)
+    lead = deal.lead
+
+    if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR]):
+        return HttpResponseForbidden("Nemáš oprávnění měnit provizi.")
+
+    rp = getattr(lead.referrer, "referrer_profile", None)
+    manager = getattr(rp, "manager", None) if rp else None
+    office = getattr(getattr(manager, "manager_profile", None), "office", None) if manager else None
+
+    has_manager = manager is not None
+    has_office = office is not None
+
+    changes = []
+
+    if part == "referrer":
+        if not deal.paid_referrer:
+            deal.paid_referrer = True
+            changes.append("Vyplaceno makléři")
+    elif part == "manager":
+        if not has_manager:
+            return HttpResponseForbidden("Tento obchod nemá manažera.")
+        if not deal.paid_manager:
+            deal.paid_manager = True
+            changes.append("Vyplaceno manažerovi")
+    elif part == "office":
+        if not has_office:
+            return HttpResponseForbidden("Tento obchod nemá kancelář.")
+        if not deal.paid_office:
+            deal.paid_office = True
+            changes.append("Vyplaceno kanceláři")
+    else:
+        return HttpResponseForbidden("Neznámá část provize.")
+
+    # pokud něco změněno, uložit
+    if changes:
+        # pokud je aspoň něco vyplaceno, nastavíme PAID
+        deal.commission_status = Deal.CommissionStatus.PAID
+        deal.save(update_fields=["paid_referrer", "paid_manager", "paid_office", "commission_status"])
+
+        LeadHistory.objects.create(
+            lead=lead,
+            event_type=LeadHistory.EventType.UPDATED,
+            user=user,
+            description="; ".join(changes),
+        )
+
+        # pokud chceš: když jsou vyplacené všechny relevantní části, přepni lead na "Provize vyplacena"
+        all_paid = deal.paid_referrer and (deal.paid_manager or not has_manager) and (deal.paid_office or not has_office)
+        if all_paid:
+            lead.communication_status = Lead.CommunicationStatus.COMMISSION_PAID
+            lead.save(update_fields=["communication_status", "updated_at"])
+            LeadHistory.objects.create(
+                lead=lead,
+                event_type=LeadHistory.EventType.STATUS_CHANGED,
+                user=user,
+                description="Změněn stav leadu: → Provize vyplacena",
+            )
+
+    return redirect("deal_detail", pk=deal.pk)
+
+
+@login_required
+def deal_edit(request, pk: int):
+    user: User = request.user
+    deal = get_deal_for_user_or_404(user, pk)
+    lead = deal.lead
+
+    # edit povolíme poradci + admin
+    if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR]):
+        return HttpResponseForbidden("Nemáš oprávnění upravit obchod.")
+
+    tracked_deal_fields = ["client_name", "client_phone", "client_email", "loan_amount", "bank", "property_type", "status"]
+    old = {f: getattr(deal, f) for f in tracked_deal_fields}
+    old_lead = {"client_name": lead.client_name, "client_phone": lead.client_phone, "client_email": lead.client_email}
+
+    if request.method == "POST":
+        form = DealEditForm(request.POST, instance=deal)
+        if form.is_valid():
+            updated = form.save()
+
+            # sync klientských údajů do leadu
+            lead.client_name = updated.client_name
+            lead.client_phone = updated.client_phone
+            lead.client_email = updated.client_email
+            lead.save(update_fields=["client_name", "client_phone", "client_email", "updated_at"])
+
+            # historie (do leadu)
+            changes = []
+            if old["loan_amount"] != updated.loan_amount:
+                changes.append(f"Změněna výše úvěru: {old['loan_amount']} → {updated.loan_amount}")
+            if old["bank"] != updated.bank:
+                changes.append(f"Změněna banka: {deal.Bank(old['bank']).label if old['bank'] else old['bank']} → {updated.get_bank_display()}")
+            if old["property_type"] != updated.property_type:
+                changes.append(f"Změněna nemovitost: {deal.PropertyType(old['property_type']).label if old['property_type'] else old['property_type']} → {updated.get_property_type_display()}")
+            if old["status"] != updated.status:
+                changes.append(f"Změněn stav obchodu: {deal.DealStatus(old['status']).label if old['status'] else old['status']} → {updated.get_status_display()}")
+
+            # změna klientských údajů
+            if old_lead["client_name"] != lead.client_name:
+                changes.append("Změněno jméno klienta (propagováno do leadu).")
+            if old_lead["client_phone"] != lead.client_phone:
+                changes.append("Změněn telefon klienta (propagováno do leadu).")
+            if old_lead["client_email"] != lead.client_email:
+                changes.append("Změněn email klienta (propagováno do leadu).")
+
+            if changes:
+                LeadHistory.objects.create(
+                    lead=lead,
+                    event_type=LeadHistory.EventType.UPDATED,
+                    user=user,
+                    description="; ".join(changes),
+                )
+
+            return redirect("deal_detail", pk=deal.pk)
+    else:
+        form = DealEditForm(instance=deal)
+
+    return render(request, "leads/deal_form_edit.html", {"deal": deal, "lead": lead, "form": form})

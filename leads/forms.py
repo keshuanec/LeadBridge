@@ -281,3 +281,25 @@ class DealCreateForm(forms.ModelForm):
         self.fields["client_name"].disabled = True
         self.fields["client_phone"].disabled = True
         self.fields["client_email"].disabled = True
+
+class DealEditForm(forms.ModelForm):
+    class Meta:
+        model = Deal
+        fields = [
+            "client_name",
+            "client_phone",
+            "client_email",
+            "loan_amount",
+            "bank",
+            "property_type",
+            "status",
+        ]
+        labels = {
+            "client_name": "Jméno klienta",
+            "client_phone": "Telefon",
+            "client_email": "E-mail",
+            "loan_amount": "Výše úvěru (Kč)",
+            "bank": "Banka",
+            "property_type": "Nemovitost",
+            "status": "Stav obchodu",
+        }

@@ -8,6 +8,11 @@ urlpatterns = [
     path("<int:pk>/edit/", views.lead_edit, name="lead_edit"),
     path("<int:pk>/meeting/", views.lead_schedule_meeting, name="lead_schedule_meeting"),
     path("deals/", views.deals_list, name="deals_list"),
+    path("deals/<int:pk>/", views.deal_detail, name="deal_detail"),
+    path("deals/<int:pk>/edit/", views.deal_edit, name="deal_edit"),
+    path("deals/<int:pk>/commission/ready/", views.deal_commission_ready, name="deal_commission_ready"),
+    path("deals/<int:pk>/commission/paid/<str:part>/", views.deal_commission_paid, name="deal_commission_paid"),
     path("referrers/", views.referrers_list, name="referrers_list"),
     path("<int:pk>/deal/new/", views.deal_create_from_lead, name="deal_create_from_lead"),
+
 ]

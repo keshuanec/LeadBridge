@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Detail obchodu{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>{{ deal.client_name }}</h2>
+
+    <p><strong>Telefon:</strong> {{ deal.client_phone|default:"—" }}</p>
+    <p><strong>E-mail:</strong> {{ deal.client_email|default:"—" }}</p>
+
+    {% if show_referrer %}
+        <p><strong>Doporučitel:</strong> {{ lead.referrer }}</p>
+    {% endif %}
+    {% if show_manager %}
+        <p><strong>Manažer:</strong> {{ lead.referrer_manager|default:"—" }}</p>
+    {% endif %}
+    {% if show_office %}
+        <p><strong>Kancelář:</strong> {{ lead.referrer_office|default:"—" }}</p>
+    {% endif %}
+
+    <hr>
+
+    <p><strong>Výše úvěru:</strong> {{ deal.loan_amount }} Kč</p>
+    <p><strong>Banka:</strong> {{ deal.get_bank_display }}</p>
+    <p><strong>Nemovitost:</strong> {{ deal.get_property_type_display }}</p>
+    <p><strong>Stav obchodu:</strong> <span class="badge">{{ deal.get_status_display }}</span></p>
+
+    <hr>
+
+    <p><strong>Provize makléře:</strong> {{ deal.commission_referrer|default:"—" }} Kč</p>
+
+    {% if user.role != "REFERRER" %}
+        <p><strong>Provize celkem:</strong> {{ deal.commission_total|default:"—" }} Kč</p>
+    {% endif %}
+
+    {% if user.role == "REFERRER_MANAGER" or user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+        <p><strong>Provize manažer:</strong> {{ deal.commission_manager|default:"—" }} Kč</p>
+    {% endif %}
+    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+        <p><strong>Provize kancelář:</strong> {{ deal.commission_office|default:"—" }} Kč</p>
+    {% endif %}
+
+    <hr>
+
+    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+        <a href="{% url 'deal_edit' deal.pk %}" title="Upravit obchod">✏️ Upravit obchod</a>
+
+        {% if can_manage_commission %}
+            {% if deal.commission_status != "READY" and deal.commission_status != "PAID" %}
+                <form method="post" action="{% url 'deal_commission_ready' deal.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">✅ Připraveno k vyplacení</button>
+                </form>
+            {% else %}
+                <form method="post" action="{% url 'deal_commission_paid' deal.pk 'referrer' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">💸 Vyplaceno makléři</button>
+                </form>
+
+                {% if has_manager %}
+                    <form method="post" action="{% url 'deal_commission_paid' deal.pk 'manager' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">💸 Vyplaceno manažerovi</button>
+                    </form>
+                {% endif %}
+
+                {% if has_office %}
+                    <form method="post" action="{% url 'deal_commission_paid' deal.pk 'office' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">💸 Vyplaceno kanceláři</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <hr style="margin:16px 0;">
+
+    <h3>Přidat poznámku</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ note_form.text }}
+        <div style="margin-top:8px;">
+            <button type="submit">Přidat poznámku</button>
+        </div>
+    </form>
+
+    <hr style="margin:16px 0;">
+
+    <h3>Poznámky</h3>
+    {% if notes %}
+        {% for note in notes %}
+            <div class="card" style="box-shadow:none; border:1px solid #eee;">
+                <strong>{{ note.author|default:"—" }}</strong>
+                <small> – {{ note.created_at|date:"d.m.Y H:i" }}</small>
+                <div style="margin-top:6px;">{{ note.text|linebreaksbr }}</div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Žádné poznámky.</p>
+    {% endif %}
+
+    <hr style="margin:16px 0;">
+
+    <h3>Historie</h3>
+    {% if history %}
+        <ul>
+            {% for h in history %}
+                <li>
+                    <strong>{{ h.get_event_type_display }}</strong>
+                    – {{ h.created_at|date:"d.m.Y H:i" }}
+                    {% if h.user %} ({{ h.user }}){% endif %}
+                    {% if h.description %}<br><small>{{ h.description }}</small>{% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Žádná historie.</p>
+    {% endif %}
+</div>
+{% endblock %}
