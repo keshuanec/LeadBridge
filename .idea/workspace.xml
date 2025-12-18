@@ -4,13 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2c1eb26d-4562-4c7b-90c9-a2b40a90094c" name="Changes" comment="deals setup">
-      <change afterPath="$PROJECT_DIR$/templates/leads/deal_detail.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/templates/leads/deal_form_edit.html" afterDir="false" />
+    <list default="true" id="2c1eb26d-4562-4c7b-90c9-a2b40a90094c" name="Changes" comment="deal detail setup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leads/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/leads/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leads/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/leads/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leads/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/leads/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/leads/deals_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/leads/deals_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/leads/lead_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/leads/lead_detail.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,6 +64,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "deals",
+    "settings.editor.selected.configurable": "configurable.group.language",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -278,7 +276,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765997843037</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="deal detail setup">
+      <option name="closed" value="true" />
+      <created>1766048381955</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1766048381955</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -299,6 +305,7 @@
     <MESSAGE value="overview setup" />
     <MESSAGE value="deal model" />
     <MESSAGE value="deals setup" />
-    <option name="LAST_COMMIT_MESSAGE" value="deals setup" />
+    <MESSAGE value="deal detail setup" />
+    <option name="LAST_COMMIT_MESSAGE" value="deal detail setup" />
   </component>
 </project>

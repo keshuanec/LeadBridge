@@ -51,8 +51,13 @@
         {% endif %}
 
         {% if can_create_deal %}
-            <a href="{% url 'deal_create_from_lead' lead.pk %}" title="Založit obchod">💼 Založit obchod</a>
+            {% if lead.deal %}
+                <a href="{% url 'deal_detail' lead.deal.pk %}" title="Přejít na obchod">💼 Přejít na obchod</a>
+            {% else %}
+                <a href="{% url 'deal_create_from_lead' lead.pk %}" title="Založit obchod">➕ Založit obchod</a>
+            {% endif %}
         {% endif %}
+
 
     </div>
 </div>
