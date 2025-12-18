@@ -113,7 +113,12 @@
             <tbody>
             {% for d in deals %}
                 <tr>
-                    <td><span class="badge">{{ d.get_status_display }}</span></td>
+                    <td>
+                    <span class="badge">{{ d.get_status_display }}</span>
+                        {% if d.commission_status == d.CommissionStatus.READY %}
+                    <span class="badge badge-ready" style="margin-left:6px;">Provize připravena</span>
+                        {% endif %}
+                    </td>
                     <td><a href="{% url 'deal_detail' d.pk %}">{{ d.client_name }}</a></td>
                     <td>{{ d.loan_amount }} Kč</td>
 
