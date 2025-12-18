@@ -576,7 +576,7 @@ def lead_schedule_meeting(request, pk: int):
 def overview(request):
     user: User = request.user
 
-    # Vezmeme stejný "base" přístup jako v my_leads
+    # Base přístup (stejně jako my_leads)
     leads_qs = Lead.objects.none()
 
     if user.is_superuser or user.role == User.Role.ADMIN:
@@ -599,27 +599,69 @@ def overview(request):
         "referrer__referrer_profile__manager__manager_profile__office",
     )
 
-    # 1) Schůzky – jen leady se schůzkou (ať už jsou ve stavu MEETING nebo i později, pokud chceš)
+    # Meetings – domluvené schůzky
     meetings = (
-        leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING, meeting_at__isnull=False)
+        leads_qs.filter(
+            communication_status=Lead.CommunicationStatus.MEETING,
+            meeting_at__isnull=False,
+        )
+        .order_by("meeting_at")[:20]
     )
 
-    # 2) Nové leady – pouze stav NEW
+    # Nové leady
     new_leads = (
         leads_qs.filter(communication_status=Lead.CommunicationStatus.NEW)
         .order_by("-created_at")[:20]
     )
 
-    # 3) Obchody – placeholder
-    deals_placeholder = True
+    # Běžící obchody – jen ty, které už existují a nejsou "Načerpáno"
+    deals_qs = Deal.objects.select_related(
+        "lead",
+        "lead__referrer",
+        "lead__advisor",
+        "lead__referrer__referrer_profile__manager",
+        "lead__referrer__referrer_profile__manager__manager_profile__office",
+    )
+
+    # stejné oprávnění jako u leadů (přes lead)
+    if user.is_superuser or user.role == User.Role.ADMIN:
+        pass
+    elif user.role == User.Role.ADVISOR:
+        deals_qs = deals_qs.filter(lead__advisor=user)
+    elif user.role == User.Role.REFERRER:
+        deals_qs = deals_qs.filter(lead__referrer=user)
+    elif user.role == User.Role.REFERRER_MANAGER:
+        deals_qs = deals_qs.filter(lead__referrer__referrer_profile__manager=user).distinct()
+    elif user.role == User.Role.OFFICE:
+        deals_qs = deals_qs.filter(
+            Q(lead__referrer__referrer_profile__manager__manager_profile__office__owner=user)
+            | Q(lead__referrer=user)
+        ).distinct()
+    else:
+        deals_qs = Deal.objects.none()
+
+    deals = (
+        deals_qs.exclude(status=Deal.DealStatus.DRAWN)
+        .order_by("-created_at")[:20]
+    )
+
+    # --- sloupce podle role (stejně jako v tabulce leadů) ---
+    show_referrer = user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR, User.Role.REFERRER_MANAGER, User.Role.OFFICE]
+    show_advisor = user.is_superuser or user.role in [User.Role.ADMIN, User.Role.REFERRER, User.Role.REFERRER_MANAGER, User.Role.OFFICE]
+    show_manager = user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR, User.Role.OFFICE]
+    show_office = user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR]
 
     context = {
         "meetings": meetings,
         "new_leads": new_leads,
-        "deals_placeholder": deals_placeholder,
+        "deals": deals,
+
+        "show_referrer": show_referrer,
+        "show_advisor": show_advisor,
+        "show_manager": show_manager,
+        "show_office": show_office,
     }
     return render(request, "leads/overview.html", context)
-
 @login_required
 def deal_create_from_lead(request, pk: int):
     user: User = request.user

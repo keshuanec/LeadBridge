@@ -85,17 +85,15 @@ class Lead(models.Model):
 
     @property
     def referrer_manager(self):
-        """
-        Vrátí manažera doporučitele (pokud existuje), jinak None.
-        Bezpečné i pro leady, kde není ReferrerProfile.
-        """
-        try:
-            return self.referrer.referrer_profile.manager
-        except (ReferrerProfile.DoesNotExist, AttributeError):
-            return None
+        rp = getattr(self.referrer, "referrer_profile", None)
+        return getattr(rp, "manager", None) if rp else None
 
-    def __str__(self):
-        return f"{self.client_name} – {self.referrer}"
+    @property
+    def referrer_office(self):
+        manager = self.referrer_manager
+        mp = getattr(manager, "manager_profile", None) if manager else None
+        office = getattr(mp, "office", None) if mp else None
+        return office
 
 
 class LeadNote(models.Model):

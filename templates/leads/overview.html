@@ -13,8 +13,10 @@
                 <tr>
                     <th>Termín</th>
                     <th>Klient</th>
-                    <th>Doporučitel</th>
-                    <th>Poradce</th>
+                    {% if show_referrer %}<th>Doporučitel</th>{% endif %}
+                    {% if show_manager %}<th>Manažer</th>{% endif %}
+                    {% if show_office %}<th>Kancelář</th>{% endif %}
+                    {% if show_advisor %}<th>Poradce</th>{% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -22,8 +24,22 @@
                 <tr>
                     <td>{{ lead.meeting_at|date:"d.m.Y H:i" }}</td>
                     <td><a href="{% url 'lead_detail' lead.pk %}">{{ lead.client_name }}</a></td>
-                    <td>{{ lead.referrer }}</td>
-                    <td>{{ lead.advisor|default:"—" }}</td>
+
+                    {% if show_referrer %}
+                        <td>{{ lead.referrer }}</td>
+                    {% endif %}
+
+                    {% if show_manager %}
+                        <td>{{ lead.referrer_manager|default:"—" }}</td>
+                    {% endif %}
+
+                    {% if show_office %}
+                        <td>{{ lead.referrer_office|default:"—" }}</td>
+                    {% endif %}
+
+                    {% if show_advisor %}
+                        <td>{{ lead.advisor|default:"—" }}</td>
+                    {% endif %}
                 </tr>
             {% endfor %}
             </tbody>
@@ -40,8 +56,10 @@
             <thead>
                 <tr>
                     <th>Klient</th>
-                    <th>Doporučitel</th>
-                    <th>Poradce</th>
+                    {% if show_referrer %}<th>Doporučitel</th>{% endif %}
+                    {% if show_manager %}<th>Manažer</th>{% endif %}
+                    {% if show_office %}<th>Kancelář</th>{% endif %}
+                    {% if show_advisor %}<th>Poradce</th>{% endif %}
                     <th>Vytvořeno</th>
                 </tr>
             </thead>
@@ -49,8 +67,23 @@
             {% for lead in new_leads %}
                 <tr>
                     <td><a href="{% url 'lead_detail' lead.pk %}">{{ lead.client_name }}</a></td>
-                    <td>{{ lead.referrer }}</td>
-                    <td>{{ lead.advisor|default:"—" }}</td>
+
+                    {% if show_referrer %}
+                        <td>{{ lead.referrer }}</td>
+                    {% endif %}
+
+                    {% if show_manager %}
+                        <td>{{ lead.referrer_manager|default:"—" }}</td>
+                    {% endif %}
+
+                    {% if show_office %}
+                        <td>{{ lead.referrer_office|default:"—" }}</td>
+                    {% endif %}
+
+                    {% if show_advisor %}
+                        <td>{{ lead.advisor|default:"—" }}</td>
+                    {% endif %}
+
                     <td>{{ lead.created_at|date:"d.m.Y H:i" }}</td>
                 </tr>
             {% endfor %}
@@ -63,6 +96,50 @@
     <hr style="margin:16px 0; border:none; border-top:1px solid #eee;">
 
     <h3>Běžící obchody</h3>
-    <p>Zatím nemáme implementováno. (Placeholder)</p>
+    {% if deals %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Stav</th>
+                    <th>Klient</th>
+                    <th>Výše úvěru</th>
+                    {% if show_referrer %}<th>Doporučitel</th>{% endif %}
+                    {% if show_manager %}<th>Manažer</th>{% endif %}
+                    {% if show_office %}<th>Kancelář</th>{% endif %}
+                    {% if show_advisor %}<th>Poradce</th>{% endif %}
+                    <th>Vytvořeno</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for d in deals %}
+                <tr>
+                    <td><span class="badge">{{ d.get_status_display }}</span></td>
+                    <td><a href="{% url 'deal_detail' d.pk %}">{{ d.client_name }}</a></td>
+                    <td>{{ d.loan_amount }} Kč</td>
+
+                    {% if show_referrer %}
+                        <td>{{ d.lead.referrer }}</td>
+                    {% endif %}
+
+                    {% if show_manager %}
+                        <td>{{ d.lead.referrer_manager|default:"—" }}</td>
+                    {% endif %}
+
+                    {% if show_office %}
+                        <td>{{ d.lead.referrer_office|default:"—" }}</td>
+                    {% endif %}
+
+                    {% if show_advisor %}
+                        <td>{{ d.lead.advisor|default:"—" }}</td>
+                    {% endif %}
+
+                    <td>{{ d.created_at|date:"d.m.Y H:i" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Žádné běžící obchody.</p>
+    {% endif %}
 </div>
 {% endblock %}
