@@ -71,21 +71,44 @@
                     {% endif %}
 
                     <td>{{ d.created_at|date:"d.m.Y H:i" }}</td>
-
                     <td>
+                    {# Text stavu zobraz jen pokud NENÍ READY #}
+                    {% if d.commission_status != d.CommissionStatus.READY %}
                         {{ d.get_commission_status_display }}
-                        {% if d.commission_status == "PAID" %}
-                            <div style="font-size:12px; margin-top:4px;">
-                                <label><input type="checkbox" disabled {% if d.paid_referrer %}checked{% endif %}> makléř</label>
-                                {% if d.manager_name %}
-                                    <label style="margin-left:8px;"><input type="checkbox" disabled {% if d.paid_manager %}checked{% endif %}> manažer</label>
-                                {% endif %}
-                                {% if d.office_name %}
-                                    <label style="margin-left:8px;"><input type="checkbox" disabled {% if d.paid_office %}checked{% endif %}> kancelář</label>
-                                {% endif %}
-                            </div>
-                        {% endif %}
+                    {% endif %}
+
+                    {# === READY → jen badge === #}
+                    {% if d.commission_status == d.CommissionStatus.READY %}
+                        <span class="badge badge-ready">
+                            Provize připravena
+                        </span>
+                    {% endif %}
+
+                    {# === PAID → checkboxy === #}
+                    {% if d.commission_status == d.CommissionStatus.PAID %}
+                        <div style="font-size:12px; margin-top:4px;">
+                            <label>
+                                <input type="checkbox" disabled {% if d.paid_referrer %}checked{% endif %}>
+                                makléř
+                            </label>
+
+                            {% if d.manager_name %}
+                                <label style="margin-left:8px;">
+                                    <input type="checkbox" disabled {% if d.paid_manager %}checked{% endif %}>
+                                    manažer
+                                </label>
+                            {% endif %}
+
+                            {% if d.office_name %}
+                                <label style="margin-left:8px;">
+                                    <input type="checkbox" disabled {% if d.paid_office %}checked{% endif %}>
+                                    kancelář
+                                </label>
+                            {% endif %}
+                        </div>
+                    {% endif %}
                     </td>
+
                 </tr>
             {% endfor %}
             </tbody>
