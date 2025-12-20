@@ -6,7 +6,7 @@ from accounts.models import ReferrerProfile, Office
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Lead, LeadNote, LeadHistory, Deal
 from .forms import LeadForm, LeadNoteForm, LeadMeetingForm, DealCreateForm, DealEditForm
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.utils.http import urlencode
 from django.utils import timezone
 
@@ -503,13 +503,35 @@ def deals_list(request):
 def referrers_list(request):
     user: User = request.user
 
-    # Vidí jen poradce, manažer doporučitelů a admin
-    if not (user.role in [User.Role.ADVISOR, User.Role.REFERRER_MANAGER] or user.is_superuser):
+    # Vidí: poradce, admin, manažer doporučitelů, superuser
+    if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR, User.Role.REFERRER_MANAGER]):
         return HttpResponseForbidden("Nemáš oprávnění zobrazit doporučitele.")
 
     from accounts.models import ReferrerProfile
 
-    queryset = ReferrerProfile.objects.select_related("user", "manager").prefetch_related("advisors")
+    queryset = (
+        ReferrerProfile.objects
+        .select_related("user", "manager")
+        .prefetch_related("advisors")
+        .annotate(
+            leads_sent=Count("user__leads_created", distinct=True),
+            meetings_planned=Count(
+                "user__leads_created",
+                filter=Q(user__leads_created__communication_status=Lead.CommunicationStatus.MEETING),
+                distinct=True,
+            ),
+            meetings_done=Count(
+                "user__leads_created",
+                filter=Q(user__leads_created__meeting_done=True),
+                distinct=True,
+            ),
+            deals_done=Count(
+                "user__leads_created__deal",
+                filter=Q(user__leads_created__deal__status=Deal.DealStatus.DRAWN),
+                distinct=True,
+            ),
+        )
+    )
 
     # Poradce vidí jen „svoje“ doporučitele
     if user.role == User.Role.ADVISOR and not user.is_superuser:
@@ -523,6 +545,40 @@ def referrers_list(request):
         "referrer_profiles": queryset,
     }
     return render(request, "leads/referrers_list.html", context)
+
+@login_required
+def referrer_detail(request, pk: int):
+    user: User = request.user
+
+    if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR, User.Role.REFERRER_MANAGER]):
+        return HttpResponseForbidden("Nemáš oprávnění zobrazit detail doporučitele.")
+
+    profile = get_object_or_404(
+        ReferrerProfile.objects.select_related("user", "manager").prefetch_related("advisors"),
+        pk=pk,
+    )
+
+    # Omezení přístupu:
+    # - Advisor jen pokud je v profile.advisors
+    if user.role == User.Role.ADVISOR and not user.is_superuser and not profile.advisors.filter(id=user.id).exists():
+        return HttpResponseForbidden("Nemáš oprávnění zobrazit detail tohoto doporučitele.")
+
+    # - Manažer jen pokud je to jeho doporučitel
+    if user.role == User.Role.REFERRER_MANAGER and not user.is_superuser and profile.manager_id != user.id:
+        return HttpResponseForbidden("Nemáš oprávnění zobrazit detail tohoto doporučitele.")
+
+    # Statistika pro konkrétního doporučitele
+    leads_qs = Lead.objects.filter(referrer=profile.user)
+
+    stats = {
+        "leads_sent": leads_qs.count(),
+        "meetings_planned": leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+        "meetings_done": leads_qs.filter(meeting_done=True).count(),
+        "deals_done": Deal.objects.filter(lead__in=leads_qs, status=Deal.DealStatus.DRAWN).count(),
+    }
+
+    return render(request, "leads/referrer_detail.html", {"profile": profile, "stats": stats})
+
 
 @login_required
 def lead_schedule_meeting(request, pk: int):

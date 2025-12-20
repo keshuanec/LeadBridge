@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2c1eb26d-4562-4c7b-90c9-a2b40a90094c" name="Changes" comment="login/logout reverse lazy">
-      <change afterPath="$PROJECT_DIR$/leads/services/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/leads/services/user_stats.py" afterDir="false" />
+    <list default="true" id="2c1eb26d-4562-4c7b-90c9-a2b40a90094c" name="Changes" comment="statistics preparation">
+      <change afterPath="$PROJECT_DIR$/templates/leads/referrer_detail.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leads/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/leads/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leads/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/leads/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leads/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/leads/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/leads/referrers_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/leads/referrers_list.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,8 +19,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -92,7 +93,7 @@
       <option name="presentableId" value="Default" />
       <updated>1764170694238</updated>
       <workItem from="1764170695178" duration="11000" />
-      <workItem from="1766230560745" duration="2807000" />
+      <workItem from="1766230560745" duration="4023000" />
     </task>
     <task id="LOCAL-00001" summary="první commit">
       <option name="closed" value="true" />
@@ -334,7 +335,15 @@
       <option name="project" value="LOCAL" />
       <updated>1766239822989</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="statistics preparation">
+      <option name="closed" value="true" />
+      <created>1766242101794</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1766242101794</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -363,6 +372,7 @@
     <MESSAGE value="overview update" />
     <MESSAGE value="provision paid badge" />
     <MESSAGE value="login/logout reverse lazy" />
-    <option name="LAST_COMMIT_MESSAGE" value="login/logout reverse lazy" />
+    <MESSAGE value="statistics preparation" />
+    <option name="LAST_COMMIT_MESSAGE" value="statistics preparation" />
   </component>
 </project>

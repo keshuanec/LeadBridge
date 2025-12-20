@@ -8,35 +8,49 @@
 
     {% if referrer_profiles %}
         <table>
-            <thead>
-            <tr>
-                <th>Doporučitel</th>
-                <th>Manažer</th>
-                <th>Poradci</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for profile in referrer_profiles %}
-                <tr>
-                    <td>{{ profile.user.get_full_name|default:profile.user.username }}</td>
-                    <td>
-                        {% if profile.manager %}
-                            {{ profile.manager.get_full_name|default:profile.manager.username }}
-                        {% else %}
-                            —
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% for advisor in profile.advisors.all %}
-                            {{ advisor.get_full_name|default:advisor.username }}{% if not forloop.last %}, {% endif %}
-                        {% empty %}
-                            —
-                        {% endfor %}
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+    <thead>
+    <tr>
+        <th>Doporučitel</th>
+        <th>Manažer</th>
+        <th>Poradci</th>
+        <th>Předané leady</th>
+        <th>Domluvené schůzky</th>
+        <th>Realizované schůzky</th>
+        <th>Dokončené obchody</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for profile in referrer_profiles %}
+        <tr style="cursor:pointer;" onclick="window.location='{% url 'referrer_detail' profile.id %}'">
+            <td>
+                <a href="{% url 'referrer_detail' profile.id %}">
+                    {{ profile.user.get_full_name|default:profile.user.username }}
+                </a>
+            </td>
+            <td>
+                {% if profile.manager %}
+                    {{ profile.manager.get_full_name|default:profile.manager.username }}
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+            <td>
+                {% for advisor in profile.advisors.all %}
+                    {{ advisor.get_full_name|default:advisor.username }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    —
+                {% endfor %}
+            </td>
+
+            <td>{{ profile.leads_sent|default:0 }}</td>
+            <td>{{ profile.meetings_planned|default:0 }}</td>
+            <td>{{ profile.meetings_done|default:0 }}</td>
+            <td>{{ profile.deals_done|default:0 }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+
     {% else %}
         <p>Zatím tu nejsou žádní doporučitelé.</p>
     {% endif %}
