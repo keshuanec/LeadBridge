@@ -82,6 +82,9 @@ class Lead(models.Model):
 
     meeting_at = models.DateTimeField("Datum a čas schůzky", null=True, blank=True)
     meeting_note = models.TextField("Poznámka ke schůzce", blank=True)
+    meeting_done = models.BooleanField("Schůzka proběhla", default=False)
+    meeting_done_at = models.DateTimeField("Schůzka proběhla (čas)", null=True, blank=True)
+
 
     @property
     def referrer_manager(self):
@@ -94,6 +97,15 @@ class Lead(models.Model):
         mp = getattr(manager, "manager_profile", None) if manager else None
         office = getattr(mp, "office", None) if mp else None
         return office
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["referrer"]),
+            models.Index(fields=["advisor"]),
+            models.Index(fields=["communication_status"]),
+            models.Index(fields=["meeting_done"]),
+            models.Index(fields=["created_at"]),
+        ]
 
 
 class LeadNote(models.Model):
