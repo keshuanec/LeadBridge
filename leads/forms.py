@@ -303,3 +303,12 @@ class DealEditForm(forms.ModelForm):
             "property_type": "Nemovitost",
             "status": "Stav obchodu",
         }
+
+class MeetingResultForm(forms.Form):
+    """Formulář pro záznam výsledku schůzky - zatím placeholder"""
+    result_note = forms.CharField(
+        label="Poznámka k výsledku schůzky",
+        widget=forms.Textarea(attrs={"rows": 4}),
+        required=False,
+        help_text="Jak schůzka proběhla? (později zde bude strukturovanější formulář)"
+    )

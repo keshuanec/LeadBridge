@@ -5,7 +5,7 @@ from django.http import HttpResponseForbidden
 from accounts.models import ReferrerProfile, Office
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Lead, LeadNote, LeadHistory, Deal
-from .forms import LeadForm, LeadNoteForm, LeadMeetingForm, DealCreateForm, DealEditForm
+from .forms import LeadForm, LeadNoteForm, LeadMeetingForm, DealCreateForm, DealEditForm, MeetingResultForm
 from django.db.models import Q, Count
 from django.utils.http import urlencode
 from django.utils import timezone
@@ -626,6 +626,108 @@ def lead_schedule_meeting(request, pk: int):
         form = LeadMeetingForm(instance=lead)
 
     return render(request, "leads/lead_meeting_form.html", {"lead": lead, "form": form})
+
+
+@login_required
+def lead_meeting_completed(request, pk: int):
+    """View pro oznámení že schůzka proběhla"""
+    user: User = request.user
+    lead = get_lead_for_user_or_404(user, pk)
+
+    # jen poradce (a admin/superuser)
+    if not (user.is_superuser or user.role == User.Role.ADMIN or user.role == User.Role.ADVISOR):
+        return HttpResponseForbidden("Nemáš oprávnění měnit stav schůzky.")
+
+    # kontrola že lead je ve stavu MEETING
+    if lead.communication_status != Lead.CommunicationStatus.MEETING:
+        return HttpResponseForbidden("Lead není ve stavu domluvené schůzky.")
+
+    if request.method == "POST":
+        form = MeetingResultForm(request.POST)
+        if form.is_valid():
+            # nastavíme meeting_done na True
+            lead.meeting_done = True
+            lead.meeting_done_at = timezone.now()
+            lead.save(update_fields=["meeting_done", "meeting_done_at", "updated_at"])
+
+            # přidáme poznámku pokud je vyplněna
+            result_note = form.cleaned_data.get("result_note", "").strip()
+            if result_note:
+                LeadNote.objects.create(
+                    lead=lead,
+                    author=user,
+                    text=f"Výsledek schůzky: {result_note}",
+                )
+                LeadHistory.objects.create(
+                    lead=lead,
+                    event_type=LeadHistory.EventType.NOTE_ADDED,
+                    user=user,
+                    description="Přidána poznámka k výsledku schůzky.",
+                )
+
+            # historie
+            LeadHistory.objects.create(
+                lead=lead,
+                event_type=LeadHistory.EventType.STATUS_CHANGED,
+                user=user,
+                description="Schůzka označena jako proběhlá.",
+            )
+
+            return redirect("lead_detail", pk=lead.pk)
+    else:
+        form = MeetingResultForm()
+
+    return render(request, "leads/lead_meeting_result_form.html", {"lead": lead, "form": form})
+
+
+@login_required
+def lead_meeting_cancelled(request, pk: int):
+    """View pro zrušení schůzky - změní stav na FAILED"""
+    user: User = request.user
+    lead = get_lead_for_user_or_404(user, pk)
+
+    # jen poradce (a admin/superuser)
+    if not (user.is_superuser or user.role == User.Role.ADMIN or user.role == User.Role.ADVISOR):
+        return HttpResponseForbidden("Nemáš oprávnění měnit stav leadu.")
+
+    # kontrola že lead je ve stavu MEETING
+    if lead.communication_status != Lead.CommunicationStatus.MEETING:
+        return HttpResponseForbidden("Lead není ve stavu domluvené schůzky.")
+
+    if request.method == "POST":
+        # získáme poznámku
+        cancel_note = request.POST.get("cancel_note", "").strip()
+
+        # změníme stav na FAILED
+        lead.communication_status = Lead.CommunicationStatus.FAILED
+        lead.save(update_fields=["communication_status", "updated_at"])
+
+        # přidáme poznámku pokud je vyplněna
+        if cancel_note:
+            LeadNote.objects.create(
+                lead=lead,
+                author=user,
+                text=f"Schůzka zrušena: {cancel_note}",
+            )
+            LeadHistory.objects.create(
+                lead=lead,
+                event_type=LeadHistory.EventType.NOTE_ADDED,
+                user=user,
+                description="Přidána poznámka ke zrušení schůzky.",
+            )
+
+        # historie
+        LeadHistory.objects.create(
+            lead=lead,
+            event_type=LeadHistory.EventType.STATUS_CHANGED,
+            user=user,
+            description="Schůzka zrušena, lead označen jako neúspěšný.",
+        )
+
+        return redirect("lead_detail", pk=lead.pk)
+
+    # GET request - zobrazíme potvrzovací stránku
+    return render(request, "leads/lead_meeting_cancel_form.html", {"lead": lead})
 
 
 @login_required

@@ -47,7 +47,22 @@
         </a>
 
         {% if can_schedule_meeting %}
-            <a href="{% url 'lead_schedule_meeting' lead.pk %}" title="Domluvit schůzku">📅 Domluvit schůzku</a>
+            {% if lead.communication_status == "MEETING" %}
+                {# Lead je ve stavu domluvené schůzky - zobrazíme tlačítka pro výsledek #}
+                <a href="{% url 'lead_meeting_completed' lead.pk %}"
+                   style="padding:6px 10px;border-radius:4px;background:#2e7d32;color:#fff;text-decoration:none;font-size:13px;"
+                   title="Schůzka proběhla">
+                    ✅ Schůzka proběhla
+                </a>
+                <a href="{% url 'lead_meeting_cancelled' lead.pk %}"
+                   style="padding:6px 10px;border-radius:4px;background:#d32f2f;color:#fff;text-decoration:none;font-size:13px;"
+                   title="Schůzka zrušena">
+                    ❌ Schůzka zrušena
+                </a>
+            {% else %}
+                {# Jiný stav - zobrazíme tlačítko pro domluvení schůzky #}
+                <a href="{% url 'lead_schedule_meeting' lead.pk %}" title="Domluvit schůzku">📅 Domluvit schůzku</a>
+            {% endif %}
         {% endif %}
 
         {% if can_create_deal %}
