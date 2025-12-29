@@ -3,6 +3,9 @@
 {% block title %}Domluvit schůzku{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/cs.js"></script>
 <div class="card" style="max-width: 600px; margin: 0 auto;">
     <h2>Domluvit schůzku – {{ lead.client_name }}</h2>
 
@@ -29,4 +32,87 @@
         <a href="{% url 'lead_detail' lead.pk %}" style="margin-left:10px;">Zrušit</a>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const meetingInput = document.getElementById('{{ form.meeting_at.id_for_label }}');
+    if (meetingInput) {
+        // Změníme type z datetime-local na text pro Flatpickr
+        meetingInput.type = 'text';
+
+        const fp = flatpickr(meetingInput, {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            time_24hr: true,
+            minuteIncrement: 15,
+            locale: "cs",
+            allowInput: true,  // Umožní ručně psát do pole
+            onReady: function(selectedDates, dateStr, instance) {
+                // Přidáme scroll support na hodiny a minuty s throttlingem
+                const timeContainer = instance.timeContainer;
+                if (timeContainer) {
+                    const hourInput = timeContainer.querySelector('.flatpickr-hour');
+                    const minuteInput = timeContainer.querySelector('.flatpickr-minute');
+
+                    // Akumulátory pro delta hodnoty
+                    let hourDelta = 0;
+                    let minuteDelta = 0;
+                    const threshold = 100; // Práh pro změnu hodnoty
+
+                    // Funkce pro aktualizaci Flatpickr hodnoty
+                    const updateDateTime = function() {
+                        const currentDate = instance.selectedDates[0] || new Date();
+                        const hours = parseInt(hourInput.value) || 0;
+                        const minutes = parseInt(minuteInput.value) || 0;
+
+                        const newDate = new Date(currentDate);
+                        newDate.setHours(hours);
+                        newDate.setMinutes(minutes);
+
+                        instance.setDate(newDate, true);
+                    };
+
+                    if (hourInput) {
+                        hourInput.addEventListener('wheel', function(e) {
+                            e.preventDefault();
+                            hourDelta += e.deltaY;
+
+                            if (Math.abs(hourDelta) >= threshold) {
+                                const change = hourDelta > 0 ? -1 : 1;
+                                let value = parseInt(this.value) || 0;
+                                value = (value + change + 24) % 24;
+                                this.value = value.toString().padStart(2, '0');
+                                updateDateTime();
+                                hourDelta = 0; // Reset akumulátoru
+                            }
+                        });
+
+                        // Aktualizovat i při změně pomocí šipek nebo ručním zadáním
+                        hourInput.addEventListener('change', updateDateTime);
+                    }
+
+                    if (minuteInput) {
+                        minuteInput.addEventListener('wheel', function(e) {
+                            e.preventDefault();
+                            minuteDelta += e.deltaY;
+
+                            if (Math.abs(minuteDelta) >= threshold) {
+                                const change = minuteDelta > 0 ? -15 : 15;
+                                let value = parseInt(this.value) || 0;
+                                value = (value + change + 60) % 60;
+                                this.value = value.toString().padStart(2, '0');
+                                updateDateTime();
+                                minuteDelta = 0; // Reset akumulátoru
+                            }
+                        });
+
+                        // Aktualizovat i při změně pomocí šipek nebo ručním zadáním
+                        minuteInput.addEventListener('change', updateDateTime);
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

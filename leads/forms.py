@@ -243,7 +243,7 @@ class LeadMeetingForm(forms.ModelForm):
             "meeting_note": "Poznámka",
         }
         widgets = {
-            "meeting_at": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "meeting_at": forms.DateTimeInput(attrs={"type": "datetime-local", "step": "900"}),
             "meeting_note": forms.Textarea(attrs={"rows": 3}),
         }
 

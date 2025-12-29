@@ -4,17 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2c1eb26d-4562-4c7b-90c9-a2b40a90094c" name="Changes" comment="statistics preparation">
-      <change afterPath="$PROJECT_DIR$/templates/leads/referrer_detail.html" afterDir="false" />
+    <list default="true" id="2c1eb26d-4562-4c7b-90c9-a2b40a90094c" name="Changes" comment="statistics and referrer_detail setup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leads/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/leads/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leads/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/leads/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/leads/referrers_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/leads/referrers_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/leads/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/leads/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/leads/lead_meeting_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/leads/lead_meeting_form.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
+    <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -60,6 +61,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "DefaultHtmlFileTemplate": "HTML File",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
@@ -73,7 +75,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.intellij.python.django.customization.DjangoModulesConfigurable",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -93,7 +95,8 @@
       <option name="presentableId" value="Default" />
       <updated>1764170694238</updated>
       <workItem from="1764170695178" duration="11000" />
-      <workItem from="1766230560745" duration="4023000" />
+      <workItem from="1766230560745" duration="6014000" />
+      <workItem from="1767002116664" duration="7552000" />
     </task>
     <task id="LOCAL-00001" summary="první commit">
       <option name="closed" value="true" />
@@ -343,7 +346,15 @@
       <option name="project" value="LOCAL" />
       <updated>1766242101794</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="statistics and referrer_detail setup">
+      <option name="closed" value="true" />
+      <created>1766252700566</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1766252700566</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -373,6 +384,7 @@
     <MESSAGE value="provision paid badge" />
     <MESSAGE value="login/logout reverse lazy" />
     <MESSAGE value="statistics preparation" />
-    <option name="LAST_COMMIT_MESSAGE" value="statistics preparation" />
+    <MESSAGE value="statistics and referrer_detail setup" />
+    <option name="LAST_COMMIT_MESSAGE" value="statistics and referrer_detail setup" />
   </component>
 </project>
