@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2c1eb26d-4562-4c7b-90c9-a2b40a90094c" name="Changes" comment="statistics and referrer_detail setup">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/leads/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/leads/forms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/leads/lead_meeting_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/leads/lead_meeting_form.html" afterDir="false" />
-    </list>
+    <list default="true" id="2c1eb26d-4562-4c7b-90c9-a2b40a90094c" name="Changes" comment="statistics and referrer_detail setup" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -69,7 +65,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
-    "git-widget-placeholder": "statistics",
+    "git-widget-placeholder": "dev",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
