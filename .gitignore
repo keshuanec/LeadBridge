@@ -35,6 +35,16 @@ uploads/
 # VSCode
 .vscode/
 
+# PyCharm / IntelliJ IDEA
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries
+.idea/shelf/
+.idea/dataSources/
+.idea/dataSources.local.xml
+.idea/dataSources.xml
+
 # Pip / Build
 pip-log.txt
 pip-delete-this-directory.txt
