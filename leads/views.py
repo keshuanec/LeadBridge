@@ -503,8 +503,8 @@ def deals_list(request):
 def referrers_list(request):
     user: User = request.user
 
-    # Vidí: poradce, admin, manažer doporučitelů, superuser
-    if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR, User.Role.REFERRER_MANAGER]):
+    # Vidí: poradce, admin, manažer doporučitelů, kancelář, superuser
+    if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR, User.Role.REFERRER_MANAGER, User.Role.OFFICE]):
         return HttpResponseForbidden("Nemáš oprávnění zobrazit doporučitele.")
 
     from accounts.models import ReferrerProfile
@@ -533,13 +533,17 @@ def referrers_list(request):
         )
     )
 
-    # Poradce vidí jen „svoje“ doporučitele
+    # Poradce vidí jen „svoje" doporučitele
     if user.role == User.Role.ADVISOR and not user.is_superuser:
         queryset = queryset.filter(advisors=user)
 
     # Manažer vidí svoje doporučitele
     if user.role == User.Role.REFERRER_MANAGER and not user.is_superuser:
         queryset = queryset.filter(manager=user)
+
+    # Kancelář vidí doporučitele pod svými manažery
+    if user.role == User.Role.OFFICE and not user.is_superuser:
+        queryset = queryset.filter(manager__manager_profile__office__owner=user)
 
     context = {
         "referrer_profiles": queryset,
@@ -550,11 +554,11 @@ def referrers_list(request):
 def referrer_detail(request, pk: int):
     user: User = request.user
 
-    if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR, User.Role.REFERRER_MANAGER]):
+    if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR, User.Role.REFERRER_MANAGER, User.Role.OFFICE]):
         return HttpResponseForbidden("Nemáš oprávnění zobrazit detail doporučitele.")
 
     profile = get_object_or_404(
-        ReferrerProfile.objects.select_related("user", "manager").prefetch_related("advisors"),
+        ReferrerProfile.objects.select_related("user", "manager", "manager__manager_profile__office").prefetch_related("advisors"),
         pk=pk,
     )
 
@@ -566,6 +570,13 @@ def referrer_detail(request, pk: int):
     # - Manažer jen pokud je to jeho doporučitel
     if user.role == User.Role.REFERRER_MANAGER and not user.is_superuser and profile.manager_id != user.id:
         return HttpResponseForbidden("Nemáš oprávnění zobrazit detail tohoto doporučitele.")
+
+    # - Kancelář jen pokud je doporučitel pod jejími manažery
+    if user.role == User.Role.OFFICE and not user.is_superuser:
+        manager_profile = getattr(profile.manager, "manager_profile", None) if profile.manager else None
+        office = getattr(manager_profile, "office", None) if manager_profile else None
+        if not office or office.owner_id != user.id:
+            return HttpResponseForbidden("Nemáš oprávnění zobrazit detail tohoto doporučitele.")
 
     # Statistika pro konkrétního doporučitele
     leads_qs = Lead.objects.filter(referrer=profile.user)
