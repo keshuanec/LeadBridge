@@ -7,18 +7,18 @@ from .models import User, ReferrerProfile, Office, ManagerProfile
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     fieldsets = BaseUserAdmin.fieldsets + (
-        ("LeadBridge role", {"fields": ("role",)}),
+        ("LeadBridge", {"fields": ("role", "phone")}),
     )
 
     # Tohle je formulář pro VYTVOŘENÍ uživatele
     add_fieldsets = BaseUserAdmin.add_fieldsets + (
-        ("LeadBridge role", {
+        ("LeadBridge", {
             "classes": ("wide",),
-            "fields": ("role",),
+            "fields": ("role", "email", "phone"),
         }),
     )
 
-    list_display = ("username", "email", "first_name", "last_name", "role", "is_staff")
+    list_display = ("username", "email", "phone", "first_name", "last_name", "role", "is_staff")
     list_filter = ("role", "is_staff", "is_superuser", "is_active")
 
 

@@ -19,7 +19,12 @@ class User(AbstractUser):
         help_text="Role uživatele v systému LeadBridge.",
     )
 
-    # Sem můžeme později přidávat další společné údaje (telefon, firma atd.)
+    phone = models.CharField(
+        "Telefon",
+        max_length=20,
+        blank=True,
+        help_text="Telefonní číslo uživatele.",
+    )
 
     def __str__(self):
         return self.get_full_name() or self.username

@@ -592,6 +592,120 @@ def referrer_detail(request, pk: int):
 
 
 @login_required
+def advisors_list(request):
+    """Seznam poradců se statistikami"""
+    user: User = request.user
+
+    # Vidí: doporučitel, manažer, kancelář, admin, superuser
+    if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.REFERRER, User.Role.REFERRER_MANAGER, User.Role.OFFICE]):
+        return HttpResponseForbidden("Nemáš oprávnění zobrazit poradce.")
+
+    # Základní queryset všech poradců se statistikami
+    queryset = (
+        User.objects
+        .filter(role=User.Role.ADVISOR)
+        .annotate(
+            leads_received=Count("leads_assigned", distinct=True),
+            meetings_planned=Count(
+                "leads_assigned",
+                filter=Q(leads_assigned__communication_status=Lead.CommunicationStatus.MEETING),
+                distinct=True,
+            ),
+            meetings_done=Count(
+                "leads_assigned",
+                filter=Q(leads_assigned__meeting_done=True),
+                distinct=True,
+            ),
+            deals_created=Count(
+                "leads_assigned__deal",
+                distinct=True,
+            ),
+            deals_completed=Count(
+                "leads_assigned__deal",
+                filter=Q(leads_assigned__deal__status=Deal.DealStatus.DRAWN),
+                distinct=True,
+            ),
+        )
+    )
+
+    # Filtrování podle role
+    if user.role == User.Role.REFERRER and not user.is_superuser:
+        # Doporučitel vidí jen své přiřazené poradce
+        profile = getattr(user, "referrer_profile", None)
+        if profile:
+            queryset = queryset.filter(id__in=profile.advisors.values_list("id", flat=True))
+        else:
+            queryset = queryset.none()
+
+    elif user.role == User.Role.REFERRER_MANAGER and not user.is_superuser:
+        # Manažer vidí poradce přiřazené k jeho doporučitelům
+        referrer_profiles = ReferrerProfile.objects.filter(manager=user)
+        advisor_ids = referrer_profiles.values_list("advisors__id", flat=True)
+        queryset = queryset.filter(id__in=advisor_ids).distinct()
+
+    elif user.role == User.Role.OFFICE and not user.is_superuser:
+        # Kancelář vidí poradce pod svými manažery
+        referrer_profiles = ReferrerProfile.objects.filter(manager__manager_profile__office__owner=user)
+        advisor_ids = referrer_profiles.values_list("advisors__id", flat=True)
+        queryset = queryset.filter(id__in=advisor_ids).distinct()
+
+    # Admin a superuser vidí všechny
+
+    context = {
+        "advisors": queryset.order_by("last_name", "first_name", "username"),
+    }
+    return render(request, "leads/advisors_list.html", context)
+
+
+@login_required
+def advisor_detail(request, pk: int):
+    """Detail poradce se statistikami"""
+    user: User = request.user
+
+    if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.REFERRER, User.Role.REFERRER_MANAGER, User.Role.OFFICE]):
+        return HttpResponseForbidden("Nemáš oprávnění zobrazit detail poradce.")
+
+    advisor = get_object_or_404(User, pk=pk, role=User.Role.ADVISOR)
+
+    # Kontrola přístupu podle role
+    has_access = False
+
+    if user.is_superuser or user.role == User.Role.ADMIN:
+        has_access = True
+    elif user.role == User.Role.REFERRER:
+        # Doporučitel musí mít tohoto poradce přiřazeného
+        profile = getattr(user, "referrer_profile", None)
+        if profile and profile.advisors.filter(id=advisor.id).exists():
+            has_access = True
+    elif user.role == User.Role.REFERRER_MANAGER:
+        # Manažer musí mít poradce přiřazeného k některému ze svých doporučitelů
+        referrer_profiles = ReferrerProfile.objects.filter(manager=user)
+        if referrer_profiles.filter(advisors=advisor).exists():
+            has_access = True
+    elif user.role == User.Role.OFFICE:
+        # Kancelář musí mít poradce pod svými manažery
+        referrer_profiles = ReferrerProfile.objects.filter(manager__manager_profile__office__owner=user)
+        if referrer_profiles.filter(advisors=advisor).exists():
+            has_access = True
+
+    if not has_access:
+        return HttpResponseForbidden("Nemáš oprávnění zobrazit detail tohoto poradce.")
+
+    # Statistiky pro konkrétního poradce
+    leads_qs = Lead.objects.filter(advisor=advisor)
+
+    stats = {
+        "leads_received": leads_qs.count(),
+        "meetings_planned": leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+        "meetings_done": leads_qs.filter(meeting_done=True).count(),
+        "deals_created": Deal.objects.filter(lead__advisor=advisor).count(),
+        "deals_completed": Deal.objects.filter(lead__advisor=advisor, status=Deal.DealStatus.DRAWN).count(),
+    }
+
+    return render(request, "leads/advisor_detail.html", {"advisor": advisor, "stats": stats})
+
+
+@login_required
 def lead_schedule_meeting(request, pk: int):
     user: User = request.user
     lead = get_lead_for_user_or_404(user, pk)

@@ -161,6 +161,10 @@
                 {% if user.is_superuser or user.role == user.Role.ADMIN or user.role == user.Role.ADVISOR or user.role == user.Role.REFERRER_MANAGER or user.role == user.Role.OFFICE %}
                     <a href="{% url 'referrers_list' %}">Doporučitelé</a>
                 {% endif %}
+
+                {% if user.is_superuser or user.role == user.Role.ADMIN or user.role == user.Role.REFERRER or user.role == user.Role.REFERRER_MANAGER or user.role == user.Role.OFFICE %}
+                    <a href="{% url 'advisors_list' %}">Poradci</a>
+                {% endif %}
             {% endif %}
         </nav>
 

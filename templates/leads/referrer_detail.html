@@ -8,6 +8,12 @@
 
     <p><strong>Doporučitel:</strong> {{ profile.user.get_full_name|default:profile.user.username }}</p>
 
+    <p><strong>Uživatelské jméno:</strong> {{ profile.user.username }}</p>
+
+    <p><strong>E-mail:</strong> {{ profile.user.email|default:"—" }}</p>
+
+    <p><strong>Telefon:</strong> {{ profile.user.phone|default:"—" }}</p>
+
     <p><strong>Manažer:</strong>
         {% if profile.manager %}
             {{ profile.manager.get_full_name|default:profile.manager.username }}
