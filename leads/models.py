@@ -249,3 +249,73 @@ class Deal(models.Model):
 
     def __str__(self):
         return f"Obchod – {self.client_name} ({self.get_status_display()})"
+
+    def calculate_commission_for_user(self, user):
+        """Vypočítá provizi pro daného uživatele na základě loan_amount"""
+        if not user or not self.loan_amount:
+            return 0
+
+        # Celková provize za tento deal (na základě výše úvěru)
+        total_commission_base = (
+            user.commission_total_per_million * self.loan_amount / 1_000_000
+        )
+
+        # Provize konkrétního uživatele (jeho procento z celkové)
+        user_commission = total_commission_base * (user.commission_percentage / 100)
+
+        return int(user_commission)
+
+    @property
+    def calculated_commission_referrer(self):
+        """Vypočítá provizi pro doporučitele"""
+        return self.calculate_commission_for_user(self.lead.referrer)
+
+    @property
+    def calculated_commission_manager(self):
+        """Vypočítá provizi pro manažera"""
+        referrer = self.lead.referrer
+        profile = getattr(referrer, "referrer_profile", None)
+        manager = getattr(profile, "manager", None) if profile else None
+        return self.calculate_commission_for_user(manager)
+
+    @property
+    def calculated_commission_office(self):
+        """Vypočítá provizi pro kancelář"""
+        referrer = self.lead.referrer
+        profile = getattr(referrer, "referrer_profile", None)
+        manager = getattr(profile, "manager", None) if profile else None
+        manager_profile = getattr(manager, "manager_profile", None) if manager else None
+        office = getattr(manager_profile, "office", None) if manager_profile else None
+        office_owner = getattr(office, "owner", None) if office else None
+        return self.calculate_commission_for_user(office_owner)
+
+    @property
+    def calculated_commission_total(self):
+        """Vypočítá celkovou provizi (součet všech)"""
+        return (
+            self.calculated_commission_referrer
+            + self.calculated_commission_manager
+            + self.calculated_commission_office
+        )
+
+    @property
+    def all_commissions_paid(self):
+        """Zkontroluje, jestli jsou všichni účastníci vyplacení"""
+        # Makléř musí být vždy vyplacený
+        if not self.paid_referrer:
+            return False
+
+        # Pokud existuje manažer, musí být vyplacený
+        referrer = self.lead.referrer
+        profile = getattr(referrer, "referrer_profile", None)
+        manager = getattr(profile, "manager", None) if profile else None
+        if manager and not self.paid_manager:
+            return False
+
+        # Pokud existuje kancelář, musí být vyplacená
+        manager_profile = getattr(manager, "manager_profile", None) if manager else None
+        office = getattr(manager_profile, "office", None) if manager_profile else None
+        if office and not self.paid_office:
+            return False
+
+        return True

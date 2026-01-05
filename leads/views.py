@@ -770,13 +770,24 @@ def lead_meeting_completed(request, pk: int):
     if request.method == "POST":
         form = MeetingResultForm(request.POST)
         if form.is_valid():
+            next_action = form.cleaned_data.get("next_action")
+            result_note = form.cleaned_data.get("result_note", "").strip()
+
             # nastavíme meeting_done na True
             lead.meeting_done = True
             lead.meeting_done_at = timezone.now()
-            lead.save(update_fields=["meeting_done", "meeting_done_at", "updated_at"])
+
+            # změníme stav podle vybrané akce
+            if next_action == "CREATE_DEAL":
+                # Pro založení obchodu jen označíme schůzku jako proběhlou
+                # Stav se automaticky změní na DEAL_CREATED při vytvoření dealu
+                lead.save(update_fields=["meeting_done", "meeting_done_at", "updated_at"])
+            elif next_action in ["SEARCHING_PROPERTY", "WAITING_FOR_CLIENT", "FAILED"]:
+                # Nastavíme nový stav
+                lead.communication_status = next_action
+                lead.save(update_fields=["meeting_done", "meeting_done_at", "communication_status", "updated_at"])
 
             # přidáme poznámku pokud je vyplněna
-            result_note = form.cleaned_data.get("result_note", "").strip()
             if result_note:
                 LeadNote.objects.create(
                     lead=lead,
@@ -791,14 +802,25 @@ def lead_meeting_completed(request, pk: int):
                 )
 
             # historie
+            action_labels = {
+                "SEARCHING_PROPERTY": "Hledá nemovitost",
+                "WAITING_FOR_CLIENT": "Čekání na klienta",
+                "FAILED": "Neúspěšný",
+                "CREATE_DEAL": "Založit obchod",
+            }
+            action_label = action_labels.get(next_action, next_action)
             LeadHistory.objects.create(
                 lead=lead,
                 event_type=LeadHistory.EventType.STATUS_CHANGED,
                 user=user,
-                description="Schůzka označena jako proběhlá.",
+                description=f"Schůzka proběhla. Další krok: {action_label}",
             )
 
-            return redirect("lead_detail", pk=lead.pk)
+            # přesměrování podle akce
+            if next_action == "CREATE_DEAL":
+                return redirect("deal_create_from_lead", pk=lead.pk)
+            else:
+                return redirect("lead_detail", pk=lead.pk)
     else:
         form = MeetingResultForm()
 

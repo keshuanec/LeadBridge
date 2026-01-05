@@ -26,6 +26,22 @@ class User(AbstractUser):
         help_text="Telefonní číslo uživatele.",
     )
 
+    commission_total_per_million = models.DecimalField(
+        "Celková provize za 1 mil. Kč",
+        max_digits=10,
+        decimal_places=0,
+        default=0,
+        help_text="Celková provize za každý 1 000 000 Kč realizované hypotéky (např. 7000).",
+    )
+
+    commission_percentage = models.DecimalField(
+        "Procento z celkové provize",
+        max_digits=5,
+        decimal_places=2,
+        default=0,
+        help_text="Procento z celkové provize, na které má uživatel nárok (např. 50.00 pro 50%).",
+    )
+
     def __str__(self):
         return self.get_full_name() or self.username
 

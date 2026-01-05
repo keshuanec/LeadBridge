@@ -13,15 +13,21 @@
                     <th>Klient</th>
                     <th>Výše úvěru</th>
 
-                    <th>Provize celkem</th>
-                    <th>Provize makléř</th>
-
-                    {% if user.role == "REFERRER_MANAGER" or user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
-                        <th>Provize manažer</th>
-                    {% endif %}
-
-                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
-                        <th>Provize kancelář</th>
+                    {# Provize podle role #}
+                    {% if user.role == "REFERRER" %}
+                        <th>Vaše provize</th>
+                    {% elif user.role == "REFERRER_MANAGER" %}
+                        <th>Provize makléře</th>
+                        <th>Vaše provize</th>
+                    {% elif user.role == "OFFICE" %}
+                        <th>Provize makléře</th>
+                        <th>Provize manažera</th>
+                        <th>Vaše provize</th>
+                    {% elif user.role == "ADVISOR" or user.is_superuser %}
+                        <th>Provize makléře</th>
+                        <th>Provize manažera</th>
+                        <th>Provize kanceláře</th>
+                        <th>Provize celkem</th>
                     {% endif %}
 
                     {% if user.role == "REFERRER_MANAGER" or user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
@@ -45,17 +51,23 @@
                 <tr>
                     <td><a href="{% url 'deal_detail' d.pk %}"><span class="badge">{{ d.get_status_display }}</span></a></td>
                     <td><a href="{% url 'deal_detail' d.pk %}">{{ d.client_name }}</a></td>
-                    <td>{{ d.loan_amount }}</td>
+                    <td>{{ d.loan_amount|floatformat:0 }} Kč</td>
 
-                    <td>{{ d.commission_total|default:"—" }}</td>
-                    <td>{{ d.commission_referrer|default:"—" }}</td>
-
-                    {% if user.role == "REFERRER_MANAGER" or user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
-                        <td>{{ d.commission_manager|default:"—" }}</td>
-                    {% endif %}
-
-                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
-                        <td>{{ d.commission_office|default:"—" }}</td>
+                    {# Zobrazení provizí podle role #}
+                    {% if user.role == "REFERRER" %}
+                        <td>{{ d.calculated_commission_referrer|floatformat:0 }} Kč</td>
+                    {% elif user.role == "REFERRER_MANAGER" %}
+                        <td>{{ d.calculated_commission_referrer|floatformat:0 }} Kč</td>
+                        <td>{{ d.calculated_commission_manager|floatformat:0 }} Kč</td>
+                    {% elif user.role == "OFFICE" %}
+                        <td>{{ d.calculated_commission_referrer|floatformat:0 }} Kč</td>
+                        <td>{% if d.manager_name %}{{ d.calculated_commission_manager|floatformat:0 }} Kč{% else %}—{% endif %}</td>
+                        <td>{{ d.calculated_commission_office|floatformat:0 }} Kč</td>
+                    {% elif user.role == "ADVISOR" or user.is_superuser %}
+                        <td>{{ d.calculated_commission_referrer|floatformat:0 }} Kč</td>
+                        <td>{% if d.manager_name %}{{ d.calculated_commission_manager|floatformat:0 }} Kč{% else %}—{% endif %}</td>
+                        <td>{% if d.office_name %}{{ d.calculated_commission_office|floatformat:0 }} Kč{% else %}—{% endif %}</td>
+                        <td>{{ d.calculated_commission_total|floatformat:0 }} Kč</td>
                     {% endif %}
 
                     {% if user.role == "REFERRER_MANAGER" or user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
@@ -72,40 +84,34 @@
 
                     <td>{{ d.created_at|date:"d.m.Y H:i" }}</td>
                     <td>
-                    {# Text stavu zobraz jen pokud NENÍ READY #}
-                    {% if d.commission_status != d.CommissionStatus.READY %}
+                    {% if d.commission_status == "PENDING" %}
                         {{ d.get_commission_status_display }}
-                    {% endif %}
-
-                    {# === READY → jen badge === #}
-                    {% if d.commission_status == d.CommissionStatus.READY %}
-                        <span class="badge badge-ready">
-                            Provize připravena
-                        </span>
-                    {% endif %}
-
-                    {# === PAID → checkboxy === #}
-                    {% if d.commission_status == d.CommissionStatus.PAID %}
-                        <div style="font-size:12px; margin-top:4px;">
-                            <label>
-                                <input type="checkbox" disabled {% if d.paid_referrer %}checked{% endif %}>
-                                makléř
-                            </label>
-
-                            {% if d.manager_name %}
-                                <label style="margin-left:8px;">
-                                    <input type="checkbox" disabled {% if d.paid_manager %}checked{% endif %}>
-                                    manažer
-                                </label>
-                            {% endif %}
-
-                            {% if d.office_name %}
-                                <label style="margin-left:8px;">
-                                    <input type="checkbox" disabled {% if d.paid_office %}checked{% endif %}>
-                                    kancelář
-                                </label>
-                            {% endif %}
-                        </div>
+                    {% elif d.commission_status == "READY" or d.commission_status == "PAID" %}
+                        {# Kontrola, jestli jsou všichni vyplacení #}
+                        {% if d.all_commissions_paid %}
+                            {# Všichni vyplacení #}
+                            Provize vyplacena
+                        {% else %}
+                            {# Ještě někdo není vyplacený #}
+                            <span class="badge badge-ready">
+                                Připraveno k vyplacení
+                            </span>
+                            <div style="font-size:12px; margin-top:6px;">
+                                <div style="{% if d.paid_referrer %}color: #2e7d32;{% else %}color: #999;{% endif %}">
+                                    makléř
+                                </div>
+                                {% if d.manager_name %}
+                                    <div style="{% if d.paid_manager %}color: #2e7d32;{% else %}color: #999;{% endif %}">
+                                        manažer
+                                    </div>
+                                {% endif %}
+                                {% if d.office_name %}
+                                    <div style="{% if d.paid_office %}color: #2e7d32;{% else %}color: #999;{% endif %}">
+                                        kancelář
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
                     {% endif %}
                     </td>
 

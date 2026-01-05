@@ -305,10 +305,26 @@ class DealEditForm(forms.ModelForm):
         }
 
 class MeetingResultForm(forms.Form):
-    """Formulář pro záznam výsledku schůzky - zatím placeholder"""
+    """Formulář pro záznam výsledku schůzky"""
+
+    ACTION_CHOICES = [
+        ("SEARCHING_PROPERTY", "Hledá nemovitost"),
+        ("WAITING_FOR_CLIENT", "Čekání na klienta"),
+        ("FAILED", "Neúspěšný"),
+        ("CREATE_DEAL", "Založit obchod"),
+    ]
+
+    next_action = forms.ChoiceField(
+        label="Co bude následovat?",
+        choices=ACTION_CHOICES,
+        widget=forms.RadioSelect,
+        required=True,
+        help_text="Vyberte další krok po proběhlé schůzce"
+    )
+
     result_note = forms.CharField(
         label="Poznámka k výsledku schůzky",
         widget=forms.Textarea(attrs={"rows": 4}),
         required=False,
-        help_text="Jak schůzka proběhla? (později zde bude strukturovanější formulář)"
+        help_text="Jak schůzka proběhla?"
     )
