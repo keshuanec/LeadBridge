@@ -1,0 +1,17 @@
+# Django framework
+Django==5.2.8
+
+# PostgreSQL adapter
+psycopg2-binary==2.9.9
+
+# Static files serving
+whitenoise==6.7.0
+
+# Environment variables
+python-decouple==3.8
+
+# Production server
+gunicorn==21.2.0
+
+# Database URL parsing (pro Railway a Heroku)
+dj-database-url==2.1.0

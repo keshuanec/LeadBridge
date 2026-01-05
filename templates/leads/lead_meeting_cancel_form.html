@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Zrušit schůzku{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2>Zrušit schůzku – {{ lead.client_name }}</h2>
+
+    <p style="margin-bottom: 20px; color: #d32f2f; font-weight: 500;">
+        ⚠️ Pozor: Tato akce změní stav leadu na "Neúspěšný".
+    </p>
+
+    <p style="margin-bottom: 20px; color: #666;">
+        Schůzka plánovaná na: <strong>{{ lead.meeting_at|date:"d.m.Y H:i" }}</strong>
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div style="margin-bottom:15px;">
+            <label for="cancel_note">Poznámka ke zrušení (nepovinné)</label><br>
+            <textarea name="cancel_note" id="cancel_note" rows="4" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+            <small style="color: #666;">Proč byla schůzka zrušena?</small>
+        </div>
+
+        <button type="submit" style="background: #d32f2f; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+            Potvrdit zrušení
+        </button>
+        <a href="{% url 'lead_detail' lead.pk %}" style="margin-left:10px;">Zpět</a>
+    </form>
+</div>
+{% endblock %}

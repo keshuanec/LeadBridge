@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Poradci{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Poradci</h2>
+
+    {% if advisors %}
+        <table>
+    <thead>
+    <tr>
+        <th>Poradce</th>
+        <th>Obdržené leady</th>
+        <th>Domluvené schůzky</th>
+        <th>Realizované schůzky</th>
+        <th>Založené obchody</th>
+        <th>Dokončené obchody</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for advisor in advisors %}
+        <tr style="cursor:pointer;" onclick="window.location='{% url 'advisor_detail' advisor.id %}'">
+            <td>
+                <a href="{% url 'advisor_detail' advisor.id %}">
+                    {{ advisor.get_full_name|default:advisor.username }}
+                </a>
+            </td>
+            <td>{{ advisor.leads_received|default:0 }}</td>
+            <td>{{ advisor.meetings_planned|default:0 }}</td>
+            <td>{{ advisor.meetings_done|default:0 }}</td>
+            <td>{{ advisor.deals_created|default:0 }}</td>
+            <td>{{ advisor.deals_completed|default:0 }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+
+    {% else %}
+        <p>Zatím tu nejsou žádní poradci.</p>
+    {% endif %}
+</div>
+{% endblock %}

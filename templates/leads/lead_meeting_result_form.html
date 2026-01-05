@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Schůzka proběhla{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2>Schůzka proběhla – {{ lead.client_name }}</h2>
+
+    <p style="margin-bottom: 20px; color: #666;">
+        Označuješ schůzku jako proběhlou. Vyber další krok a můžeš přidat poznámku k výsledku.
+    </p>
+
+    {% if form.non_field_errors %}
+        <div style="color:red; margin-bottom:10px;">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div style="margin-bottom:20px;">
+            <label>{{ form.next_action.label }}</label><br>
+            {% if form.next_action.help_text %}
+                <small style="color: #666;">{{ form.next_action.help_text }}</small><br>
+            {% endif %}
+            <div style="margin-top: 8px;">
+                {% for choice in form.next_action %}
+                    <div style="margin-bottom: 8px;">
+                        {{ choice }}
+                    </div>
+                {% endfor %}
+            </div>
+            {% if form.next_action.errors %}<div style="color:red;">{{ form.next_action.errors }}</div>{% endif %}
+        </div>
+
+        <div style="margin-bottom:15px;">
+            <label for="{{ form.result_note.id_for_label }}">{{ form.result_note.label }}</label><br>
+            {% if form.result_note.help_text %}
+                <small style="color: #666;">{{ form.result_note.help_text }}</small><br>
+            {% endif %}
+            {{ form.result_note }}
+            {% if form.result_note.errors %}<div style="color:red;">{{ form.result_note.errors }}</div>{% endif %}
+        </div>
+
+        <button type="submit" style="background: #2e7d32; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+            Potvrdit
+        </button>
+        <a href="{% url 'lead_detail' lead.pk %}" style="margin-left:10px;">Zrušit</a>
+    </form>
+</div>
+{% endblock %}
