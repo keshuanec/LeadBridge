@@ -119,3 +119,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = reverse_lazy("overview")
 LOGOUT_REDIRECT_URL = reverse_lazy("login")
 LOGIN_URL = "login"
+
+# Email configuration
+# Pro vývoj používáme console backend (vypisuje emaily do konzole)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'noreply@leadbridge.cz'
+
+# Pro produkci použijte SMTP backend:
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.example.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your-email@example.com'
+# EMAIL_HOST_PASSWORD = 'your-password'

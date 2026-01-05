@@ -9,6 +9,7 @@ from .forms import LeadForm, LeadNoteForm, LeadMeetingForm, DealCreateForm, Deal
 from django.db.models import Q, Count
 from django.utils.http import urlencode
 from django.utils import timezone
+from .services import notifications
 
 
 def get_lead_for_user_or_404(user, pk: int) -> Lead:
@@ -310,6 +311,9 @@ def lead_create(request):
                     profile.last_chosen_advisor = lead.advisor
                     profile.save(update_fields=["last_chosen_advisor"])
 
+            # Notifikace
+            notifications.notify_lead_created(lead, created_by=user)
+
             return redirect("my_leads")
 
     else:
@@ -349,6 +353,9 @@ def lead_detail(request, pk: int):
                 user=user,
                 description="Přidána poznámka.",
             )
+
+            # Notifikace
+            notifications.notify_note_added(lead, note, added_by=user)
 
             return redirect("lead_detail", pk=lead.pk)
     else:
@@ -444,6 +451,9 @@ def lead_edit(request, pk: int):
                     user=user,
                     description="; ".join(changes),
                 )
+
+                # Notifikace
+                notifications.notify_lead_updated(updated_lead, updated_by=user, changes_description="; ".join(changes))
 
             return redirect("lead_detail", pk=updated_lead.pk)
     else:
@@ -746,6 +756,9 @@ def lead_schedule_meeting(request, pk: int):
                     description="Přidána poznámka ke schůzce.",
                 )
 
+            # Notifikace
+            notifications.notify_meeting_scheduled(lead, scheduled_by=user)
+
             return redirect("lead_detail", pk=lead.pk)
     else:
         form = LeadMeetingForm(instance=lead)
@@ -815,6 +828,9 @@ def lead_meeting_completed(request, pk: int):
                 user=user,
                 description=f"Schůzka proběhla. Další krok: {action_label}",
             )
+
+            # Notifikace
+            notifications.notify_meeting_completed(lead, completed_by=user, next_action=action_label)
 
             # přesměrování podle akce
             if next_action == "CREATE_DEAL":
@@ -1010,6 +1026,9 @@ def deal_create_from_lead(request, pk: int):
                 description="Změněn stav leadu: → Založen obchod",
             )
 
+            # Notifikace
+            notifications.notify_deal_created(deal, lead, created_by=user)
+
             return redirect("deals_list")
     else:
         form = DealCreateForm(lead=lead)
@@ -1061,6 +1080,10 @@ def deal_detail(request, pk: int):
                 user=user,
                 description="Přidána poznámka (z detailu obchodu).",
             )
+
+            # Notifikace
+            notifications.notify_note_added(lead, note, added_by=user)
+
             return redirect("deal_detail", pk=deal.pk)
     else:
         note_form = LeadNoteForm()
@@ -1104,6 +1127,9 @@ def deal_commission_ready(request, pk: int):
             user=user,
             description="Provize nastavena na: připravená k vyplacení.",
         )
+
+        # Notifikace
+        notifications.notify_commission_ready(deal, marked_by=user)
 
     return redirect("deal_detail", pk=deal.pk)
 
@@ -1160,6 +1186,9 @@ def deal_commission_paid(request, pk: int, part: str):
             user=user,
             description="; ".join(changes),
         )
+
+        # Notifikace
+        notifications.notify_commission_paid(deal, recipient_type=part, marked_by=user)
 
         # pokud chceš: když jsou vyplacené všechny relevantní části, přepni lead na "Provize vyplacena"
         all_paid = deal.paid_referrer and (deal.paid_manager or not has_manager) and (deal.paid_office or not has_office)
@@ -1227,6 +1256,9 @@ def deal_edit(request, pk: int):
                     user=user,
                     description="; ".join(changes),
                 )
+
+                # Notifikace
+                notifications.notify_deal_updated(deal, updated_by=user, changes_description="; ".join(changes))
 
             return redirect("deal_detail", pk=deal.pk)
     else:
