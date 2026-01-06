@@ -9,28 +9,28 @@
     <form method="post" style="margin-top: 24px;">
         {% csrf_token %}
 
-        <div style="margin-bottom: 16px;">
-            <label for="id_first_name" style="display: block; margin-bottom: 4px; font-weight: 500;">Jméno:</label>
+        <div class="form-group">
+            <label for="id_first_name">Jméno:</label>
             {{ form.first_name }}
         </div>
 
-        <div style="margin-bottom: 16px;">
-            <label for="id_last_name" style="display: block; margin-bottom: 4px; font-weight: 500;">Příjmení:</label>
+        <div class="form-group">
+            <label for="id_last_name">Příjmení:</label>
             {{ form.last_name }}
         </div>
 
-        <div style="margin-bottom: 16px;">
-            <label for="id_email" style="display: block; margin-bottom: 4px; font-weight: 500;">E-mail:</label>
+        <div class="form-group">
+            <label for="id_email">E-mail:</label>
             {{ form.email }}
         </div>
 
-        <div style="margin-bottom: 16px;">
-            <label for="id_phone" style="display: block; margin-bottom: 4px; font-weight: 500;">Telefon:</label>
+        <div class="form-group">
+            <label for="id_phone">Telefon:</label>
             {{ form.phone }}
         </div>
 
         {% if form.errors %}
-        <div style="padding: 12px; margin-bottom: 16px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; color: #721c24;">
+        <div class="alert alert-error">
             <strong>Opravte prosím následující chyby:</strong>
             {{ form.errors }}
         </div>
@@ -38,7 +38,13 @@
 
         <div style="margin-top: 24px; display: flex; gap: 12px;">
             <button type="submit" class="btn btn-primary">Uložit změny</button>
-            <a href="{% url 'user_settings' %}" class="btn btn-secondary">Zrušit</a>
+            {% if user.role == user.Role.REFERRER and user.referrer_profile %}
+                <a href="{% url 'referrer_detail' user.referrer_profile.pk %}" class="btn btn-secondary">Zrušit</a>
+            {% elif user.role == user.Role.ADVISOR %}
+                <a href="{% url 'advisor_detail' user.pk %}" class="btn btn-secondary">Zrušit</a>
+            {% else %}
+                <a href="{% url 'user_settings' %}" class="btn btn-secondary">Zrušit</a>
+            {% endif %}
         </div>
     </form>
 </div>

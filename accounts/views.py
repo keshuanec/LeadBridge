@@ -41,7 +41,15 @@ def edit_profile(request):
             user.phone = form.cleaned_data.get("phone", "")
             user.save()
             messages.success(request, "Profil byl úspěšně aktualizován.")
-            return redirect("user_settings")
+
+            # Přesměruj zpět na správný detail podle role
+            from accounts.models import User
+            if user.role == User.Role.REFERRER and hasattr(user, 'referrer_profile'):
+                return redirect('referrer_detail', pk=user.referrer_profile.pk)
+            elif user.role == User.Role.ADVISOR:
+                return redirect('advisor_detail', pk=user.pk)
+            else:
+                return redirect('user_settings')
     else:
         form = UserProfileForm(initial={
             "first_name": user.first_name,
@@ -55,14 +63,24 @@ def edit_profile(request):
 
 @login_required
 def change_password(request):
+    user = request.user
+
     if request.method == "POST":
-        form = PasswordChangeForm(request.user, request.POST)
+        form = PasswordChangeForm(user, request.POST)
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)  # Aby nebyl uživatel odhlášen
             messages.success(request, "Heslo bylo úspěšně změněno.")
-            return redirect("user_settings")
-    else:
-        form = PasswordChangeForm(request.user)
 
-    return render(request, "accounts/change_password.html", {"form": form, "user": request.user})
+            # Přesměruj zpět na správný detail podle role
+            from accounts.models import User
+            if user.role == User.Role.REFERRER and hasattr(user, 'referrer_profile'):
+                return redirect('referrer_detail', pk=user.referrer_profile.pk)
+            elif user.role == User.Role.ADVISOR:
+                return redirect('advisor_detail', pk=user.pk)
+            else:
+                return redirect('user_settings')
+    else:
+        form = PasswordChangeForm(user)
+
+    return render(request, "accounts/change_password.html", {"form": form, "user": user})
