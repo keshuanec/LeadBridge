@@ -41,39 +41,37 @@
         {% endif %}
     </p>
 
-    <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px;">
-        <a href="{% url 'lead_edit' lead.pk %}" style="padding:6px 10px;border-radius:4px;background:#eee;text-decoration:none;font-size:13px;">
-            UPRAVIT KLIENTA
+    <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 12px;">
+        <a href="{% url 'lead_edit' lead.pk %}" class="btn btn-secondary">
+            Upravit klienta
         </a>
 
         {% if can_schedule_meeting %}
             {% if lead.communication_status == "MEETING" %}
                 {# Lead je ve stavu domluvené schůzky - zobrazíme tlačítka pro výsledek #}
                 <a href="{% url 'lead_meeting_completed' lead.pk %}"
-                   style="padding:6px 10px;border-radius:4px;background:#2e7d32;color:#fff;text-decoration:none;font-size:13px;"
+                   class="btn btn-primary"
                    title="Schůzka proběhla">
                     ✅ Schůzka proběhla
                 </a>
                 <a href="{% url 'lead_meeting_cancelled' lead.pk %}"
-                   style="padding:6px 10px;border-radius:4px;background:#d32f2f;color:#fff;text-decoration:none;font-size:13px;"
+                   class="btn btn-danger"
                    title="Schůzka zrušena">
                     ❌ Schůzka zrušena
                 </a>
             {% else %}
                 {# Jiný stav - zobrazíme tlačítko pro domluvení schůzky #}
-                <a href="{% url 'lead_schedule_meeting' lead.pk %}" title="Domluvit schůzku">📅 Domluvit schůzku</a>
+                <a href="{% url 'lead_schedule_meeting' lead.pk %}" class="btn btn-secondary" title="Domluvit schůzku">📅 Domluvit schůzku</a>
             {% endif %}
         {% endif %}
 
         {% if can_create_deal %}
             {% if lead.deal %}
-                <a href="{% url 'deal_detail' lead.deal.pk %}" title="Přejít na obchod">💼 Přejít na obchod</a>
+                <a href="{% url 'deal_detail' lead.deal.pk %}" class="btn btn-primary" title="Přejít na obchod">💼 Přejít na obchod</a>
             {% else %}
-                <a href="{% url 'deal_create_from_lead' lead.pk %}" title="Založit obchod">➕ Založit obchod</a>
+                <a href="{% url 'deal_create_from_lead' lead.pk %}" class="btn btn-primary" title="Založit obchod">➕ Založit obchod</a>
             {% endif %}
         {% endif %}
-
-
     </div>
 </div>
 
@@ -81,13 +79,13 @@
     <h3>Přidat poznámku</h3>
     <form method="post">
         {% csrf_token %}
-        {{ note_form.text }}
-        {% if note_form.text.errors %}
-            <div style="color:red;">{{ note_form.text.errors }}</div>
-        {% endif %}
-        <div style="margin-top:8px;">
-            <button type="submit">Přidat poznámku</button>
+        <div class="form-group">
+            {{ note_form.text }}
+            {% if note_form.text.errors %}
+                <div class="alert alert-error">{{ note_form.text.errors }}</div>
+            {% endif %}
         </div>
+        <button type="submit" class="btn btn-primary">Přidat poznámku</button>
     </form>
 </div>
 
