@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Upravit profil{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2>Upravit profil</h2>
+
+    <form method="post" style="margin-top: 24px;">
+        {% csrf_token %}
+
+        <div style="margin-bottom: 16px;">
+            <label for="id_first_name" style="display: block; margin-bottom: 4px; font-weight: 500;">Jméno:</label>
+            {{ form.first_name }}
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label for="id_last_name" style="display: block; margin-bottom: 4px; font-weight: 500;">Příjmení:</label>
+            {{ form.last_name }}
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label for="id_email" style="display: block; margin-bottom: 4px; font-weight: 500;">E-mail:</label>
+            {{ form.email }}
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label for="id_phone" style="display: block; margin-bottom: 4px; font-weight: 500;">Telefon:</label>
+            {{ form.phone }}
+        </div>
+
+        {% if form.errors %}
+        <div style="padding: 12px; margin-bottom: 16px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; color: #721c24;">
+            <strong>Opravte prosím následující chyby:</strong>
+            {{ form.errors }}
+        </div>
+        {% endif %}
+
+        <div style="margin-top: 24px; display: flex; gap: 12px;">
+            <button type="submit" class="btn btn-primary">Uložit změny</button>
+            <a href="{% url 'user_settings' %}" class="btn btn-secondary">Zrušit</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

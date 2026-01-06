@@ -1,17 +1,38 @@
 {% extends "base.html" %}
 
-{% block title %}Nastavení uživatele{% endblock %}
+{% block title %}Můj profil{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width: 600px; margin: 0 auto;">
-    <h2>Nastavení uživatele</h2>
-    <p><strong>Uživatelské jméno:</strong> {{ user.username }}</p>
-    <p><strong>Jméno:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-    <p><strong>E-mail:</strong> {{ user.email }}</p>
-    <p><strong>Role:</strong> {{ user.get_role_display }}</p>
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+    <h2>Můj profil</h2>
 
-    <p style="margin-top: 16px; font-size: 14px;">
-        Sem později můžeme doplnit změnu hesla, úpravu profilu, notifikace atd.
-    </p>
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}" style="padding: 12px; margin: 16px 0; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px; color: #155724;">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <div style="margin-top: 24px;">
+        <h3 style="margin-bottom: 16px;">Osobní údaje</h3>
+        <p><strong>Uživatelské jméno:</strong> {{ user.username }}</p>
+        <p><strong>Jméno:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+        <p><strong>E-mail:</strong> {{ user.email }}</p>
+        <p><strong>Telefon:</strong> {{ user.phone|default:"—" }}</p>
+        <p><strong>Role:</strong> {{ user.get_role_display }}</p>
+
+        <div style="margin-top: 24px; display: flex; gap: 12px;">
+            <a href="{% url 'edit_profile' %}" class="btn btn-primary">Upravit údaje</a>
+            <a href="{% url 'change_password' %}" class="btn btn-secondary">Změnit heslo</a>
+        </div>
+    </div>
+
+    {% if referrer_profile %}
+    <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #ddd;">
+        <h3 style="margin-bottom: 16px;">Statistiky</h3>
+        <p>Pro zobrazení kompletních statistik přejděte na <a href="{% url 'referrer_detail' referrer_profile.pk %}">detail doporučitele</a>.</p>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
