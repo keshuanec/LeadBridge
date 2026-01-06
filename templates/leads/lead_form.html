@@ -113,6 +113,9 @@
         <button type="submit" class="btn btn-primary">
             {% if is_edit %}Uložit změny{% else %}Uložit lead{% endif %}
         </button>
+        {% if is_edit %}
+            <a href="{% url 'lead_detail' lead.pk %}" class="btn btn-secondary" style="margin-left:10px;">Zpět</a>
+        {% endif %}
     </form>
 </div>
 
