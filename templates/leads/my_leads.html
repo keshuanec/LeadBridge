@@ -8,7 +8,7 @@
 
     {% if can_create_leads %}
         <p>
-            <a href="{% url 'lead_create' %}">+ Nový lead</a>
+            <a href="{% url 'lead_create' %}" class="btn btn-primary">+ Nový lead</a>
         </p>
     {% endif %}
 
@@ -80,8 +80,8 @@
     <input type="hidden" name="sort" value="{{ current_sort }}">
     <input type="hidden" name="dir" value="{{ current_dir }}">
 
-    <button type="submit">Filtrovat</button>
-    <a href="{% url 'my_leads' %}">Zrušit filtry</a>
+    <button type="submit" class="btn btn-primary">Filtrovat</button>
+    <a href="{% url 'my_leads' %}" class="btn btn-secondary">Zrušit filtry</a>
 </form>
 
 {# Výsledky #}

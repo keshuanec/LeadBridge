@@ -10,26 +10,26 @@
     <h2>Domluvit schůzku – {{ lead.client_name }}</h2>
 
     {% if form.non_field_errors %}
-        <div style="color:red; margin-bottom:10px;">{{ form.non_field_errors }}</div>
+        <div class="alert alert-error">{{ form.non_field_errors }}</div>
     {% endif %}
 
     <form method="post">
         {% csrf_token %}
 
-        <div style="margin-bottom:10px;">
-            <label for="{{ form.meeting_at.id_for_label }}">Datum a čas schůzky</label><br>
+        <div class="form-group">
+            <label for="{{ form.meeting_at.id_for_label }}">Datum a čas schůzky</label>
             {{ form.meeting_at }}
-            {% if form.meeting_at.errors %}<div style="color:red;">{{ form.meeting_at.errors }}</div>{% endif %}
+            {% if form.meeting_at.errors %}<div class="alert alert-error">{{ form.meeting_at.errors }}</div>{% endif %}
         </div>
 
-        <div style="margin-bottom:10px;">
-            <label for="{{ form.meeting_note.id_for_label }}">Poznámka</label><br>
+        <div class="form-group">
+            <label for="{{ form.meeting_note.id_for_label }}">Poznámka</label>
             {{ form.meeting_note }}
-            {% if form.meeting_note.errors %}<div style="color:red;">{{ form.meeting_note.errors }}</div>{% endif %}
+            {% if form.meeting_note.errors %}<div class="alert alert-error">{{ form.meeting_note.errors }}</div>{% endif %}
         </div>
 
-        <button type="submit">Potvrdit schůzku</button>
-        <a href="{% url 'lead_detail' lead.pk %}" style="margin-left:10px;">Zrušit</a>
+        <button type="submit" class="btn btn-primary">Potvrdit schůzku</button>
+        <a href="{% url 'lead_detail' lead.pk %}" class="btn btn-secondary" style="margin-left:10px;">Zrušit</a>
     </form>
 </div>
 

@@ -6,49 +6,49 @@
     <h2>Založit obchod – {{ lead.client_name }}</h2>
 
     {% if form.non_field_errors %}
-        <div style="color:red; margin-bottom:10px;">{{ form.non_field_errors }}</div>
+        <div class="alert alert-error">{{ form.non_field_errors }}</div>
     {% endif %}
 
     <form method="post">
         {% csrf_token %}
 
-        <div style="margin-bottom:10px;">
-            <label>{{ form.client_name.label }}</label><br>
+        <div class="form-group">
+            <label>{{ form.client_name.label }}</label>
             {{ form.client_name }}
         </div>
 
-        <div style="margin-bottom:10px;">
-            <label>{{ form.client_phone.label }}</label><br>
+        <div class="form-group">
+            <label>{{ form.client_phone.label }}</label>
             {{ form.client_phone }}
         </div>
 
-        <div style="margin-bottom:10px;">
-            <label>{{ form.client_email.label }}</label><br>
+        <div class="form-group">
+            <label>{{ form.client_email.label }}</label>
             {{ form.client_email }}
         </div>
 
         <hr style="margin:16px 0; border:none; border-top:1px solid #eee;">
 
-        <div style="margin-bottom:10px;">
-            <label>{{ form.loan_amount.label }}</label><br>
+        <div class="form-group">
+            <label>{{ form.loan_amount.label }}</label>
             {{ form.loan_amount }}
-            {% if form.loan_amount.errors %}<div style="color:red;">{{ form.loan_amount.errors }}</div>{% endif %}
+            {% if form.loan_amount.errors %}<div class="alert alert-error">{{ form.loan_amount.errors }}</div>{% endif %}
         </div>
 
-        <div style="margin-bottom:10px;">
-            <label>{{ form.bank.label }}</label><br>
+        <div class="form-group">
+            <label>{{ form.bank.label }}</label>
             {{ form.bank }}
-            {% if form.bank.errors %}<div style="color:red;">{{ form.bank.errors }}</div>{% endif %}
+            {% if form.bank.errors %}<div class="alert alert-error">{{ form.bank.errors }}</div>{% endif %}
         </div>
 
-        <div style="margin-bottom:10px;">
-            <label>{{ form.property_type.label }}</label><br>
+        <div class="form-group">
+            <label>{{ form.property_type.label }}</label>
             {{ form.property_type }}
-            {% if form.property_type.errors %}<div style="color:red;">{{ form.property_type.errors }}</div>{% endif %}
+            {% if form.property_type.errors %}<div class="alert alert-error">{{ form.property_type.errors }}</div>{% endif %}
         </div>
 
-        <button type="submit">Založit obchod</button>
-        <a href="{% url 'lead_detail' lead.pk %}" style="margin-left:10px;">Zrušit</a>
+        <button type="submit" class="btn btn-primary">Založit obchod</button>
+        <a href="{% url 'lead_detail' lead.pk %}" class="btn btn-secondary" style="margin-left:10px;">Zrušit</a>
     </form>
 </div>
 {% endblock %}

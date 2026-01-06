@@ -9,7 +9,7 @@
 
     {# Globální chyby formuláře (např. z clean()) #}
     {% if form.non_field_errors %}
-        <div style="color: red; margin-bottom: 10px;">
+        <div class="alert alert-error">
             {{ form.non_field_errors }}
         </div>
     {% endif %}
@@ -17,32 +17,32 @@
     <form method="post">
         {% csrf_token %}
 
-        <div style="margin-bottom: 10px;">
-            <label for="{{ form.client_name.id_for_label }}">Jméno klienta</label><br>
+        <div class="form-group">
+            <label for="{{ form.client_name.id_for_label }}">Jméno klienta</label>
             {{ form.client_name }}
             {% if form.client_name.errors %}
-                <div style="color: red;">{{ form.client_name.errors }}</div>
+                <div class="alert alert-error">{{ form.client_name.errors }}</div>
             {% endif %}
         </div>
 
-        <div style="margin-bottom: 10px;">
-            <label for="{{ form.client_phone.id_for_label }}">Telefon klienta</label><br>
+        <div class="form-group">
+            <label for="{{ form.client_phone.id_for_label }}">Telefon klienta</label>
             {{ form.client_phone }}
             {% if form.client_phone.errors %}
-                <div style="color: red;">{{ form.client_phone.errors }}</div>
+                <div class="alert alert-error">{{ form.client_phone.errors }}</div>
             {% endif %}
         </div>
 
-        <div style="margin-bottom: 10px;">
-            <label for="{{ form.client_email.id_for_label }}">E-mail klienta</label><br>
+        <div class="form-group">
+            <label for="{{ form.client_email.id_for_label }}">E-mail klienta</label>
             {{ form.client_email }}
             {% if form.client_email.errors %}
-                <div style="color: red;">{{ form.client_email.errors }}</div>
+                <div class="alert alert-error">{{ form.client_email.errors }}</div>
             {% endif %}
         </div>
 
-        <div style="margin-bottom: 10px;">
-            <label for="{{ form.advisor.id_for_label }}">Poradce</label><br>
+        <div class="form-group">
+            <label for="{{ form.advisor.id_for_label }}">Poradce</label>
 
            {% if form.single_advisor %}
                 <strong>
@@ -58,17 +58,18 @@
             {% endif %}
 
             {% if form.advisor.errors %}
-                <div style="color: red;">{{ form.advisor.errors }}</div>
+                <div class="alert alert-error">{{ form.advisor.errors }}</div>
             {% endif %}
         </div>
 
         {% if user.role != "REFERRER" %}
-            <div style="margin-bottom: 10px;"><label for="{{ form.referrer.id_for_label }}">Doporučitel</label><br>
-            {{ form.referrer }}
-            {% if form.referrer.errors %}
-                <div style="color: red;">{{ form.referrer.errors }}</div>
-            {% endif %}
-        </div>
+            <div class="form-group">
+                <label for="{{ form.referrer.id_for_label }}">Doporučitel</label>
+                {{ form.referrer }}
+                {% if form.referrer.errors %}
+                    <div class="alert alert-error">{{ form.referrer.errors }}</div>
+                {% endif %}
+            </div>
 
         {% else %}
             {# referrer pole neupravuje, jen skrytý input #}
@@ -76,11 +77,11 @@
         {% endif %}
 
         {% if user.role == "ADVISOR" %}
-        <div style="margin-bottom: 10px;">
-            <label for="{{ form.communication_status.id_for_label }}">Stav leadu</label><br>
+        <div class="form-group">
+            <label for="{{ form.communication_status.id_for_label }}">Stav leadu</label>
             {{ form.communication_status }}
             {% if form.communication_status.errors %}
-                <div style="color: red;">{{ form.communication_status.errors }}</div>
+                <div class="alert alert-error">{{ form.communication_status.errors }}</div>
             {% endif %}
         </div>
         {% else %}
@@ -89,27 +90,27 @@
         {% endif %}
 
         {% if is_edit %}
-            <div id="extra-note-wrapper" style="margin-bottom: 10px; display: none;">
-                <label for="{{ form.extra_note.id_for_label }}">Poznámka ke změně stavu</label><br>
+            <div id="extra-note-wrapper" class="form-group" style="display: none;">
+                <label for="{{ form.extra_note.id_for_label }}">Poznámka ke změně stavu</label>
                     {{ form.extra_note }}
                     {% if form.extra_note.errors %}
-                        <div style="color:red;">{{ form.extra_note.errors }}</div>
+                        <div class="alert alert-error">{{ form.extra_note.errors }}</div>
                     {% endif %}
                 <small>Volitelné – pokud vyplníš, uloží se jako běžná poznámka.</small>
             </div>
         {% endif %}
 
 
-        <div style="margin-bottom: 10px;">
-            <label for="{{ form.description.id_for_label }}">Popis situace</label><br>
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">Popis situace</label>
             {{ form.description }}
             {% if form.description.errors %}
-                <div style="color: red;">{{ form.description.errors }}</div>
+                <div class="alert alert-error">{{ form.description.errors }}</div>
             {% endif %}
         </div>
 
 
-        <button type="submit">
+        <button type="submit" class="btn btn-primary">
             {% if is_edit %}Uložit změny{% else %}Uložit lead{% endif %}
         </button>
     </form>

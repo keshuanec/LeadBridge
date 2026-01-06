@@ -11,14 +11,14 @@
     </p>
 
     {% if form.non_field_errors %}
-        <div style="color:red; margin-bottom:10px;">{{ form.non_field_errors }}</div>
+        <div class="alert alert-error">{{ form.non_field_errors }}</div>
     {% endif %}
 
     <form method="post">
         {% csrf_token %}
 
-        <div style="margin-bottom:20px;">
-            <label>{{ form.next_action.label }}</label><br>
+        <div class="form-group">
+            <label>{{ form.next_action.label }}</label>
             {% if form.next_action.help_text %}
                 <small style="color: #666;">{{ form.next_action.help_text }}</small><br>
             {% endif %}
@@ -29,22 +29,22 @@
                     </div>
                 {% endfor %}
             </div>
-            {% if form.next_action.errors %}<div style="color:red;">{{ form.next_action.errors }}</div>{% endif %}
+            {% if form.next_action.errors %}<div class="alert alert-error">{{ form.next_action.errors }}</div>{% endif %}
         </div>
 
-        <div style="margin-bottom:15px;">
-            <label for="{{ form.result_note.id_for_label }}">{{ form.result_note.label }}</label><br>
+        <div class="form-group">
+            <label for="{{ form.result_note.id_for_label }}">{{ form.result_note.label }}</label>
             {% if form.result_note.help_text %}
                 <small style="color: #666;">{{ form.result_note.help_text }}</small><br>
             {% endif %}
             {{ form.result_note }}
-            {% if form.result_note.errors %}<div style="color:red;">{{ form.result_note.errors }}</div>{% endif %}
+            {% if form.result_note.errors %}<div class="alert alert-error">{{ form.result_note.errors }}</div>{% endif %}
         </div>
 
-        <button type="submit" style="background: #2e7d32; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+        <button type="submit" class="btn btn-primary" style="background: #2e7d32;">
             Potvrdit
         </button>
-        <a href="{% url 'lead_detail' lead.pk %}" style="margin-left:10px;">Zrušit</a>
+        <a href="{% url 'lead_detail' lead.pk %}" class="btn btn-secondary" style="margin-left:10px;">Zrušit</a>
     </form>
 </div>
 {% endblock %}
