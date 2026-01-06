@@ -13,9 +13,13 @@ class UserAdmin(BaseUserAdmin):
 
     # Tohle je formulář pro VYTVOŘENÍ uživatele
     add_fieldsets = BaseUserAdmin.add_fieldsets + (
+        ("Osobní údaje", {
+            "classes": ("wide",),
+            "fields": ("first_name", "last_name", "email"),
+        }),
         ("LeadBridge", {
             "classes": ("wide",),
-            "fields": ("role", "email", "phone"),
+            "fields": ("role", "phone"),
         }),
         ("Provize", {
             "classes": ("wide",),
