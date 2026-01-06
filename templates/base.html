@@ -170,9 +170,19 @@
 
         <div class="nav-right">
             {% if user.is_authenticated %}
-                <a href="{% url 'user_settings' %}" class="user-link">
-                    {{ user.username }}
-                </a>
+                {% if user.role == user.Role.REFERRER and user.referrer_profile %}
+                    <a href="{% url 'referrer_detail' user.referrer_profile.pk %}" class="user-link">
+                        {{ user.username }}
+                    </a>
+                {% elif user.role == user.Role.ADVISOR %}
+                    <a href="{% url 'advisor_detail' user.pk %}" class="user-link">
+                        {{ user.username }}
+                    </a>
+                {% else %}
+                    <a href="{% url 'user_settings' %}" class="user-link">
+                        {{ user.username }}
+                    </a>
+                {% endif %}
                 <form method="post" action="{% url 'logout' %}" style="display:inline;">
                     {% csrf_token %}
                     <button type="submit" class="logout-button">

@@ -14,6 +14,15 @@
 
     <p><strong>Telefon:</strong> {{ profile.user.phone|default:"—" }}</p>
 
+    {% if user == profile.user %}
+    <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #ddd; display: flex; gap: 12px;">
+        <a href="{% url 'edit_profile' %}" class="btn btn-primary" style="display: inline-block; padding: 8px 16px; background: #0b3c61; color: #fff; text-decoration: none; border-radius: 4px; font-size: 14px;">Upravit údaje</a>
+        <a href="{% url 'change_password' %}" class="btn btn-secondary" style="display: inline-block; padding: 8px 16px; background: #6c757d; color: #fff; text-decoration: none; border-radius: 4px; font-size: 14px;">Změnit heslo</a>
+    </div>
+    {% endif %}
+
+    <hr>
+
     <p><strong>Manažer:</strong>
         {% if profile.manager %}
             {{ profile.manager.get_full_name|default:profile.manager.username }}
