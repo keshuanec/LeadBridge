@@ -1,1 +1,1 @@
-web: python manage.py migrate --noinput && python create_superuser.py && python manage.py collectstatic --noinput && gunicorn leadbridge.wsgi --bind 0.0.0.0:$PORT --log-file -
+web: python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn leadbridge.wsgi --bind 0.0.0.0:$PORT --log-file -

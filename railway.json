@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "python manage.py migrate --noinput && python create_superuser.py && python manage.py collectstatic --noinput && gunicorn leadbridge.wsgi --bind 0.0.0.0:$PORT --log-file -",
+    "startCommand": "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn leadbridge.wsgi --bind 0.0.0.0:$PORT --log-file -",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
