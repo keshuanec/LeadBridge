@@ -108,8 +108,9 @@ class ReferrerProfile(models.Model):
         null=True,
         blank=True,
         related_name="managed_referrers",
-        limit_choices_to={"role": User.Role.REFERRER_MANAGER},
+        limit_choices_to={"role__in": [User.Role.REFERRER_MANAGER, User.Role.OFFICE]},
         verbose_name="Manažer doporučitelů",
+        help_text="Manažer nebo kancelář, pod kterého tento doporučitel spadá.",
     )
 
     advisors = models.ManyToManyField(

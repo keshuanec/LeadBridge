@@ -47,13 +47,38 @@
     </p>
     {% endif %}
 
+    {% if office_stats %}
+    <hr>
+    <h3>Statistiky kanceláře</h3>
+    <table>
+        <tbody>
+            <tr>
+                <th>Předané leady</th>
+                <td>{{ office_stats.leads_sent }}</td>
+            </tr>
+            <tr>
+                <th>Domluvené schůzky</th>
+                <td>{{ office_stats.meetings_planned }}</td>
+            </tr>
+            <tr>
+                <th>Realizované schůzky</th>
+                <td>{{ office_stats.meetings_done }}</td>
+            </tr>
+            <tr>
+                <th>Dokončené obchody</th>
+                <td>{{ office_stats.deals_done }}</td>
+            </tr>
+        </tbody>
+    </table>
+    {% endif %}
+
     {% if team_stats %}
     <hr>
     <h3>
         {% if viewed_user.role == "REFERRER_MANAGER" %}
             Statistiky týmu
         {% elif viewed_user.role == "OFFICE" %}
-            Statistiky kanceláře
+            Statistiky týmu (jako manažer)
         {% endif %}
     </h3>
     <table>

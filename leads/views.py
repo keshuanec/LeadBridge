@@ -1558,6 +1558,7 @@ def user_detail(request, pk: int):
 
     # Vypočítat statistiky podle role
     team_stats = None
+    office_stats = None
     referrer_stats = None
 
     if viewed_user.role == User.Role.REFERRER_MANAGER:
@@ -1584,19 +1585,32 @@ def user_detail(request, pk: int):
             }
 
     elif viewed_user.role == User.Role.OFFICE:
-        # Statistiky kanceláře (bez obchodů kanceláře samotné)
+        # Statistiky celé kanceláře (všichni pod kanceláří včetně managed referrers)
         office_referrer_profiles = ReferrerProfile.objects.filter(
             manager__manager_profile__office__owner=viewed_user
         )
         office_referrer_ids = office_referrer_profiles.values_list("user_id", flat=True)
         office_leads_qs = Lead.objects.filter(referrer_id__in=office_referrer_ids)
 
-        team_stats = {
+        office_stats = {
             "leads_sent": office_leads_qs.count(),
             "meetings_planned": office_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
             "meetings_done": office_leads_qs.filter(meeting_done=True).count(),
             "deals_done": Deal.objects.filter(lead__in=office_leads_qs, status=Deal.DealStatus.DRAWN).count(),
         }
+
+        # Pokud kancelář funguje i jako manažer (má přiřazené doporučitele)
+        managed_profiles = ReferrerProfile.objects.filter(manager=viewed_user)
+        if managed_profiles.exists():
+            team_referrer_ids = managed_profiles.values_list("user_id", flat=True)
+            team_leads_qs = Lead.objects.filter(referrer_id__in=team_referrer_ids)
+
+            team_stats = {
+                "leads_sent": team_leads_qs.count(),
+                "meetings_planned": team_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+                "meetings_done": team_leads_qs.filter(meeting_done=True).count(),
+                "deals_done": Deal.objects.filter(lead__in=team_leads_qs, status=Deal.DealStatus.DRAWN).count(),
+            }
 
         # Statistiky jako doporučitel (pokud má ReferrerProfile)
         if referrer_profile:
@@ -1614,6 +1628,7 @@ def user_detail(request, pk: int):
         "manager_profile": manager_profile,
         "manager": manager,
         "office": office,
+        "office_stats": office_stats,
         "team_stats": team_stats,
         "referrer_stats": referrer_stats,
     }
