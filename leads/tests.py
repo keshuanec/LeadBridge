@@ -105,6 +105,7 @@ class AdvisorAccessTestCase(TestCase):
         # Vytvořit ReferrerProfile pro advisora (aby mohl být referrer)
         self.advisor_ref_profile = ReferrerProfile.objects.create(user=self.advisor_with_profile)
         self.advisor_ref_profile.advisors.add(self.advisor)
+        self.advisor_ref_profile.advisors.add(self.advisor_with_profile)  # může vybrat i sebe
 
         # Client pro HTTP requesty
         self.client = Client()
