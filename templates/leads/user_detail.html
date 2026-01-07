@@ -47,6 +47,35 @@
     </p>
     {% endif %}
 
+    {% if advisor_stats %}
+    <hr>
+    <h3>Statistiky jako poradce</h3>
+    <table>
+        <tbody>
+            <tr>
+                <th>Obdržené leady</th>
+                <td>{{ advisor_stats.leads_received }}</td>
+            </tr>
+            <tr>
+                <th>Domluvené schůzky</th>
+                <td>{{ advisor_stats.meetings_planned }}</td>
+            </tr>
+            <tr>
+                <th>Realizované schůzky</th>
+                <td>{{ advisor_stats.meetings_done }}</td>
+            </tr>
+            <tr>
+                <th>Založené obchody</th>
+                <td>{{ advisor_stats.deals_created }}</td>
+            </tr>
+            <tr>
+                <th>Dokončené obchody</th>
+                <td>{{ advisor_stats.deals_completed }}</td>
+            </tr>
+        </tbody>
+    </table>
+    {% endif %}
+
     {% if office_stats %}
     <hr>
     <h3>Statistiky kanceláře</h3>

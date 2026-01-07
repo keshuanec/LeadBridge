@@ -1519,9 +1519,31 @@ def user_detail(request, pk: int):
     # Vypočítat statistiky podle role
     team_stats = None
     office_stats = None
+    advisor_stats = None
     referrer_stats = None
 
-    if viewed_user.role == User.Role.REFERRER_MANAGER:
+    if viewed_user.role == User.Role.ADVISOR:
+        # Statistiky poradce
+        leads_qs = Lead.objects.filter(advisor=viewed_user)
+        advisor_stats = {
+            "leads_received": leads_qs.count(),
+            "meetings_planned": leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+            "meetings_done": leads_qs.filter(meeting_done=True).count(),
+            "deals_created": Deal.objects.filter(lead__advisor=viewed_user).count(),
+            "deals_completed": Deal.objects.filter(lead__advisor=viewed_user, status=Deal.DealStatus.DRAWN).count(),
+        }
+
+        # Statistiky jako doporučitel (pokud má ReferrerProfile)
+        if referrer_profile:
+            referrer_leads_qs = Lead.objects.filter(referrer=viewed_user)
+            referrer_stats = {
+                "leads_sent": referrer_leads_qs.count(),
+                "meetings_planned": referrer_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+                "meetings_done": referrer_leads_qs.filter(meeting_done=True).count(),
+                "deals_done": Deal.objects.filter(lead__in=referrer_leads_qs, status=Deal.DealStatus.DRAWN).count(),
+            }
+
+    elif viewed_user.role == User.Role.REFERRER_MANAGER:
         # Statistiky týmu (bez obchodů manažera samotného)
         managed_profiles = ReferrerProfile.objects.filter(manager=viewed_user)
         team_referrer_ids = managed_profiles.values_list("user_id", flat=True)
@@ -1601,6 +1623,7 @@ def user_detail(request, pk: int):
         "office": office,
         "office_stats": office_stats,
         "team_stats": team_stats,
+        "advisor_stats": advisor_stats,
         "referrer_stats": referrer_stats,
     }
 
