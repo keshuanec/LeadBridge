@@ -68,6 +68,7 @@
         display: flex;
         align-items: center;
         padding: 12px 24px;
+        background: #fff;
     }
 
     .nav-center {
@@ -76,31 +77,31 @@
         gap: 24px;
         flex: 1;
         justify-content: center;
-        padding: 12px 24px;
+        padding: 12px 12px 12px 24px;
+        background: var(--teal-dark);
+        position: relative;
+        margin-left: 20px;
+    }
+
+    /* Zakřivená vlna vlevo od nav-center */
+    .nav-center::before {
+        content: '';
+        position: absolute;
+        left: -20px;
+        top: 0;
+        bottom: 0;
+        width: 20px;
+        background: var(--teal-dark);
+        border-top-left-radius: 100%;
+        border-bottom-left-radius: 100%;
     }
 
     .nav-right {
         display: flex;
         align-items: center;
         gap: 16px;
-        padding: 12px 32px;
+        padding: 12px 48px 12px 32px;
         background: var(--teal-dark);
-        color: #fff;
-        position: relative;
-        margin-left: 40px;
-    }
-
-    /* Zakřivená vlna vlevo od nav-right */
-    .nav-right::before {
-        content: '';
-        position: absolute;
-        left: -40px;
-        top: 0;
-        bottom: 0;
-        width: 40px;
-        background: var(--teal-dark);
-        border-top-left-radius: 100%;
-        border-bottom-left-radius: 100%;
     }
 
     .brand {
@@ -119,32 +120,23 @@
         width: auto;
     }
 
-    /* Odkazy v centru */
-    .nav-center a {
-        color: var(--gray-text) !important;
-        text-decoration: none;
-        font-size: 15px;
-        font-weight: 500;
-        transition: color 0.2s;
-    }
-
-    .nav-center a:hover {
-        color: var(--teal-primary) !important;
-        text-decoration: none;
-    }
-
-    /* Odkazy vpravo (user jméno, odhlásit) */
+    /* Odkazy v centru a vpravo - bílé na tmavém */
+    .nav-center a,
     .nav-right a,
     .nav-right .logout-button {
         color: #fff !important;
         text-decoration: none;
-        font-size: 14px;
+        font-size: 15px;
+        font-weight: 500;
+        transition: opacity 0.2s;
     }
 
+    .nav-center a:hover,
     .nav-right a:hover,
     .nav-right .logout-button:hover {
         color: #fff !important;
-        text-decoration: underline;
+        opacity: 0.8;
+        text-decoration: none;
     }
 
     .logout-button {
