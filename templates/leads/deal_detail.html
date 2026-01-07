@@ -10,9 +10,7 @@
 
     {% if show_referrer %}
         <p><strong>Doporučitel:</strong>
-            {% if lead.referrer.role == "REFERRER" and lead.referrer.referrer_profile %}
-                <a href="{% url 'referrer_detail' lead.referrer.referrer_profile.pk %}">{{ lead.referrer }}</a>
-            {% elif lead.referrer.role == "ADVISOR" %}
+            {% if lead.referrer.role == "ADVISOR" %}
                 <a href="{% url 'advisor_detail' lead.referrer.pk %}">{{ lead.referrer }}</a>
             {% else %}
                 <a href="{% url 'user_detail' lead.referrer.pk %}">{{ lead.referrer }}</a>

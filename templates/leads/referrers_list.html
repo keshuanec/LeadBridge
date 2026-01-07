@@ -21,9 +21,9 @@
     </thead>
     <tbody>
     {% for profile in referrer_profiles %}
-        <tr style="cursor:pointer;" onclick="window.location='{% url 'referrer_detail' profile.id %}'">
+        <tr style="cursor:pointer;" onclick="window.location='{% url 'user_detail' profile.user.id %}'">
             <td>
-                <a href="{% url 'referrer_detail' profile.id %}">
+                <a href="{% url 'user_detail' profile.user.id %}">
                     {{ profile.user.get_full_name }}
                 </a>
             </td>
