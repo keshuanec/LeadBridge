@@ -113,13 +113,18 @@ class LeadForm(forms.ModelForm):
             self.fields["advisor"].initial = user
 
             # referrery omezíme na ty, kteří mají tohoto poradce přiřazeného
+            # může to být kdokoliv s ReferrerProfile (REFERRER, REFERRER_MANAGER, OFFICE, ADVISOR)
             referrer_profiles = ReferrerProfile.objects.filter(advisors=user)
             referrer_user_ids = referrer_profiles.values_list("user_id", flat=True)
 
-            referrers_qs = User.objects.filter(
-                id__in=referrer_user_ids,
-                role=User.Role.REFERRER,
-            )
+            referrers_qs = User.objects.filter(id__in=referrer_user_ids)
+
+            # pokud má poradce svůj ReferrerProfile, přidáme i jeho samotného
+            if hasattr(user, 'referrer_profile'):
+                referrers_qs = User.objects.filter(
+                    Q(id__in=referrer_user_ids) | Q(id=user.id)
+                ).distinct()
+
             self.fields["referrer"].queryset = referrers_qs
 
             # ---- Stav leadu pro poradce ----
@@ -147,12 +152,13 @@ class LeadForm(forms.ModelForm):
         # =========================
         elif user.role == User.Role.REFERRER_MANAGER:
             # doporučitelé, které tento manažer řídí
+            # může to být kdokoliv s ReferrerProfile (REFERRER, REFERRER_MANAGER, OFFICE, ADVISOR)
             managed_profiles = ReferrerProfile.objects.filter(manager=user).select_related("user")
             referrer_ids = managed_profiles.values_list("user_id", flat=True)
 
             # referrers = managed referrers + manažer sám
             referrers_qs = User.objects.filter(
-                Q(id__in=referrer_ids, role=User.Role.REFERRER) | Q(id=user.id)
+                Q(id__in=referrer_ids) | Q(id=user.id)
             ).distinct()
 
             self.fields["referrer"].queryset = referrers_qs
@@ -180,21 +186,16 @@ class LeadForm(forms.ModelForm):
         elif user.role == User.Role.OFFICE:
 
             # doporučitelé pod manažery této kanceláře
-
+            # může to být kdokoliv s ReferrerProfile (REFERRER, REFERRER_MANAGER, OFFICE, ADVISOR)
             referrer_profiles = ReferrerProfile.objects.filter(
-
                 manager__manager_profile__office__owner=user
-
             ).select_related("user")
 
             referrer_ids = referrer_profiles.values_list("user_id", flat=True)
 
             # referrery = doporučitelé pod kanceláří + kancelář sama
-
             referrers_qs = User.objects.filter(
-
-                Q(id__in=referrer_ids, role=User.Role.REFERRER) | Q(id=user.id)
-
+                Q(id__in=referrer_ids) | Q(id=user.id)
             ).distinct()
 
             self.fields["referrer"].queryset = referrers_qs
