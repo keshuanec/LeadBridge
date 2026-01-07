@@ -23,7 +23,7 @@
 
     <hr>
 
-    <h3>Statistiky</h3>
+    <h3>Statistiky jako poradce</h3>
     <table>
         <tbody>
             <tr>
@@ -48,6 +48,31 @@
             </tr>
         </tbody>
     </table>
+
+    {% if referrer_stats %}
+    <hr>
+    <h3>Statistiky jako doporučitel</h3>
+    <table>
+        <tbody>
+            <tr>
+                <th>Předané leady</th>
+                <td>{{ referrer_stats.leads_sent }}</td>
+            </tr>
+            <tr>
+                <th>Domluvené schůzky</th>
+                <td>{{ referrer_stats.meetings_planned }}</td>
+            </tr>
+            <tr>
+                <th>Realizované schůzky</th>
+                <td>{{ referrer_stats.meetings_done }}</td>
+            </tr>
+            <tr>
+                <th>Dokončené obchody</th>
+                <td>{{ referrer_stats.deals_done }}</td>
+            </tr>
+        </tbody>
+    </table>
+    {% endif %}
 
     <div style="margin-top: 24px;">
         <a href="{% url 'advisors_list' %}" class="btn btn-secondary">← Zpět na seznam poradců</a>

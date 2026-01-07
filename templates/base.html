@@ -272,6 +272,10 @@
                     <a href="{% url 'advisor_detail' user.pk %}" class="user-link">
                         {{ user.username }}
                     </a>
+                {% elif user.role == user.Role.REFERRER_MANAGER or user.role == user.Role.OFFICE %}
+                    <a href="{% url 'user_detail' user.pk %}" class="user-link">
+                        {{ user.username }}
+                    </a>
                 {% else %}
                     <a href="{% url 'user_settings' %}" class="user-link">
                         {{ user.username }}

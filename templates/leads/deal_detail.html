@@ -9,16 +9,22 @@
     <p><strong>E-mail:</strong> {{ deal.client_email|default:"—" }}</p>
 
     {% if show_referrer %}
-        <p><strong>Doporučitel:</strong> <a href="{% url 'user_detail' lead.referrer.pk %}">{{ lead.referrer }}</a></p>
+        <p><strong>Doporučitel:</strong>
+            {% if lead.referrer.role == "REFERRER" and lead.referrer.referrer_profile %}
+                <a href="{% url 'referrer_detail' lead.referrer.referrer_profile.pk %}">{{ lead.referrer }}</a>
+            {% elif lead.referrer.role == "ADVISOR" %}
+                <a href="{% url 'advisor_detail' lead.referrer.pk %}">{{ lead.referrer }}</a>
+            {% else %}
+                <a href="{% url 'user_detail' lead.referrer.pk %}">{{ lead.referrer }}</a>
+            {% endif %}
+        </p>
     {% endif %}
     {% if lead.referrer_manager %}
         <p><strong>Manažer:</strong> <a href="{% url 'user_detail' lead.referrer_manager.pk %}">{{ lead.referrer_manager }}</a></p>
     {% endif %}
-    {% if lead.referrer_office %}
+    {% if lead.referrer_office and lead.referrer_office.owner %}
         <p><strong>Kancelář:</strong> {{ lead.referrer_office.name }}
-            {% if lead.referrer_office.owner %}
-                (<a href="{% url 'user_detail' lead.referrer_office.owner.pk %}">{{ lead.referrer_office.owner }}</a>)
-            {% endif %}
+            (<a href="{% url 'user_detail' lead.referrer_office.owner.pk %}">{{ lead.referrer_office.owner }}</a>)
         </p>
     {% endif %}
 

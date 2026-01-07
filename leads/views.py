@@ -751,7 +751,7 @@ def advisor_detail(request, pk: int):
     # Statistiky pro konkrétního poradce
     leads_qs = Lead.objects.filter(advisor=advisor)
 
-    stats = {
+    advisor_stats = {
         "leads_received": leads_qs.count(),
         "meetings_planned": leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
         "meetings_done": leads_qs.filter(meeting_done=True).count(),
@@ -759,7 +759,24 @@ def advisor_detail(request, pk: int):
         "deals_completed": Deal.objects.filter(lead__advisor=advisor, status=Deal.DealStatus.DRAWN).count(),
     }
 
-    return render(request, "leads/advisor_detail.html", {"advisor": advisor, "stats": stats})
+    # Pokud má poradce také ReferrerProfile, počítáme i statistiky jako doporučitel
+    referrer_stats = None
+    referrer_profile = getattr(advisor, "referrer_profile", None)
+    if referrer_profile:
+        referrer_leads_qs = Lead.objects.filter(referrer=advisor)
+        referrer_stats = {
+            "leads_sent": referrer_leads_qs.count(),
+            "meetings_planned": referrer_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+            "meetings_done": referrer_leads_qs.filter(meeting_done=True).count(),
+            "deals_done": Deal.objects.filter(lead__in=referrer_leads_qs, status=Deal.DealStatus.DRAWN).count(),
+        }
+
+    return render(request, "leads/advisor_detail.html", {
+        "advisor": advisor,
+        "stats": advisor_stats,
+        "referrer_stats": referrer_stats,
+        "referrer_profile": referrer_profile,
+    })
 
 
 @login_required
@@ -1374,12 +1391,66 @@ def user_detail(request, pk: int):
         if manager_mp:
             office = manager_mp.office
 
+    # Vypočítat statistiky podle role
+    team_stats = None
+    referrer_stats = None
+
+    if viewed_user.role == User.Role.REFERRER_MANAGER:
+        # Statistiky týmu (bez obchodů manažera samotného)
+        managed_profiles = ReferrerProfile.objects.filter(manager=viewed_user)
+        team_referrer_ids = managed_profiles.values_list("user_id", flat=True)
+        team_leads_qs = Lead.objects.filter(referrer_id__in=team_referrer_ids)
+
+        team_stats = {
+            "leads_sent": team_leads_qs.count(),
+            "meetings_planned": team_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+            "meetings_done": team_leads_qs.filter(meeting_done=True).count(),
+            "deals_done": Deal.objects.filter(lead__in=team_leads_qs, status=Deal.DealStatus.DRAWN).count(),
+        }
+
+        # Statistiky jako doporučitel (pokud má ReferrerProfile)
+        if referrer_profile:
+            referrer_leads_qs = Lead.objects.filter(referrer=viewed_user)
+            referrer_stats = {
+                "leads_sent": referrer_leads_qs.count(),
+                "meetings_planned": referrer_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+                "meetings_done": referrer_leads_qs.filter(meeting_done=True).count(),
+                "deals_done": Deal.objects.filter(lead__in=referrer_leads_qs, status=Deal.DealStatus.DRAWN).count(),
+            }
+
+    elif viewed_user.role == User.Role.OFFICE:
+        # Statistiky kanceláře (bez obchodů kanceláře samotné)
+        office_referrer_profiles = ReferrerProfile.objects.filter(
+            manager__manager_profile__office__owner=viewed_user
+        )
+        office_referrer_ids = office_referrer_profiles.values_list("user_id", flat=True)
+        office_leads_qs = Lead.objects.filter(referrer_id__in=office_referrer_ids)
+
+        team_stats = {
+            "leads_sent": office_leads_qs.count(),
+            "meetings_planned": office_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+            "meetings_done": office_leads_qs.filter(meeting_done=True).count(),
+            "deals_done": Deal.objects.filter(lead__in=office_leads_qs, status=Deal.DealStatus.DRAWN).count(),
+        }
+
+        # Statistiky jako doporučitel (pokud má ReferrerProfile)
+        if referrer_profile:
+            referrer_leads_qs = Lead.objects.filter(referrer=viewed_user)
+            referrer_stats = {
+                "leads_sent": referrer_leads_qs.count(),
+                "meetings_planned": referrer_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+                "meetings_done": referrer_leads_qs.filter(meeting_done=True).count(),
+                "deals_done": Deal.objects.filter(lead__in=referrer_leads_qs, status=Deal.DealStatus.DRAWN).count(),
+            }
+
     context = {
         "viewed_user": viewed_user,
         "referrer_profile": referrer_profile,
         "manager_profile": manager_profile,
         "manager": manager,
         "office": office,
+        "team_stats": team_stats,
+        "referrer_stats": referrer_stats,
     }
 
     return render(request, "leads/user_detail.html", context)

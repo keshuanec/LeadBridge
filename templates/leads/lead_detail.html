@@ -8,11 +8,17 @@
 
     <p>
         <strong>Doporučitel:</strong>
-        <a href="{% url 'user_detail' lead.referrer.pk %}">{{ lead.referrer.get_full_name|default:lead.referrer.username }}</a><br>
+        {% if lead.referrer.role == "REFERRER" and lead.referrer.referrer_profile %}
+            <a href="{% url 'referrer_detail' lead.referrer.referrer_profile.pk %}">{{ lead.referrer.get_full_name|default:lead.referrer.username }}</a>
+        {% elif lead.referrer.role == "ADVISOR" %}
+            <a href="{% url 'advisor_detail' lead.referrer.pk %}">{{ lead.referrer.get_full_name|default:lead.referrer.username }}</a>
+        {% else %}
+            <a href="{% url 'user_detail' lead.referrer.pk %}">{{ lead.referrer.get_full_name|default:lead.referrer.username }}</a>
+        {% endif %}<br>
 
         <strong>Poradce:</strong>
         {% if lead.advisor %}
-            <a href="{% url 'user_detail' lead.advisor.pk %}">{{ lead.advisor.get_full_name|default:lead.advisor.username }}</a>
+            <a href="{% url 'advisor_detail' lead.advisor.pk %}">{{ lead.advisor.get_full_name|default:lead.advisor.username }}</a>
         {% else %}
             —
         {% endif %}<br>
@@ -22,12 +28,10 @@
             <a href="{% url 'user_detail' lead.referrer_manager.pk %}">{{ lead.referrer_manager.get_full_name|default:lead.referrer_manager.username }}</a><br>
         {% endif %}
 
-        {% if lead.referrer_office %}
+        {% if lead.referrer_office and lead.referrer_office.owner %}
             <strong>Kancelář:</strong>
             {{ lead.referrer_office.name }}
-            {% if lead.referrer_office.owner %}
-                (<a href="{% url 'user_detail' lead.referrer_office.owner.pk %}">{{ lead.referrer_office.owner.get_full_name|default:lead.referrer_office.owner.username }}</a>)
-            {% endif %}<br>
+            (<a href="{% url 'user_detail' lead.referrer_office.owner.pk %}">{{ lead.referrer_office.owner.get_full_name|default:lead.referrer_office.owner.username }}</a>)<br>
         {% endif %}
 
         <strong>Stav leadu:</strong>
