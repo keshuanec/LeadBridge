@@ -18,7 +18,13 @@ def get_lead_for_user_or_404(user, pk: int) -> Lead:
     if user.is_superuser or user.role == User.Role.ADMIN:
         return get_object_or_404(qs, pk=pk)
     elif user.role == User.Role.ADVISOR:
-        return get_object_or_404(qs, pk=pk, advisor=user)
+        # Pokud má advisor ReferrerProfile, vidí i leady svých podřízených doporučitelů
+        return get_object_or_404(
+            qs.filter(
+                Q(advisor=user) | Q(referrer__referrer_profile__advisors=user)
+            ).distinct(),
+            pk=pk,
+        )
     elif user.role == User.Role.REFERRER:
         return get_object_or_404(qs, pk=pk, referrer=user)
     elif user.role == User.Role.REFERRER_MANAGER:
@@ -70,7 +76,10 @@ def my_leads(request):
         leads_qs = Lead.objects.all()
 
     elif user.role == User.Role.ADVISOR:
-        leads_qs = Lead.objects.filter(advisor=user)
+        # Pokud má advisor ReferrerProfile, vidí i leady svých podřízených doporučitelů
+        leads_qs = Lead.objects.filter(
+            Q(advisor=user) | Q(referrer__referrer_profile__advisors=user)
+        ).distinct()
 
     elif user.role == User.Role.REFERRER:
         leads_qs = Lead.objects.filter(referrer=user)
@@ -485,7 +494,10 @@ def deals_list(request):
     if user.is_superuser or user.role == User.Role.ADMIN:
         pass
     elif user.role == User.Role.ADVISOR:
-        qs = qs.filter(lead__advisor=user)
+        # Pokud má advisor ReferrerProfile, vidí i dealy svých podřízených doporučitelů
+        qs = qs.filter(
+            Q(lead__advisor=user) | Q(lead__referrer__referrer_profile__advisors=user)
+        ).distinct()
     elif user.role == User.Role.REFERRER:
         qs = qs.filter(lead__referrer=user)
     elif user.role == User.Role.REFERRER_MANAGER:
@@ -912,7 +924,10 @@ def overview(request):
     if user.is_superuser or user.role == User.Role.ADMIN:
         leads_qs = Lead.objects.all()
     elif user.role == User.Role.ADVISOR:
-        leads_qs = Lead.objects.filter(advisor=user)
+        # Pokud má advisor ReferrerProfile, vidí i leady svých podřízených doporučitelů
+        leads_qs = Lead.objects.filter(
+            Q(advisor=user) | Q(referrer__referrer_profile__advisors=user)
+        ).distinct()
     elif user.role == User.Role.REFERRER:
         leads_qs = Lead.objects.filter(referrer=user)
     elif user.role == User.Role.REFERRER_MANAGER:
@@ -959,7 +974,10 @@ def overview(request):
     if user.is_superuser or user.role == User.Role.ADMIN:
         pass
     elif user.role == User.Role.ADVISOR:
-        deals_qs = deals_qs.filter(lead__advisor=user)
+        # Pokud má advisor ReferrerProfile, vidí i dealy svých podřízených doporučitelů
+        deals_qs = deals_qs.filter(
+            Q(lead__advisor=user) | Q(lead__referrer__referrer_profile__advisors=user)
+        ).distinct()
     elif user.role == User.Role.REFERRER:
         deals_qs = deals_qs.filter(lead__referrer=user)
     elif user.role == User.Role.REFERRER_MANAGER:
