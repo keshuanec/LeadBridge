@@ -25,6 +25,8 @@ db.sqlite3-journal
 # Static & media
 static/
 staticfiles/
+!staticfiles/favicon*
+!staticfiles/apple-touch-icon.png
 media/
 uploads/
 
