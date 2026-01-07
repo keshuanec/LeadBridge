@@ -13,22 +13,11 @@
                     <th>Klient</th>
                     <th>Výše úvěru</th>
 
-                    {# Provize podle role #}
-                    {% if user.role == "REFERRER" %}
-                        <th>Vaše provize</th>
-                    {% elif user.role == "REFERRER_MANAGER" %}
-                        <th>Provize makléře</th>
-                        <th>Vaše provize</th>
-                    {% elif user.role == "OFFICE" %}
-                        <th>Provize makléře</th>
-                        <th>Provize manažera</th>
-                        <th>Vaše provize</th>
-                    {% elif user.role == "ADVISOR" or user.is_superuser %}
-                        <th>Provize makléře</th>
-                        <th>Provize manažera</th>
-                        <th>Provize kanceláře</th>
-                        <th>Provize celkem</th>
-                    {% endif %}
+                    {# Provize - všichni vidí stejné sloupce #}
+                    <th>Provize makléře</th>
+                    <th>Provize manažera</th>
+                    <th>Provize kanceláře</th>
+                    <th>Provize celkem</th>
 
                     {% if user.role == "REFERRER_MANAGER" or user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
                         <th>Doporučitel</th>
@@ -53,22 +42,11 @@
                     <td><a href="{% url 'deal_detail' d.pk %}">{{ d.client_name }}</a></td>
                     <td>{{ d.loan_amount|floatformat:0 }} Kč</td>
 
-                    {# Zobrazení provizí podle role #}
-                    {% if user.role == "REFERRER" %}
-                        <td>{{ d.calculated_commission_referrer|floatformat:0 }} Kč</td>
-                    {% elif user.role == "REFERRER_MANAGER" %}
-                        <td>{{ d.calculated_commission_referrer|floatformat:0 }} Kč</td>
-                        <td>{{ d.calculated_commission_manager|floatformat:0 }} Kč</td>
-                    {% elif user.role == "OFFICE" %}
-                        <td>{{ d.calculated_commission_referrer|floatformat:0 }} Kč</td>
-                        <td>{% if d.manager_name %}{{ d.calculated_commission_manager|floatformat:0 }} Kč{% else %}—{% endif %}</td>
-                        <td>{{ d.calculated_commission_office|floatformat:0 }} Kč</td>
-                    {% elif user.role == "ADVISOR" or user.is_superuser %}
-                        <td>{{ d.calculated_commission_referrer|floatformat:0 }} Kč</td>
-                        <td>{% if d.manager_name %}{{ d.calculated_commission_manager|floatformat:0 }} Kč{% else %}—{% endif %}</td>
-                        <td>{% if d.office_name %}{{ d.calculated_commission_office|floatformat:0 }} Kč{% else %}—{% endif %}</td>
-                        <td>{{ d.calculated_commission_total|floatformat:0 }} Kč</td>
-                    {% endif %}
+                    {# Zobrazení provizí - všichni vidí stejné sloupce #}
+                    <td>{{ d.calculated_commission_referrer|floatformat:0 }} Kč</td>
+                    <td>{% if d.calculated_commission_manager > 0 %}{{ d.calculated_commission_manager|floatformat:0 }} Kč{% else %}—{% endif %}</td>
+                    <td>{% if d.calculated_commission_office > 0 %}{{ d.calculated_commission_office|floatformat:0 }} Kč{% else %}—{% endif %}</td>
+                    <td>{{ d.calculated_commission_total|floatformat:0 }} Kč</td>
 
                     {% if user.role == "REFERRER_MANAGER" or user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
                         <td>{{ d.referrer_name }}</td>
