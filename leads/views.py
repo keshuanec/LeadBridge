@@ -538,7 +538,143 @@ def deals_list(request):
     else:
         return HttpResponseForbidden("Nemáš oprávnění zobrazit obchody.")
 
-    qs = qs.order_by("-created_at")
+    # --- base queryset (na options do filtrů) ---
+    base_deals_qs = qs
+
+    # ===== Filtry povolené podle role =====
+    allowed_filters = {
+        User.Role.REFERRER: {"status", "commission"},
+        User.Role.REFERRER_MANAGER: {"status", "commission", "referrer", "advisor"},
+        User.Role.OFFICE: {"status", "commission", "referrer", "manager", "advisor"},
+        User.Role.ADVISOR: {"status", "commission", "referrer", "manager", "office"},
+    }
+
+    if user.is_superuser or user.role == User.Role.ADMIN:
+        allowed = {"status", "commission", "referrer", "advisor", "manager", "office"}
+    else:
+        allowed = allowed_filters.get(user.role, set())
+
+    # ===== Čtení filtrů z GET =====
+    current_status = request.GET.get("status") or ""
+    current_commission = request.GET.get("commission") or ""
+    current_referrer = request.GET.get("referrer") or ""
+    current_advisor = request.GET.get("advisor") or ""
+    current_manager = request.GET.get("manager") or ""
+    current_office = request.GET.get("office") or ""
+
+    # ===== Aplikace filtrů (jen povolené) =====
+    if "status" in allowed and current_status:
+        qs = qs.filter(status=current_status)
+
+    if "commission" in allowed and current_commission:
+        qs = qs.filter(commission_status=current_commission)
+
+    if "referrer" in allowed and current_referrer:
+        qs = qs.filter(lead__referrer_id=current_referrer)
+
+    if "advisor" in allowed and current_advisor:
+        qs = qs.filter(lead__advisor_id=current_advisor)
+
+    if "manager" in allowed and current_manager:
+        if current_manager == "__none__":
+            qs = qs.filter(
+                Q(lead__referrer__referrer_profile__manager__isnull=True) |
+                Q(lead__referrer__referrer_profile__isnull=True)
+            )
+        else:
+            qs = qs.filter(lead__referrer__referrer_profile__manager_id=current_manager)
+
+    if "office" in allowed and current_office:
+        if current_office == "__none__":
+            qs = qs.filter(
+                Q(lead__referrer__referrer_profile__manager__manager_profile__office__isnull=True) |
+                Q(lead__referrer__referrer_profile__manager__isnull=True) |
+                Q(lead__referrer__referrer_profile__isnull=True)
+            )
+        else:
+            qs = qs.filter(
+                lead__referrer__referrer_profile__manager__manager_profile__office_id=current_office
+            )
+
+    # ===== ŘAZENÍ =====
+    sort = request.GET.get("sort") or "created_at"
+    direction = request.GET.get("dir") or "desc"
+
+    sort_mapping = {
+        "client": ["lead__client_name"],
+        "referrer": ["lead__referrer__last_name", "lead__referrer__first_name"],
+        "advisor": ["lead__advisor__last_name", "lead__advisor__first_name"],
+        "manager": [
+            "lead__referrer__referrer_profile__manager__last_name",
+            "lead__referrer__referrer_profile__manager__first_name",
+        ],
+        "office": [
+            "lead__referrer__referrer_profile__manager__manager_profile__office__name",
+        ],
+        "status": ["status"],
+        "commission": ["commission_status"],
+        "loan_amount": ["loan_amount"],
+        "created_at": ["created_at"],
+    }
+
+    if sort not in sort_mapping:
+        sort = "created_at"
+    if direction not in ["asc", "desc"]:
+        direction = "desc"
+
+    order_fields = sort_mapping[sort]
+    qs = qs.order_by(*([("-" + f) for f in order_fields] if direction == "desc" else order_fields))
+
+    # ===== Options do filtrů (vždy jen z base_deals_qs) =====
+    status_choices = Deal.DealStatus.choices
+    commission_choices = Deal.CommissionStatus.choices
+
+    referrer_options = User.objects.none()
+    advisor_options = User.objects.none()
+    manager_options = User.objects.none()
+    office_options = Office.objects.none()
+
+    if "referrer" in allowed:
+        ref_ids = base_deals_qs.values_list("lead__referrer_id", flat=True).distinct()
+        referrer_options = User.objects.filter(id__in=ref_ids)
+
+    if "advisor" in allowed:
+        adv_ids = base_deals_qs.values_list("lead__advisor_id", flat=True).distinct()
+        advisor_options = User.objects.filter(id__in=[x for x in adv_ids if x])
+
+    if "manager" in allowed:
+        mgr_ids = base_deals_qs.values_list("lead__referrer__referrer_profile__manager_id", flat=True).distinct()
+        manager_options = User.objects.filter(id__in=[x for x in mgr_ids if x])
+
+    if "office" in allowed:
+        off_ids = base_deals_qs.values_list(
+            "lead__referrer__referrer_profile__manager__manager_profile__office_id",
+            flat=True
+        ).distinct()
+        office_options = Office.objects.filter(id__in=[x for x in off_ids if x])
+
+    # ===== Zachování filtrů při řazení (klik na sloupce) =====
+    keep_params = {}
+    if "status" in allowed and current_status:
+        keep_params["status"] = current_status
+    if "commission" in allowed and current_commission:
+        keep_params["commission"] = current_commission
+    if "referrer" in allowed and current_referrer:
+        keep_params["referrer"] = current_referrer
+    if "advisor" in allowed and current_advisor:
+        keep_params["advisor"] = current_advisor
+    if "manager" in allowed and current_manager:
+        keep_params["manager"] = current_manager
+    if "office" in allowed and current_office:
+        keep_params["office"] = current_office
+
+    qs_keep = urlencode(keep_params)
+
+    is_admin_like = user.is_superuser or user.role == User.Role.ADMIN
+    show_referrer_col = is_admin_like or user.role in (User.Role.REFERRER_MANAGER, User.Role.OFFICE, User.Role.ADVISOR)
+    show_manager_col = is_admin_like or user.role in (User.Role.OFFICE, User.Role.ADVISOR)
+    show_office_col = is_admin_like or user.role in (User.Role.ADVISOR,)
+    show_advisor_col = is_admin_like or user.role in (User.Role.ADVISOR, User.Role.REFERRER_MANAGER, User.Role.OFFICE)
 
     # pro šablonu si připravíme helper hodnoty (bez rizika padání v template)
     deals = []
@@ -553,7 +689,36 @@ def deals_list(request):
         d.advisor_name = str(d.lead.advisor) if d.lead.advisor else None
         deals.append(d)
 
-    return render(request, "leads/deals_list.html", {"deals": deals})
+    context = {
+        "deals": deals,
+        "current_sort": sort,
+        "current_dir": direction,
+
+        # filtry
+        "allowed": allowed,
+        "status_choices": status_choices,
+        "commission_choices": commission_choices,
+        "referrer_options": referrer_options,
+        "advisor_options": advisor_options,
+        "manager_options": manager_options,
+        "office_options": office_options,
+
+        "current_status": current_status,
+        "current_commission": current_commission,
+        "current_referrer": current_referrer,
+        "current_advisor": current_advisor,
+        "current_manager": current_manager,
+        "current_office": current_office,
+
+        "show_referrer_col": show_referrer_col,
+        "show_manager_col": show_manager_col,
+        "show_office_col": show_office_col,
+        "show_advisor_col": show_advisor_col,
+
+        "qs_keep": qs_keep,
+    }
+
+    return render(request, "leads/deals_list.html", context)
 
 
 @login_required

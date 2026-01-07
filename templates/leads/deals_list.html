@@ -5,13 +5,118 @@
 <div class="card">
     <h2>Obchody</h2>
 
+{# Filtry #}
+<form method="get" style="margin-bottom:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+    {% if "status" in allowed %}
+        <div>
+            <label style="font-size:12px; display:block;">Stav obchodu</label>
+            <select name="status">
+                <option value="">– všechny –</option>
+                {% for code, label in status_choices %}
+                    <option value="{{ code }}" {% if current_status == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endif %}
+
+    {% if "commission" in allowed %}
+        <div>
+            <label style="font-size:12px; display:block;">Stav provize</label>
+            <select name="commission">
+                <option value="">– všechny –</option>
+                {% for code, label in commission_choices %}
+                    <option value="{{ code }}" {% if current_commission == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endif %}
+
+    {% if "referrer" in allowed %}
+        <div>
+            <label style="font-size:12px; display:block;">Doporučitel</label>
+            <select name="referrer">
+                <option value="">– všichni –</option>
+                {% for r in referrer_options %}
+                    <option value="{{ r.id }}" {% if current_referrer == r.id|stringformat:"s" %}selected{% endif %}>{{ r }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endif %}
+
+    {% if "advisor" in allowed and show_advisor_col %}
+        <div>
+            <label style="font-size:12px; display:block;">Poradce</label>
+            <select name="advisor">
+                <option value="">– všichni –</option>
+                {% for a in advisor_options %}
+                    <option value="{{ a.id }}" {% if current_advisor == a.id|stringformat:"s" %}selected{% endif %}>{{ a }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endif %}
+
+    {% if "manager" in allowed %}
+        <div>
+            <label style="font-size:12px; display:block;">Manažer</label>
+            <select name="manager">
+                <option value="">– všichni –</option>
+                <option value="__none__" {% if current_manager == "__none__" %}selected{% endif %}>— bez manažera —</option>
+                {% for m in manager_options %}
+                    <option value="{{ m.id }}" {% if current_manager == m.id|stringformat:"s" %}selected{% endif %}>{{ m }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endif %}
+
+    {% if "office" in allowed %}
+        <div>
+            <label style="font-size:12px; display:block;">Kancelář</label>
+            <select name="office">
+                <option value="">– všechny –</option>
+                <option value="__none__" {% if current_office == "__none__" %}selected{% endif %}>— bez kanceláře —</option>
+                {% for o in office_options %}
+                    <option value="{{ o.id }}" {% if current_office == o.id|stringformat:"s" %}selected{% endif %}>{{ o.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endif %}
+
+    <input type="hidden" name="sort" value="{{ current_sort }}">
+    <input type="hidden" name="dir" value="{{ current_dir }}">
+
+    <button type="submit" class="btn btn-primary">Filtrovat</button>
+    <a href="{% url 'deals_list' %}" class="btn btn-secondary">Zrušit filtry</a>
+</form>
+
+{# Výsledky #}
     {% if deals %}
         <table>
             <thead>
                 <tr>
-                    <th>Stav obchodu</th>
-                    <th>Klient</th>
-                    <th>Výše úvěru</th>
+                    <th>
+                        <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=status&dir={% if current_sort == 'status' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                            Stav obchodu
+                            {% if current_sort == 'status' %}
+                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=client&dir={% if current_sort == 'client' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                            Klient
+                            {% if current_sort == 'client' %}
+                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=loan_amount&dir={% if current_sort == 'loan_amount' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                            Výše úvěru
+                            {% if current_sort == 'loan_amount' %}
+                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
 
                     {# Provize - role-based zobrazení #}
                     <th>Provize makléře</th>
@@ -25,20 +130,55 @@
                         <th>Provize celkem</th>
                     {% endif %}
 
-                    {% if user.role == "REFERRER_MANAGER" or user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
-                        <th>Doporučitel</th>
+                    {% if show_referrer_col %}
+                        <th>
+                            <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=referrer&dir={% if current_sort == 'referrer' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                                Doporučitel
+                                {% if current_sort == 'referrer' %}
+                                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
                     {% endif %}
 
-                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
-                        <th>Manažer</th>
+                    {% if show_manager_col %}
+                        <th>
+                            <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=manager&dir={% if current_sort == 'manager' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                                Manažer
+                                {% if current_sort == 'manager' %}
+                                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
                     {% endif %}
 
-                    {% if user.role == "ADVISOR" or user.is_superuser %}
-                        <th>Kancelář</th>
+                    {% if show_office_col %}
+                        <th>
+                            <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=office&dir={% if current_sort == 'office' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                                Kancelář
+                                {% if current_sort == 'office' %}
+                                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
                     {% endif %}
 
-                    <th>Vytvořeno</th>
-                    <th>Stav provize</th>
+                    <th>
+                        <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=created_at&dir={% if current_sort == 'created_at' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                            Vytvořeno
+                            {% if current_sort == 'created_at' %}
+                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=commission&dir={% if current_sort == 'commission' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                            Stav provize
+                            {% if current_sort == 'commission' %}
+                                {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                            {% endif %}
+                        </a>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -60,15 +200,15 @@
                         <td>{{ d.calculated_commission_total|floatformat:0 }} Kč</td>
                     {% endif %}
 
-                    {% if user.role == "REFERRER_MANAGER" or user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+                    {% if show_referrer_col %}
                         <td>{{ d.referrer_name }}</td>
                     {% endif %}
 
-                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+                    {% if show_manager_col %}
                         <td>{{ d.manager_name|default:"—" }}</td>
                     {% endif %}
 
-                    {% if user.role == "ADVISOR" or user.is_superuser %}
+                    {% if show_office_col %}
                         <td>{{ d.office_name|default:"—" }}</td>
                     {% endif %}
 
