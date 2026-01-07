@@ -18,6 +18,7 @@ urlpatterns = [
     path("referrers/<int:pk>/", views.referrer_detail, name="referrer_detail"),
     path("advisors/", views.advisors_list, name="advisors_list"),
     path("advisors/<int:pk>/", views.advisor_detail, name="advisor_detail"),
+    path("users/<int:pk>/", views.user_detail, name="user_detail"),
     path("<int:pk>/deal/new/", views.deal_create_from_lead, name="deal_create_from_lead"),
 
 ]

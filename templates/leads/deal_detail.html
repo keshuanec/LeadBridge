@@ -9,13 +9,17 @@
     <p><strong>E-mail:</strong> {{ deal.client_email|default:"—" }}</p>
 
     {% if show_referrer %}
-        <p><strong>Doporučitel:</strong> {{ lead.referrer }}</p>
+        <p><strong>Doporučitel:</strong> <a href="{% url 'user_detail' lead.referrer.pk %}">{{ lead.referrer }}</a></p>
     {% endif %}
-    {% if show_manager %}
-        <p><strong>Manažer:</strong> {{ lead.referrer_manager|default:"—" }}</p>
+    {% if lead.referrer_manager %}
+        <p><strong>Manažer:</strong> <a href="{% url 'user_detail' lead.referrer_manager.pk %}">{{ lead.referrer_manager }}</a></p>
     {% endif %}
-    {% if show_office %}
-        <p><strong>Kancelář:</strong> {{ lead.referrer_office|default:"—" }}</p>
+    {% if lead.referrer_office %}
+        <p><strong>Kancelář:</strong> {{ lead.referrer_office.name }}
+            {% if lead.referrer_office.owner %}
+                (<a href="{% url 'user_detail' lead.referrer_office.owner.pk %}">{{ lead.referrer_office.owner }}</a>)
+            {% endif %}
+        </p>
     {% endif %}
 
     <hr>

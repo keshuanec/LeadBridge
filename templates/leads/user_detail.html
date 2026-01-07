@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Detail uživatele{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Detail uživatele</h2>
+
+    <p><strong>Jméno:</strong> {{ viewed_user.get_full_name|default:viewed_user.username }}</p>
+
+    <p><strong>Uživatelské jméno:</strong> {{ viewed_user.username }}</p>
+
+    <p><strong>E-mail:</strong> {{ viewed_user.email|default:"—" }}</p>
+
+    <p><strong>Telefon:</strong> {{ viewed_user.phone|default:"—" }}</p>
+
+    <p><strong>Role:</strong> {{ viewed_user.get_role_display }}</p>
+
+    {% if user == viewed_user %}
+    <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #ddd; display: flex; gap: 12px;">
+        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Upravit údaje</a>
+        <a href="{% url 'change_password' %}" class="btn btn-secondary">Změnit heslo</a>
+    </div>
+    {% endif %}
+
+    <hr>
+
+    {% if manager %}
+    <p><strong>Manažer:</strong>
+        <a href="{% url 'user_detail' manager.pk %}">{{ manager.get_full_name|default:manager.username }}</a>
+    </p>
+    {% endif %}
+
+    {% if office %}
+    <p><strong>Kancelář:</strong> {{ office.name }}
+        {% if office.owner %}
+            (<a href="{% url 'user_detail' office.owner.pk %}">{{ office.owner.get_full_name|default:office.owner.username }}</a>)
+        {% endif %}
+    </p>
+    {% endif %}
+
+    {% if referrer_profile %}
+    <p><strong>Přiřazení poradci:</strong>
+        {% for advisor in referrer_profile.advisors.all %}
+            <a href="{% url 'user_detail' advisor.pk %}">{{ advisor.get_full_name|default:advisor.username }}</a>{% if not forloop.last %}, {% endif %}
+        {% empty %}
+            —
+        {% endfor %}
+    </p>
+    {% endif %}
+
+    <div style="margin-top: 24px;">
+        <a href="javascript:history.back()" class="btn btn-secondary">← Zpět</a>
+    </div>
+</div>
+{% endblock %}

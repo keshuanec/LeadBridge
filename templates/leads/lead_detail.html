@@ -8,14 +8,27 @@
 
     <p>
         <strong>Doporučitel:</strong>
-        {{ lead.referrer.get_full_name|default:lead.referrer.username }}<br>
+        <a href="{% url 'user_detail' lead.referrer.pk %}">{{ lead.referrer.get_full_name|default:lead.referrer.username }}</a><br>
 
         <strong>Poradce:</strong>
         {% if lead.advisor %}
-            {{ lead.advisor.get_full_name|default:lead.advisor.username }}
+            <a href="{% url 'user_detail' lead.advisor.pk %}">{{ lead.advisor.get_full_name|default:lead.advisor.username }}</a>
         {% else %}
             —
         {% endif %}<br>
+
+        {% if lead.referrer_manager %}
+            <strong>Manažer:</strong>
+            <a href="{% url 'user_detail' lead.referrer_manager.pk %}">{{ lead.referrer_manager.get_full_name|default:lead.referrer_manager.username }}</a><br>
+        {% endif %}
+
+        {% if lead.referrer_office %}
+            <strong>Kancelář:</strong>
+            {{ lead.referrer_office.name }}
+            {% if lead.referrer_office.owner %}
+                (<a href="{% url 'user_detail' lead.referrer_office.owner.pk %}">{{ lead.referrer_office.owner.get_full_name|default:lead.referrer_office.owner.username }}</a>)
+            {% endif %}<br>
+        {% endif %}
 
         <strong>Stav leadu:</strong>
         {{ lead.get_communication_status_display }}<br>

@@ -1341,3 +1341,45 @@ def deal_edit(request, pk: int):
         form = DealEditForm(instance=deal)
 
     return render(request, "leads/deal_form_edit.html", {"deal": deal, "lead": lead, "form": form})
+
+
+@login_required
+def user_detail(request, pk: int):
+    """
+    Detail uživatele - zobrazí info podle role (doporučitel, manažer, kancelář, poradce)
+    """
+    user: User = request.user
+    viewed_user = get_object_or_404(User, pk=pk)
+
+    # Kontrola oprávnění - jen admin, advisor, manager, office mohou vidět detaily jiných uživatelů
+    if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR, User.Role.REFERRER_MANAGER, User.Role.OFFICE]):
+        return HttpResponseForbidden("Nemáš oprávnění zobrazit detail uživatele.")
+
+    # Získat profily pokud existují
+    referrer_profile = getattr(viewed_user, "referrer_profile", None)
+    manager_profile = getattr(viewed_user, "manager_profile", None)
+
+    # Manažer z ReferrerProfile
+    manager = None
+    if referrer_profile:
+        manager = referrer_profile.manager
+
+    # Kancelář z ManagerProfile
+    office = None
+    if manager_profile:
+        office = manager_profile.office
+    elif manager:
+        # Pokud má manažera, získat kancelář z něj
+        manager_mp = getattr(manager, "manager_profile", None)
+        if manager_mp:
+            office = manager_mp.office
+
+    context = {
+        "viewed_user": viewed_user,
+        "referrer_profile": referrer_profile,
+        "manager_profile": manager_profile,
+        "manager": manager,
+        "office": office,
+    }
+
+    return render(request, "leads/user_detail.html", context)
