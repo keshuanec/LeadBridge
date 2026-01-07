@@ -23,7 +23,10 @@ db.sqlite3-journal
 # *migrations/*
 
 # Static & media
-static/
+static/favicon*
+static/apple-touch-icon.png
+!static/favicon*
+!static/apple-touch-icon.png
 staticfiles/
 !staticfiles/favicon*
 !staticfiles/apple-touch-icon.png
