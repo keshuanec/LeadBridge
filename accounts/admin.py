@@ -7,7 +7,7 @@ from .models import User, ReferrerProfile, Office, ManagerProfile
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     fieldsets = BaseUserAdmin.fieldsets + (
-        ("LeadBridge", {"fields": ("role", "phone")}),
+        ("LeadBridge", {"fields": ("role", "phone", "has_admin_access")}),
         ("Provize", {
             "fields": (
                 "commission_total_per_million",
@@ -26,7 +26,7 @@ class UserAdmin(BaseUserAdmin):
         }),
         ("LeadBridge", {
             "classes": ("wide",),
-            "fields": ("role", "phone"),
+            "fields": ("role", "phone", "has_admin_access"),
         }),
         ("Provize", {
             "classes": ("wide",),
@@ -39,8 +39,8 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
 
-    list_display = ("username", "email", "phone", "first_name", "last_name", "role", "commission_referrer_pct", "is_staff")
-    list_filter = ("role", "is_staff", "is_superuser", "is_active")
+    list_display = ("username", "email", "phone", "first_name", "last_name", "role", "has_admin_access", "commission_referrer_pct", "is_staff")
+    list_filter = ("role", "has_admin_access", "is_staff", "is_superuser", "is_active")
 
 
 @admin.register(ReferrerProfile)

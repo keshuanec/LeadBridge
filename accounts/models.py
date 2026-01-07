@@ -26,6 +26,12 @@ class User(AbstractUser):
         help_text="Telefonní číslo uživatele.",
     )
 
+    has_admin_access = models.BooleanField(
+        "Administrativní přístup",
+        default=False,
+        help_text="Poradce s administrativním přístupem vidí leady a obchody všech svých podřízených doporučitelů.",
+    )
+
     commission_total_per_million = models.DecimalField(
         "Celková provize za 1 mil. Kč",
         max_digits=10,
