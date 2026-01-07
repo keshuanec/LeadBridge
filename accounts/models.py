@@ -78,9 +78,10 @@ class User(AbstractUser):
 
 class ReferrerProfile(models.Model):
     """
-    Extra informace pro doporučitele (realitního makléře).
-    - kdo je jeho manažer
-    - jaké poradce má k dispozici
+    Profil doporučitele - může být makléř, manažer nebo kancelář.
+    Všichni mohou vystupovat jako doporučitelé a mají:
+    - přiřazeného manažera (pokud existuje)
+    - dostupné poradce
     """
 
     user = models.OneToOneField(
@@ -88,6 +89,7 @@ class ReferrerProfile(models.Model):
         on_delete=models.CASCADE,
         related_name="referrer_profile",
         verbose_name="Doporučitel",
+        help_text="Uživatel, který může vystupovat jako doporučitel (makléř, manažer, kancelář)",
     )
 
     manager = models.ForeignKey(
