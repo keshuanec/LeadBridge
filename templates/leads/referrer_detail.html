@@ -6,9 +6,7 @@
 <div class="card">
     <h2>Detail doporučitele</h2>
 
-    <p><strong>Doporučitel:</strong> {{ profile.user.get_full_name|default:profile.user.username }}</p>
-
-    <p><strong>Uživatelské jméno:</strong> {{ profile.user.username }}</p>
+    <p><strong>Jméno:</strong> {{ profile.user.get_full_name }}</p>
 
     <p><strong>E-mail:</strong> {{ profile.user.email|default:"—" }}</p>
 
@@ -25,7 +23,7 @@
 
     <p><strong>Manažer:</strong>
         {% if profile.manager %}
-            {{ profile.manager.get_full_name|default:profile.manager.username }}
+            {{ profile.manager.get_full_name }}
         {% else %}
             —
         {% endif %}
@@ -33,7 +31,7 @@
 
     <p><strong>Poradci:</strong>
         {% for advisor in profile.advisors.all %}
-            {{ advisor.get_full_name|default:advisor.username }}{% if not forloop.last %}, {% endif %}
+            {{ advisor.get_full_name }}{% if not forloop.last %}, {% endif %}
         {% empty %}
             —
         {% endfor %}

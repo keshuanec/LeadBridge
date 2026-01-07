@@ -39,8 +39,13 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
 
-    list_display = ("username", "email", "phone", "first_name", "last_name", "role", "has_admin_access", "commission_referrer_pct", "is_staff")
+    list_display = ("get_full_name", "email", "phone", "role", "has_admin_access", "commission_referrer_pct", "is_staff")
     list_filter = ("role", "has_admin_access", "is_staff", "is_superuser", "is_active")
+
+    def get_full_name(self, obj):
+        return obj.get_full_name()
+    get_full_name.short_description = "Jméno"
+    get_full_name.admin_order_field = "first_name"
 
 
 @admin.register(ReferrerProfile)
@@ -51,7 +56,7 @@ class ReferrerProfileAdmin(admin.ModelAdmin):
     filter_horizontal = ("advisors",)
 
     def get_advisors(self, obj):
-        return ", ".join([advisor.username for advisor in obj.advisors.all()]) or "—"
+        return ", ".join([advisor.get_full_name() for advisor in obj.advisors.all()]) or "—"
     get_advisors.short_description = "Poradci"
 
 class ManagerProfileInline(admin.TabularInline):

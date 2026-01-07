@@ -266,19 +266,19 @@
             {% if user.is_authenticated %}
                 {% if user.role == user.Role.REFERRER and user.referrer_profile %}
                     <a href="{% url 'referrer_detail' user.referrer_profile.pk %}" class="user-link">
-                        {{ user.username }}
+                        {{ user.get_full_name }}
                     </a>
                 {% elif user.role == user.Role.ADVISOR %}
                     <a href="{% url 'advisor_detail' user.pk %}" class="user-link">
-                        {{ user.username }}
+                        {{ user.get_full_name }}
                     </a>
                 {% elif user.role == user.Role.REFERRER_MANAGER or user.role == user.Role.OFFICE %}
                     <a href="{% url 'user_detail' user.pk %}" class="user-link">
-                        {{ user.username }}
+                        {{ user.get_full_name }}
                     </a>
                 {% else %}
                     <a href="{% url 'user_settings' %}" class="user-link">
-                        {{ user.username }}
+                        {{ user.get_full_name }}
                     </a>
                 {% endif %}
                 <form method="post" action="{% url 'logout' %}" style="display:inline;">

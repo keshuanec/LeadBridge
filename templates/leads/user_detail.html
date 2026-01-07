@@ -6,9 +6,7 @@
 <div class="card">
     <h2>Detail uživatele</h2>
 
-    <p><strong>Jméno:</strong> {{ viewed_user.get_full_name|default:viewed_user.username }}</p>
-
-    <p><strong>Uživatelské jméno:</strong> {{ viewed_user.username }}</p>
+    <p><strong>Jméno:</strong> {{ viewed_user.get_full_name }}</p>
 
     <p><strong>E-mail:</strong> {{ viewed_user.email|default:"—" }}</p>
 
@@ -27,14 +25,14 @@
 
     {% if manager %}
     <p><strong>Manažer:</strong>
-        <a href="{% url 'user_detail' manager.pk %}">{{ manager.get_full_name|default:manager.username }}</a>
+        <a href="{% url 'user_detail' manager.pk %}">{{ manager.get_full_name }}</a>
     </p>
     {% endif %}
 
     {% if office %}
     <p><strong>Kancelář:</strong> {{ office.name }}
         {% if office.owner %}
-            (<a href="{% url 'user_detail' office.owner.pk %}">{{ office.owner.get_full_name|default:office.owner.username }}</a>)
+            (<a href="{% url 'user_detail' office.owner.pk %}">{{ office.owner.get_full_name }}</a>)
         {% endif %}
     </p>
     {% endif %}
@@ -42,7 +40,7 @@
     {% if referrer_profile %}
     <p><strong>Přiřazení poradci:</strong>
         {% for advisor in referrer_profile.advisors.all %}
-            <a href="{% url 'advisor_detail' advisor.pk %}">{{ advisor.get_full_name|default:advisor.username }}</a>{% if not forloop.last %}, {% endif %}
+            <a href="{% url 'advisor_detail' advisor.pk %}">{{ advisor.get_full_name }}</a>{% if not forloop.last %}, {% endif %}
         {% empty %}
             —
         {% endfor %}

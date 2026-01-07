@@ -46,7 +46,7 @@
 
            {% if form.single_advisor %}
                 <strong>
-                    {{ form.single_advisor.get_full_name|default:form.single_advisor.username }}
+                    {{ form.single_advisor.get_full_name }}
                 </strong>
                 {{ form.advisor }} {# hidden input s ID poradce #}
                 <br>

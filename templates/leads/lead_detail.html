@@ -9,29 +9,29 @@
     <p>
         <strong>Doporučitel:</strong>
         {% if lead.referrer.role == "REFERRER" and lead.referrer.referrer_profile %}
-            <a href="{% url 'referrer_detail' lead.referrer.referrer_profile.pk %}">{{ lead.referrer.get_full_name|default:lead.referrer.username }}</a>
+            <a href="{% url 'referrer_detail' lead.referrer.referrer_profile.pk %}">{{ lead.referrer.get_full_name }}</a>
         {% elif lead.referrer.role == "ADVISOR" %}
-            <a href="{% url 'advisor_detail' lead.referrer.pk %}">{{ lead.referrer.get_full_name|default:lead.referrer.username }}</a>
+            <a href="{% url 'advisor_detail' lead.referrer.pk %}">{{ lead.referrer.get_full_name }}</a>
         {% else %}
-            <a href="{% url 'user_detail' lead.referrer.pk %}">{{ lead.referrer.get_full_name|default:lead.referrer.username }}</a>
+            <a href="{% url 'user_detail' lead.referrer.pk %}">{{ lead.referrer.get_full_name }}</a>
         {% endif %}<br>
 
         <strong>Poradce:</strong>
         {% if lead.advisor %}
-            <a href="{% url 'advisor_detail' lead.advisor.pk %}">{{ lead.advisor.get_full_name|default:lead.advisor.username }}</a>
+            <a href="{% url 'advisor_detail' lead.advisor.pk %}">{{ lead.advisor.get_full_name }}</a>
         {% else %}
             —
         {% endif %}<br>
 
         {% if lead.referrer_manager %}
             <strong>Manažer:</strong>
-            <a href="{% url 'user_detail' lead.referrer_manager.pk %}">{{ lead.referrer_manager.get_full_name|default:lead.referrer_manager.username }}</a><br>
+            <a href="{% url 'user_detail' lead.referrer_manager.pk %}">{{ lead.referrer_manager.get_full_name }}</a><br>
         {% endif %}
 
         {% if lead.referrer_office and lead.referrer_office.owner %}
             <strong>Kancelář:</strong>
             {{ lead.referrer_office.name }}
-            (<a href="{% url 'user_detail' lead.referrer_office.owner.pk %}">{{ lead.referrer_office.owner.get_full_name|default:lead.referrer_office.owner.username }}</a>)<br>
+            (<a href="{% url 'user_detail' lead.referrer_office.owner.pk %}">{{ lead.referrer_office.owner.get_full_name }}</a>)<br>
         {% endif %}
 
         <strong>Stav leadu:</strong>
@@ -114,7 +114,7 @@
                 <li style="margin-bottom:10px;border-bottom:1px solid #eee;padding-bottom:6px;">
                     <div style="font-size:13px;color:#666;">
                         {{ note.created_at|date:"d.m.Y H:i" }}
-                        – {{ note.author.get_full_name|default:note.author.username|default:"(neznámý uživatel)" }}
+                        – {{ note.author.get_full_name|default:"(neznámý uživatel)" }}
                     </div>
                     <div>{{ note.text|linebreaksbr }}</div>
                 </li>
@@ -134,7 +134,7 @@
                     <strong>{{ event.created_at|date:"d.m.Y H:i" }}</strong>
                     – {{ event.get_event_type_display }}
                     {% if event.user %}
-                        ({{ event.user.get_full_name|default:event.user.username }})
+                        ({{ event.user.get_full_name }})
                     {% endif %}
                     {% if event.description %}
                         – {{ event.description }}

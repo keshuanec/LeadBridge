@@ -12,6 +12,10 @@ class User(AbstractUser):
         REFERRER_MANAGER = "REFERRER_MANAGER", "Manažer doporučitelů"
         OFFICE = "OFFICE", "Kancelář"
 
+    # Přepsat first_name a last_name jako povinné
+    first_name = models.CharField("Jméno", max_length=150)
+    last_name = models.CharField("Příjmení", max_length=150)
+
     role = models.CharField(
         max_length=32,
         choices=Role.choices,
@@ -79,7 +83,7 @@ class User(AbstractUser):
             )
 
     def __str__(self):
-        return self.get_full_name() or self.username
+        return self.get_full_name()
 
 
 class ReferrerProfile(models.Model):

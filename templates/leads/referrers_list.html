@@ -24,19 +24,19 @@
         <tr style="cursor:pointer;" onclick="window.location='{% url 'referrer_detail' profile.id %}'">
             <td>
                 <a href="{% url 'referrer_detail' profile.id %}">
-                    {{ profile.user.get_full_name|default:profile.user.username }}
+                    {{ profile.user.get_full_name }}
                 </a>
             </td>
             <td>
                 {% if profile.manager %}
-                    {{ profile.manager.get_full_name|default:profile.manager.username }}
+                    {{ profile.manager.get_full_name }}
                 {% else %}
                     —
                 {% endif %}
             </td>
             <td>
                 {% for advisor in profile.advisors.all %}
-                    {{ advisor.get_full_name|default:advisor.username }}{% if not forloop.last %}, {% endif %}
+                    {{ advisor.get_full_name }}{% if not forloop.last %}, {% endif %}
                 {% empty %}
                     —
                 {% endfor %}

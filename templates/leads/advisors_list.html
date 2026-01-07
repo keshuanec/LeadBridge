@@ -23,7 +23,7 @@
         <tr style="cursor:pointer;" onclick="window.location='{% url 'advisor_detail' advisor.id %}'">
             <td>
                 <a href="{% url 'advisor_detail' advisor.id %}">
-                    {{ advisor.get_full_name|default:advisor.username }}
+                    {{ advisor.get_full_name }}
                 </a>
             </td>
             <td>{{ advisor.leads_received|default:0 }}</td>
