@@ -40,17 +40,9 @@
         {% endif %}
     {% endif %}
 
-    {# Provize celkem - podle hierarchie a role #}
-    {% if deal.calculated_commission_office > 0 %}
-        {# Deal má kancelář → celkem vidí jen OFFICE, ADVISOR, superuser #}
-        {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
-            <p><strong>Provize celkem:</strong> {{ deal.calculated_commission_total }} Kč</p>
-        {% endif %}
-    {% elif deal.calculated_commission_manager > 0 %}
-        {# Deal má manažera (ale ne kancelář) → celkem vidí jen REFERRER_MANAGER, ADVISOR, superuser #}
-        {% if user.role == "REFERRER_MANAGER" or user.role == "ADVISOR" or user.is_superuser %}
-            <p><strong>Provize celkem:</strong> {{ deal.calculated_commission_total }} Kč</p>
-        {% endif %}
+    {# Provize celkem - jen pro OFFICE, ADVISOR, superuser #}
+    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+        <p><strong>Provize celkem:</strong> {{ deal.calculated_commission_total }} Kč</p>
     {% endif %}
 
     <hr>
