@@ -1582,6 +1582,17 @@ def user_detail(request, pk: int):
                 "deals_done": Deal.objects.filter(lead__in=referrer_leads_qs, status=Deal.DealStatus.DRAWN).count(),
             }
 
+    elif viewed_user.role == User.Role.REFERRER:
+        # Běžný doporučitel - zobrazit jen jeho statistiky
+        if referrer_profile:
+            referrer_leads_qs = Lead.objects.filter(referrer=viewed_user)
+            referrer_stats = {
+                "leads_sent": referrer_leads_qs.count(),
+                "meetings_planned": referrer_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+                "meetings_done": referrer_leads_qs.filter(meeting_done=True).count(),
+                "deals_done": Deal.objects.filter(lead__in=referrer_leads_qs, status=Deal.DealStatus.DRAWN).count(),
+            }
+
     context = {
         "viewed_user": viewed_user,
         "referrer_profile": referrer_profile,
