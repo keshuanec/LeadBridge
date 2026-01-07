@@ -54,10 +54,19 @@
     }
 
     .brand {
-        font-weight: 700;
+        display: flex;
+        align-items: center;
         text-decoration: none;
-        color: #fff;
-        font-size: 18px;
+        transition: opacity 0.2s;
+    }
+
+    .brand:hover {
+        opacity: 0.9;
+    }
+
+    .brand img {
+        height: 32px;
+        width: auto;
     }
 
     header a {
@@ -255,7 +264,9 @@
     <div class="nav-container">
         <div class="nav-left">
             <!-- Logo / název aplikace -->
-            <a href="{% url 'overview' %}" class="brand">LeadBridge</a>
+            <a href="{% url 'overview' %}" class="brand">
+                <img src="{% static 'logo.svg' %}" alt="LeadBridge">
+            </a>
         </div>
 
         <nav class="nav-center">
