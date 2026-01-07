@@ -108,10 +108,6 @@ class LeadForm(forms.ModelForm):
         #  ROLE: PORADCE
         # =========================
         elif user.role == User.Role.ADVISOR:
-            # advisor = přihlášený uživatel, pole schováme
-            self.fields["advisor"].widget = forms.HiddenInput()
-            self.fields["advisor"].initial = user
-
             # referrery omezíme na ty, kteří mají tohoto poradce přiřazeného
             # může to být kdokoliv s ReferrerProfile (REFERRER, REFERRER_MANAGER, OFFICE, ADVISOR)
             referrer_profiles = ReferrerProfile.objects.filter(advisors=user)
@@ -120,10 +116,37 @@ class LeadForm(forms.ModelForm):
             referrers_qs = User.objects.filter(id__in=referrer_user_ids)
 
             # pokud má poradce svůj ReferrerProfile, přidáme i jeho samotného
-            if hasattr(user, 'referrer_profile'):
+            profile: ReferrerProfile | None = getattr(user, "referrer_profile", None)
+            if profile:
                 referrers_qs = User.objects.filter(
                     Q(id__in=referrer_user_ids) | Q(id=user.id)
                 ).distinct()
+
+                # Poradce s ReferrerProfile může vybrat advisora ze svých přiřazených advisorů
+                if profile.advisors.exists():
+                    advisors_qs = profile.advisors.all()
+
+                    # nastavíme queryset
+                    self.fields["advisor"].queryset = advisors_qs
+
+                    # přesně jeden advisor -> předvyplníme
+                    if advisors_qs.count() == 1:
+                        advisor = advisors_qs.first()
+                        self.fields["advisor"].initial = advisor
+                    # více advisorů -> zkusíme předvyplnit posledně zvoleného, jinak sebe
+                    elif advisors_qs.count() > 1:
+                        if profile.last_chosen_advisor and advisors_qs.filter(pk=profile.last_chosen_advisor_id).exists():
+                            self.fields["advisor"].initial = profile.last_chosen_advisor
+                        else:
+                            self.fields["advisor"].initial = user
+                else:
+                    # nemá žádné advisory → advisor = on sám, schováme
+                    self.fields["advisor"].widget = forms.HiddenInput()
+                    self.fields["advisor"].initial = user
+            else:
+                # advisor bez ReferrerProfile → advisor = on sám, schováme
+                self.fields["advisor"].widget = forms.HiddenInput()
+                self.fields["advisor"].initial = user
 
             self.fields["referrer"].queryset = referrers_qs
 

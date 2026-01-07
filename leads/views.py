@@ -299,7 +299,9 @@ def lead_create(request):
                 lead.referrer = user
 
             elif user.role == User.Role.ADVISOR:
-                lead.advisor = user
+                # Pokud advisor nemá ID (nebyl vybrán ve formuláři), nastav přihlášeného uživatele
+                if not lead.advisor_id:
+                    lead.advisor = user
 
             elif user.role == User.Role.REFERRER_MANAGER:
                 # Manažer může vybírat za koho lead zakládá
@@ -324,6 +326,18 @@ def lead_create(request):
                     profile = None
 
                 if profile is not None:
+                    profile.last_chosen_advisor = lead.advisor
+                    profile.save(update_fields=["last_chosen_advisor"])
+
+            # 🔽 Pokud je to advisor s ReferrerProfile a vybral advisora, zapamatujeme si ho
+            if user.role == User.Role.ADVISOR and lead.advisor_id:
+                try:
+                    profile = user.referrer_profile
+                except ReferrerProfile.DoesNotExist:
+                    profile = None
+
+                if profile is not None and lead.advisor_id != user.id:
+                    # Zapamatovat jen pokud vybral někoho jiného než sebe
                     profile.last_chosen_advisor = lead.advisor
                     profile.save(update_fields=["last_chosen_advisor"])
 
