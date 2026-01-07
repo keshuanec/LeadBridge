@@ -27,18 +27,31 @@
 
     <hr>
 
-    {# Zobrazení provizí - všechny tři samostatně #}
+    {# Zobrazení provizí - role-based #}
     <p><strong>Provize makléře:</strong> {{ deal.calculated_commission_referrer }} Kč</p>
 
-    {% if deal.calculated_commission_manager > 0 %}
+    {% if user.role != "REFERRER" and deal.calculated_commission_manager > 0 %}
         <p><strong>Provize manažera:</strong> {{ deal.calculated_commission_manager }} Kč</p>
     {% endif %}
 
-    {% if deal.calculated_commission_office > 0 %}
-        <p><strong>Provize kanceláře:</strong> {{ deal.calculated_commission_office }} Kč</p>
+    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+        {% if deal.calculated_commission_office > 0 %}
+            <p><strong>Provize kanceláře:</strong> {{ deal.calculated_commission_office }} Kč</p>
+        {% endif %}
     {% endif %}
 
-    <p><strong>Provize celkem:</strong> {{ deal.calculated_commission_total }} Kč</p>
+    {# Provize celkem - podle hierarchie a role #}
+    {% if deal.calculated_commission_office > 0 %}
+        {# Deal má kancelář → celkem vidí jen OFFICE, ADVISOR, superuser #}
+        {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+            <p><strong>Provize celkem:</strong> {{ deal.calculated_commission_total }} Kč</p>
+        {% endif %}
+    {% elif deal.calculated_commission_manager > 0 %}
+        {# Deal má manažera (ale ne kancelář) → celkem vidí jen REFERRER_MANAGER, ADVISOR, superuser #}
+        {% if user.role == "REFERRER_MANAGER" or user.role == "ADVISOR" or user.is_superuser %}
+            <p><strong>Provize celkem:</strong> {{ deal.calculated_commission_total }} Kč</p>
+        {% endif %}
+    {% endif %}
 
     <hr>
 

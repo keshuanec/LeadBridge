@@ -13,11 +13,17 @@
                     <th>Klient</th>
                     <th>Výše úvěru</th>
 
-                    {# Provize - všichni vidí stejné sloupce #}
+                    {# Provize - role-based zobrazení #}
                     <th>Provize makléře</th>
-                    <th>Provize manažera</th>
-                    <th>Provize kanceláře</th>
-                    <th>Provize celkem</th>
+                    {% if user.role != "REFERRER" %}
+                        <th>Provize manažera</th>
+                    {% endif %}
+                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+                        <th>Provize kanceláře</th>
+                    {% endif %}
+                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.role == "REFERRER_MANAGER" or user.is_superuser %}
+                        <th>Provize celkem</th>
+                    {% endif %}
 
                     {% if user.role == "REFERRER_MANAGER" or user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
                         <th>Doporučitel</th>
@@ -42,11 +48,36 @@
                     <td><a href="{% url 'deal_detail' d.pk %}">{{ d.client_name }}</a></td>
                     <td>{{ d.loan_amount|floatformat:0 }} Kč</td>
 
-                    {# Zobrazení provizí - všichni vidí stejné sloupce #}
+                    {# Zobrazení provizí - role-based #}
                     <td>{{ d.calculated_commission_referrer|floatformat:0 }} Kč</td>
-                    <td>{% if d.calculated_commission_manager > 0 %}{{ d.calculated_commission_manager|floatformat:0 }} Kč{% else %}—{% endif %}</td>
-                    <td>{% if d.calculated_commission_office > 0 %}{{ d.calculated_commission_office|floatformat:0 }} Kč{% else %}—{% endif %}</td>
-                    <td>{{ d.calculated_commission_total|floatformat:0 }} Kč</td>
+                    {% if user.role != "REFERRER" %}
+                        <td>{% if d.calculated_commission_manager > 0 %}{{ d.calculated_commission_manager|floatformat:0 }} Kč{% else %}—{% endif %}</td>
+                    {% endif %}
+                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+                        <td>{% if d.calculated_commission_office > 0 %}{{ d.calculated_commission_office|floatformat:0 }} Kč{% else %}—{% endif %}</td>
+                    {% endif %}
+                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.role == "REFERRER_MANAGER" or user.is_superuser %}
+                        <td>
+                            {% if d.calculated_commission_office > 0 %}
+                                {# Deal má kancelář → celkem vidí jen OFFICE, ADVISOR, superuser #}
+                                {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+                                    {{ d.calculated_commission_total|floatformat:0 }} Kč
+                                {% else %}
+                                    —
+                                {% endif %}
+                            {% elif d.calculated_commission_manager > 0 %}
+                                {# Deal má manažera (ale ne kancelář) → celkem vidí jen REFERRER_MANAGER, ADVISOR, superuser #}
+                                {% if user.role == "REFERRER_MANAGER" or user.role == "ADVISOR" or user.is_superuser %}
+                                    {{ d.calculated_commission_total|floatformat:0 }} Kč
+                                {% else %}
+                                    —
+                                {% endif %}
+                            {% else %}
+                                {# Deal nemá ani manažera ani kancelář → nikdo nevidí #}
+                                —
+                            {% endif %}
+                        </td>
+                    {% endif %}
 
                     {% if user.role == "REFERRER_MANAGER" or user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
                         <td>{{ d.referrer_name }}</td>
