@@ -34,6 +34,7 @@ class AdvisorAccessTestCase(TestCase):
             commission_referrer_pct=50,
             commission_manager_pct=10,
             commission_office_pct=40,
+            has_admin_access=True,  # Admin přístup - vidí leady podřízených
         )
 
         self.advisor_with_profile = User.objects.create_user(
@@ -90,6 +91,7 @@ class AdvisorAccessTestCase(TestCase):
             role=User.Role.ADVISOR,
             first_name="Other",
             last_name="Advisor",
+            has_admin_access=False,  # BEZ admin přístupu - vidí jen své leady
         )
 
         # Vytvořit ReferrerProfile pro referrery a přiřadit advisora
@@ -510,6 +512,86 @@ class AdvisorAccessTestCase(TestCase):
         # Lead by měl být v seznamu jen jednou
         leads_list = list(response.context["leads"])
         self.assertEqual(leads_list.count(lead), 1)
+
+    def test_advisor_without_admin_access_sees_only_own_leads(self):
+        """Test: Advisor BEZ admin přístupu vidí jen své vlastní leady"""
+
+        # Lead přiřazený advisorovi bez admin přístupu
+        lead1 = Lead.objects.create(
+            referrer=self.referrer1,
+            advisor=self.other_advisor,
+            client_name="Other Advisor Lead",
+            client_phone="+420666777888",
+            communication_status=Lead.CommunicationStatus.NEW,
+        )
+
+        # Lead od referrera, který má other_advisor v seznamu
+        # Ale other_advisor NEMÁ admin přístup, takže by neměl vidět
+        self.ref1_profile.advisors.add(self.other_advisor)
+        lead2 = Lead.objects.create(
+            referrer=self.referrer1,
+            advisor=self.advisor,  # jiný advisor
+            client_name="Should Not See",
+            client_phone="+420666777889",
+            communication_status=Lead.CommunicationStatus.NEW,
+        )
+
+        self.client.login(username="advisor2", password="test123")
+        response = self.client.get(reverse("my_leads"))
+
+        self.assertEqual(response.status_code, 200)
+        leads_list = list(response.context["leads"])
+        self.assertIn(lead1, leads_list)
+        self.assertNotIn(lead2, leads_list)
+
+    def test_advisor_without_admin_access_sees_only_own_deals(self):
+        """Test: Advisor BEZ admin přístupu vidí jen své vlastní dealy"""
+
+        # Deal přiřazený advisorovi bez admin přístupu
+        lead1 = Lead.objects.create(
+            referrer=self.referrer1,
+            advisor=self.other_advisor,
+            client_name="Other Advisor Deal",
+            client_phone="+420777888999",
+            communication_status=Lead.CommunicationStatus.DEAL_CREATED,
+        )
+        deal1 = Deal.objects.create(
+            lead=lead1,
+            client_name="Other Advisor Deal",
+            client_phone="+420777888999",
+            loan_amount=2000000,
+            bank=Deal.Bank.CS,
+            property_type=Deal.PropertyType.OWN,
+            status=Deal.DealStatus.REQUEST_IN_BANK,
+        )
+
+        # Deal od referrera, který má other_advisor v seznamu
+        # Ale other_advisor NEMÁ admin přístup
+        self.ref1_profile.advisors.add(self.other_advisor)
+        lead2 = Lead.objects.create(
+            referrer=self.referrer1,
+            advisor=self.advisor,  # jiný advisor
+            client_name="Should Not See Deal",
+            client_phone="+420777888998",
+            communication_status=Lead.CommunicationStatus.DEAL_CREATED,
+        )
+        deal2 = Deal.objects.create(
+            lead=lead2,
+            client_name="Should Not See Deal",
+            client_phone="+420777888998",
+            loan_amount=2000000,
+            bank=Deal.Bank.CS,
+            property_type=Deal.PropertyType.OWN,
+            status=Deal.DealStatus.REQUEST_IN_BANK,
+        )
+
+        self.client.login(username="advisor2", password="test123")
+        response = self.client.get(reverse("deals_list"))
+
+        self.assertEqual(response.status_code, 200)
+        deal_ids = [d.pk for d in response.context["deals"]]
+        self.assertIn(deal1.pk, deal_ids)
+        self.assertNotIn(deal2.pk, deal_ids)
 
 
 class AdvisorAccessEdgeCasesTestCase(TestCase):
