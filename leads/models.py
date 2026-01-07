@@ -250,53 +250,116 @@ class Deal(models.Model):
     def __str__(self):
         return f"Obchod – {self.client_name} ({self.get_status_display()})"
 
-    def calculate_commission_for_user(self, user):
-        """Vypočítá provizi pro daného uživatele na základě loan_amount"""
-        if not user or not self.loan_amount:
-            return 0
+    def calculate_commission_parts(self):
+        """
+        Vypočítá provize podle toho, kdo je referrer.
+        Vrací dict s částkami pro každou roli.
 
-        # Celková provize za tento deal (na základě výše úvěru)
-        total_commission_base = (
-            user.commission_total_per_million * self.loan_amount / 1_000_000
+        Všechny procenta se berou z referrera (ne z manažera/kanceláře).
+        """
+        referrer = self.lead.referrer
+
+        if not referrer or not self.loan_amount:
+            return {
+                'referrer': 0,
+                'manager': 0,
+                'office': 0,
+                'total': 0
+            }
+
+        # Základní provize na základě výše úvěru
+        commission_base = (
+            referrer.commission_total_per_million * self.loan_amount / 1_000_000
         )
 
-        # Provize konkrétního uživatele (jeho procento z celkové)
-        user_commission = total_commission_base * (user.commission_percentage / 100)
+        # Výpočet provizí podle procent z referrera
+        commission_referrer = int(commission_base * (referrer.commission_referrer_pct / 100))
+        commission_manager = int(commission_base * (referrer.commission_manager_pct / 100))
+        commission_office = int(commission_base * (referrer.commission_office_pct / 100))
 
-        return int(user_commission)
+        return {
+            'referrer': commission_referrer,
+            'manager': commission_manager,
+            'office': commission_office,
+            'total': commission_referrer + commission_manager + commission_office
+        }
 
     @property
     def calculated_commission_referrer(self):
         """Vypočítá provizi pro doporučitele"""
-        return self.calculate_commission_for_user(self.lead.referrer)
+        parts = self.calculate_commission_parts()
+        return parts['referrer']
 
     @property
     def calculated_commission_manager(self):
         """Vypočítá provizi pro manažera"""
-        referrer = self.lead.referrer
-        profile = getattr(referrer, "referrer_profile", None)
-        manager = getattr(profile, "manager", None) if profile else None
-        return self.calculate_commission_for_user(manager)
+        parts = self.calculate_commission_parts()
+        return parts['manager']
 
     @property
     def calculated_commission_office(self):
         """Vypočítá provizi pro kancelář"""
-        referrer = self.lead.referrer
-        profile = getattr(referrer, "referrer_profile", None)
-        manager = getattr(profile, "manager", None) if profile else None
-        manager_profile = getattr(manager, "manager_profile", None) if manager else None
-        office = getattr(manager_profile, "office", None) if manager_profile else None
-        office_owner = getattr(office, "owner", None) if office else None
-        return self.calculate_commission_for_user(office_owner)
+        parts = self.calculate_commission_parts()
+        return parts['office']
 
     @property
     def calculated_commission_total(self):
         """Vypočítá celkovou provizi (součet všech)"""
-        return (
-            self.calculated_commission_referrer
-            + self.calculated_commission_manager
-            + self.calculated_commission_office
-        )
+        parts = self.calculate_commission_parts()
+        return parts['total']
+
+    def get_own_commission(self, user):
+        """
+        Vrací 'vlastní provizi' podle role uživatele a referrera.
+
+        - Referrer (makléř): pouze commission_referrer
+        - Manager jako referrer: commission_referrer + commission_manager
+        - Office jako referrer: všechny tři provize
+        """
+        from accounts.models import User
+
+        if not user:
+            return 0
+
+        parts = self.calculate_commission_parts()
+        referrer = self.lead.referrer
+
+        # Pokud je to normální makléř (REFERRER role)
+        if referrer.role == User.Role.REFERRER:
+            if user == referrer:
+                return parts['referrer']
+            # Pokud je user manager tohoto makléře
+            rp = getattr(referrer, 'referrer_profile', None)
+            manager = getattr(rp, 'manager', None) if rp else None
+            if user == manager:
+                return parts['manager']
+            # Pokud je user office nad tímto manažerem
+            if manager:
+                mp = getattr(manager, 'manager_profile', None)
+                office = getattr(mp, 'office', None) if mp else None
+                office_owner = getattr(office, 'owner', None) if office else None
+                if user == office_owner:
+                    return parts['office']
+
+        # Pokud je referrer manager
+        elif referrer.role == User.Role.REFERRER_MANAGER:
+            if user == referrer:
+                # Manager jako referrer vidí svou "manažerskou" + "doporučitelskou" část
+                return parts['referrer'] + parts['manager']
+            # Office nad tímto manažerem
+            mp = getattr(referrer, 'manager_profile', None)
+            office = getattr(mp, 'office', None) if mp else None
+            office_owner = getattr(office, 'owner', None) if office else None
+            if user == office_owner:
+                return parts['office']
+
+        # Pokud je referrer office
+        elif referrer.role == User.Role.OFFICE:
+            if user == referrer:
+                # Kancelář jako referrer dostává všechny tři
+                return parts['referrer'] + parts['manager'] + parts['office']
+
+        return 0
 
     @property
     def all_commissions_paid(self):

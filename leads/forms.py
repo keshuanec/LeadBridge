@@ -150,12 +150,16 @@ class LeadForm(forms.ModelForm):
             managed_profiles = ReferrerProfile.objects.filter(manager=user).select_related("user")
             referrer_ids = managed_profiles.values_list("user_id", flat=True)
 
+            # referrers = managed referrers + manažer sám
             referrers_qs = User.objects.filter(
-                id__in=referrer_ids,
-                role=User.Role.REFERRER,
-            )
+                Q(id__in=referrer_ids, role=User.Role.REFERRER) | Q(id=user.id)
+            ).distinct()
 
             self.fields["referrer"].queryset = referrers_qs
+
+            # při zakládání nového leadu předvyplníme referrer = manažer
+            if not instance:
+                self.fields["referrer"].initial = user
 
             # poradci přidělení těmto doporučitelům (přes M2M advisors)
             advisor_ids = managed_profiles.values_list("advisors__id", flat=True)

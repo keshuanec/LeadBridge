@@ -34,13 +34,43 @@ class User(AbstractUser):
         help_text="Celková provize za každý 1 000 000 Kč realizované hypotéky (např. 7000).",
     )
 
-    commission_percentage = models.DecimalField(
-        "Procento z celkové provize",
+    commission_referrer_pct = models.DecimalField(
+        "Procento provize doporučitele",
         max_digits=5,
         decimal_places=2,
         default=0,
-        help_text="Procento z celkové provize, na které má uživatel nárok (např. 50.00 pro 50%).",
+        help_text="Procento z celkové provize pro doporučitele (např. 90.00 pro 90%).",
     )
+
+    commission_manager_pct = models.DecimalField(
+        "Procento provize manažera",
+        max_digits=5,
+        decimal_places=2,
+        default=0,
+        help_text="Procento z celkové provize pro manažera (např. 10.00 pro 10%).",
+    )
+
+    commission_office_pct = models.DecimalField(
+        "Procento provize kanceláře",
+        max_digits=5,
+        decimal_places=2,
+        default=0,
+        help_text="Procento z celkové provize pro kancelář (např. 40.00 pro 40%).",
+    )
+
+    def clean(self):
+        """Validace, že součet procent provizí nepřekročí 100%"""
+        from django.core.exceptions import ValidationError
+
+        total = (
+            self.commission_referrer_pct
+            + self.commission_manager_pct
+            + self.commission_office_pct
+        )
+        if total > 100:
+            raise ValidationError(
+                f"Součet procent provizí ({total}%) nesmí překročit 100%."
+            )
 
     def __str__(self):
         return self.get_full_name() or self.username

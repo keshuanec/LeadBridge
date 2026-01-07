@@ -23,9 +23,10 @@ def get_lead_for_user_or_404(user, pk: int) -> Lead:
         return get_object_or_404(qs, pk=pk, referrer=user)
     elif user.role == User.Role.REFERRER_MANAGER:
         return get_object_or_404(
-            qs,
+            qs.filter(
+                Q(referrer__referrer_profile__manager=user) | Q(referrer=user)
+            ),
             pk=pk,
-            referrer__referrer_profile__manager=user,
         )
     elif user.role == User.Role.OFFICE:
         return get_object_or_404(
@@ -76,7 +77,7 @@ def my_leads(request):
 
     elif user.role == User.Role.REFERRER_MANAGER:
         leads_qs = Lead.objects.filter(
-            referrer__referrer_profile__manager=user
+            Q(referrer__referrer_profile__manager=user) | Q(referrer=user)
         ).distinct()
 
     elif user.role == User.Role.OFFICE:
@@ -277,7 +278,7 @@ def my_leads(request):
 def lead_create(request):
     user: User = request.user
 
-    if user.role not in (User.Role.REFERRER, User.Role.ADVISOR, User.Role.OFFICE):
+    if user.role not in (User.Role.REFERRER, User.Role.ADVISOR, User.Role.OFFICE, User.Role.REFERRER_MANAGER):
         return HttpResponseForbidden("Nemáš oprávnění vytvářet leady.")
 
     if request.method == "POST":
@@ -290,6 +291,12 @@ def lead_create(request):
 
             elif user.role == User.Role.ADVISOR:
                 lead.advisor = user
+
+            elif user.role == User.Role.REFERRER_MANAGER:
+                # Manažer může vybírat za koho lead zakládá
+                # Pokud nevybral, nastaví se on sám (default z formu)
+                if not lead.referrer_id:
+                    lead.referrer = user
 
             lead.save()
             # Zalogujeme vytvoření leadu
@@ -482,7 +489,9 @@ def deals_list(request):
     elif user.role == User.Role.REFERRER:
         qs = qs.filter(lead__referrer=user)
     elif user.role == User.Role.REFERRER_MANAGER:
-        qs = qs.filter(lead__referrer__referrer_profile__manager=user).distinct()
+        qs = qs.filter(
+            Q(lead__referrer__referrer_profile__manager=user) | Q(lead__referrer=user)
+        ).distinct()
     elif user.role == User.Role.OFFICE:
         qs = qs.filter(
             Q(lead__referrer__referrer_profile__manager__manager_profile__office__owner=user)
@@ -907,7 +916,9 @@ def overview(request):
     elif user.role == User.Role.REFERRER:
         leads_qs = Lead.objects.filter(referrer=user)
     elif user.role == User.Role.REFERRER_MANAGER:
-        leads_qs = Lead.objects.filter(referrer__referrer_profile__manager=user).distinct()
+        leads_qs = Lead.objects.filter(
+            Q(referrer__referrer_profile__manager=user) | Q(referrer=user)
+        ).distinct()
     elif user.role == User.Role.OFFICE:
         leads_qs = Lead.objects.filter(
             Q(referrer__referrer_profile__manager__manager_profile__office__owner=user) | Q(referrer=user)

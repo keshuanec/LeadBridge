@@ -8,7 +8,14 @@ from .models import User, ReferrerProfile, Office, ManagerProfile
 class UserAdmin(BaseUserAdmin):
     fieldsets = BaseUserAdmin.fieldsets + (
         ("LeadBridge", {"fields": ("role", "phone")}),
-        ("Provize", {"fields": ("commission_total_per_million", "commission_percentage")}),
+        ("Provize", {
+            "fields": (
+                "commission_total_per_million",
+                "commission_referrer_pct",
+                "commission_manager_pct",
+                "commission_office_pct",
+            )
+        }),
     )
 
     # Tohle je formulář pro VYTVOŘENÍ uživatele
@@ -23,11 +30,16 @@ class UserAdmin(BaseUserAdmin):
         }),
         ("Provize", {
             "classes": ("wide",),
-            "fields": ("commission_total_per_million", "commission_percentage"),
+            "fields": (
+                "commission_total_per_million",
+                "commission_referrer_pct",
+                "commission_manager_pct",
+                "commission_office_pct",
+            ),
         }),
     )
 
-    list_display = ("username", "email", "phone", "first_name", "last_name", "role", "commission_percentage", "is_staff")
+    list_display = ("username", "email", "phone", "first_name", "last_name", "role", "commission_referrer_pct", "is_staff")
     list_filter = ("role", "is_staff", "is_superuser", "is_active")
 
 
