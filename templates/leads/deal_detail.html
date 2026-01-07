@@ -29,26 +29,44 @@
 
     {# Zobrazení provizí podle role #}
     {% if user.role == "REFERRER" %}
-        {# Doporučitel vidí jen svou provizi #}
+        {# Standardní doporučitel vidí jen svou provizi #}
         <p><strong>Vaše provize:</strong> {{ deal.calculated_commission_referrer }} Kč</p>
+
     {% elif user.role == "REFERRER_MANAGER" %}
-        {# Manažer vidí provizi doporučitele a svou #}
-        <p><strong>Provize doporučitele:</strong> {{ deal.calculated_commission_referrer }} Kč</p>
-        <p><strong>Vaše provize (manažer):</strong> {{ deal.calculated_commission_manager }} Kč</p>
-    {% elif user.role == "OFFICE" %}
-        {# Kancelář vidí provizi doporučitele, manažera (pokud existuje) a svou #}
-        <p><strong>Provize doporučitele:</strong> {{ deal.calculated_commission_referrer }} Kč</p>
-        {% if has_manager %}
-            <p><strong>Provize manažera:</strong> {{ deal.calculated_commission_manager }} Kč</p>
+        {% if is_referrer_manager %}
+            {# Manažer jako referrer vidí referrer + manager provizi jako vlastní #}
+            <p><strong>Vaše provize (doporučitel + manažer):</strong> {{ user_own_commission }} Kč</p>
+            <small style="color: #666;">Provize doporučitele: {{ deal.calculated_commission_referrer }} Kč</small><br>
+            <small style="color: #666;">Provize manažera: {{ deal.calculated_commission_manager }} Kč</small>
+        {% else %}
+            {# Manažer prohlíží lead svého makléře #}
+            <p><strong>Provize doporučitele:</strong> {{ deal.calculated_commission_referrer }} Kč</p>
+            <p><strong>Vaše provize (manažer):</strong> {{ deal.calculated_commission_manager }} Kč</p>
         {% endif %}
-        <p><strong>Vaše provize (kancelář):</strong> {{ deal.calculated_commission_office }} Kč</p>
+
+    {% elif user.role == "OFFICE" %}
+        {% if is_referrer_office %}
+            {# Kancelář jako referrer vidí všechny tři provize jako vlastní #}
+            <p><strong>Vaše provize (celkem):</strong> {{ user_own_commission }} Kč</p>
+            <small style="color: #666;">Provize doporučitele: {{ deal.calculated_commission_referrer }} Kč</small><br>
+            <small style="color: #666;">Provize manažera: {{ deal.calculated_commission_manager }} Kč</small><br>
+            <small style="color: #666;">Provize kanceláře: {{ deal.calculated_commission_office }} Kč</small>
+        {% else %}
+            {# Kancelář prohlíží lead svého makléře/manažera #}
+            <p><strong>Provize doporučitele:</strong> {{ deal.calculated_commission_referrer }} Kč</p>
+            {% if has_manager %}
+                <p><strong>Provize manažera:</strong> {{ deal.calculated_commission_manager }} Kč</p>
+            {% endif %}
+            <p><strong>Vaše provize (kancelář):</strong> {{ deal.calculated_commission_office }} Kč</p>
+        {% endif %}
+
     {% elif user.role == "ADVISOR" or user.is_superuser %}
         {# Poradce a admin vidí všechny provize #}
         <p><strong>Provize doporučitele:</strong> {{ deal.calculated_commission_referrer }} Kč</p>
-        {% if has_manager %}
+        {% if has_manager or is_referrer_manager %}
             <p><strong>Provize manažera:</strong> {{ deal.calculated_commission_manager }} Kč</p>
         {% endif %}
-        {% if has_office %}
+        {% if has_office or is_referrer_office %}
             <p><strong>Provize kanceláře:</strong> {{ deal.calculated_commission_office }} Kč</p>
         {% endif %}
         <p><strong>Provize celkem:</strong> {{ deal.calculated_commission_total }} Kč</p>

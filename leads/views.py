@@ -1076,6 +1076,14 @@ def deal_detail(request, pk: int):
     has_manager = manager is not None
     has_office = office is not None
 
+    # zjistit, jestli je referrer manager nebo kancelář
+    referrer = lead.referrer
+    is_referrer_manager = referrer.role == User.Role.REFERRER_MANAGER
+    is_referrer_office = referrer.role == User.Role.OFFICE
+
+    # vlastní provize pro přihlášeného uživatele
+    user_own_commission = deal.get_own_commission(user)
+
     # přidání poznámky (LeadNote)
     if request.method == "POST":
         note_form = LeadNoteForm(request.POST)
@@ -1113,6 +1121,11 @@ def deal_detail(request, pk: int):
         "can_manage_commission": can_manage_commission,
         "has_manager": has_manager,
         "has_office": has_office,
+
+        # nové proměnné pro zobrazení provizí
+        "is_referrer_manager": is_referrer_manager,
+        "is_referrer_office": is_referrer_office,
+        "user_own_commission": user_own_commission,
     }
     return render(request, "leads/deal_detail.html", context)
 

@@ -62,10 +62,13 @@
             {% endif %}
         </div>
 
-        {% if user.role != "REFERRER" %}
+        {% if user.role not in "REFERRER" %}
             <div class="form-group">
                 <label for="{{ form.referrer.id_for_label }}">Doporučitel</label>
                 {{ form.referrer }}
+                {% if user.role == "REFERRER_MANAGER" or user.role == "OFFICE" %}
+                    <br><small style="color: #666;">Můžeš vybrat za koho lead zakládáš (za sebe nebo za své lidi).</small>
+                {% endif %}
                 {% if form.referrer.errors %}
                     <div class="alert alert-error">{{ form.referrer.errors }}</div>
                 {% endif %}
