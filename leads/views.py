@@ -687,6 +687,21 @@ def deals_list(request):
         d.manager_name = str(manager) if manager else None
         d.office_name = office.name if office else None
         d.advisor_name = str(d.lead.advisor) if d.lead.advisor else None
+
+        # Helper pro kontrolu vyplacení provizí relevantních pro aktuálního uživatele
+        if user.role == User.Role.REFERRER:
+            # Doporučitel sleduje jen svou provizi
+            d.user_commissions_paid = d.paid_referrer
+        elif user.role == User.Role.REFERRER_MANAGER:
+            # Manažer sleduje provizi makléře + svou
+            d.user_commissions_paid = d.paid_referrer and (not manager or d.paid_manager)
+        elif user.role == User.Role.OFFICE:
+            # Kancelář sleduje všechny tři (makléř + manažer + kancelář)
+            d.user_commissions_paid = d.all_commissions_paid
+        else:
+            # Admin/Advisor vidí všechny
+            d.user_commissions_paid = d.all_commissions_paid
+
         deals.append(d)
 
     context = {

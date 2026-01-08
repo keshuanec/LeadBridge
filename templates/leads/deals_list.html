@@ -233,14 +233,14 @@
 
                     <td>{{ d.created_at|date:"d.m.Y H:i" }}</td>
                     <td>
-                    {% if d.status != "DRAWN" %}
-                        {# Obchod ještě není dokončen #}
+                    {% if d.status != "SIGNED" and d.status != "SIGNED_NO_PROPERTY" and d.status != "DRAWN" %}
+                        {# Obchod ještě není podepsán #}
                         Nedokončeno
-                    {% elif d.all_commissions_paid %}
-                        {# Všechny relevantní provize vyplaceny #}
+                    {% elif d.user_commissions_paid %}
+                        {# Všechny relevantní provize vyplaceny (podle role uživatele) #}
                         <span class="badge badge-ready">Vyplaceno</span>
                     {% else %}
-                        {# Obchod dokončen, ale provize čekají #}
+                        {# Obchod podepsán/načerpán, ale provize čekají #}
                         <span class="badge badge-warning">Čekání na provizi</span>
                     {% endif %}
                     </td>
