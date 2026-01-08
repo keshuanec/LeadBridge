@@ -1,0 +1,46 @@
+{% extends "emails/base.html" %}
+
+{% block title %}Nová poznámka: {{ lead.client_name }}{% endblock %}
+
+{% block content %}
+<h2 style="margin: 0 0 20px 0; color: #212529; font-size: 24px; font-weight: 600;">
+    📝 Nová poznámka
+</h2>
+
+<p style="margin: 0 0 20px 0; color: #212529; font-size: 16px; line-height: 1.6;">
+    <strong>{{ added_by.get_full_name }}</strong> přidal(a) poznámku k leadu.
+</p>
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8f9fa; border-radius: 6px; padding: 20px; margin-bottom: 24px;">
+    <tr>
+        <td>
+            <table width="100%">
+                <tr>
+                    <td style="padding: 8px 0; color: #6C757D; font-size: 14px; font-weight: 600;">Klient:</td>
+                    <td style="padding: 8px 0; color: #212529; font-size: 14px;">{{ lead.client_name }}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding: 16px 0 8px 0; color: #6C757D; font-size: 14px; font-weight: 600;">Poznámka:</td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding: 0 0 8px 0;">
+                        <div style="background-color: #ffffff; border-left: 4px solid #1F6F7A; padding: 12px; border-radius: 4px; color: #212529; font-size: 14px; line-height: 1.6;">
+                            {{ note.text }}
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td align="center">
+            <a href="{{ lead_url }}" style="display: inline-block; background: linear-gradient(135deg, #1F6F7A 0%, #17575F 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 16px; font-weight: 600;">
+                Zobrazit detail leadu
+            </a>
+        </td>
+    </tr>
+</table>
+{% endblock %}

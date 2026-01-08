@@ -1,0 +1,52 @@
+{% extends "emails/base.html" %}
+
+{% block title %}Nový lead: {{ lead.client_name }}{% endblock %}
+
+{% block content %}
+<h2 style="margin: 0 0 20px 0; color: #212529; font-size: 24px; font-weight: 600;">
+    ✨ Nový lead
+</h2>
+
+<p style="margin: 0 0 20px 0; color: #212529; font-size: 16px; line-height: 1.6;">
+    Byl vytvořen nový lead v systému LeadBridge.
+</p>
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8f9fa; border-radius: 6px; padding: 20px; margin-bottom: 24px;">
+    <tr>
+        <td>
+            <table width="100%">
+                <tr>
+                    <td style="padding: 8px 0; color: #6C757D; font-size: 14px; font-weight: 600;">Klient:</td>
+                    <td style="padding: 8px 0; color: #212529; font-size: 14px;">{{ lead.client_name }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; color: #6C757D; font-size: 14px; font-weight: 600;">Telefon:</td>
+                    <td style="padding: 8px 0; color: #212529; font-size: 14px;">{{ lead.client_phone|default:"—" }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; color: #6C757D; font-size: 14px; font-weight: 600;">Email:</td>
+                    <td style="padding: 8px 0; color: #212529; font-size: 14px;">{{ lead.client_email|default:"—" }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; color: #6C757D; font-size: 14px; font-weight: 600;">Doporučitel:</td>
+                    <td style="padding: 8px 0; color: #212529; font-size: 14px;">{{ lead.referrer.get_full_name }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; color: #6C757D; font-size: 14px; font-weight: 600;">Poradce:</td>
+                    <td style="padding: 8px 0; color: #212529; font-size: 14px;">{{ lead.advisor.get_full_name|default:"—" }}</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td align="center">
+            <a href="{{ lead_url }}" style="display: inline-block; background: linear-gradient(135deg, #1F6F7A 0%, #17575F 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 16px; font-weight: 600;">
+                Zobrazit detail leadu
+            </a>
+        </td>
+    </tr>
+</table>
+{% endblock %}

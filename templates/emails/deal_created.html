@@ -1,0 +1,44 @@
+{% extends "emails/base.html" %}
+
+{% block title %}Založen obchod: {{ deal.client_name }}{% endblock %}
+
+{% block content %}
+<h2 style="margin: 0 0 20px 0; color: #212529; font-size: 24px; font-weight: 600;">
+    🎉 Nový obchod!
+</h2>
+
+<p style="margin: 0 0 20px 0; color: #212529; font-size: 16px; line-height: 1.6;">
+    <strong>{{ created_by.get_full_name }}</strong> založil(a) nový obchod v systému.
+</p>
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #E8F9F0; border-radius: 6px; padding: 20px; margin-bottom: 24px; border: 2px solid #2DBE73;">
+    <tr>
+        <td>
+            <table width="100%">
+                <tr>
+                    <td style="padding: 8px 0; color: #1E8B51; font-size: 14px; font-weight: 600;">Klient:</td>
+                    <td style="padding: 8px 0; color: #212529; font-size: 14px;">{{ deal.client_name }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; color: #1E8B51; font-size: 14px; font-weight: 600;">Výše úvěru:</td>
+                    <td style="padding: 8px 0; color: #212529; font-size: 16px; font-weight: 600;">{{ deal.loan_amount|floatformat:0 }} Kč</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; color: #1E8B51; font-size: 14px; font-weight: 600;">Banka:</td>
+                    <td style="padding: 8px 0; color: #212529; font-size: 14px;">{{ deal.get_bank_display }}</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
+<table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td align="center">
+            <a href="{{ deal_url }}" style="display: inline-block; background: linear-gradient(135deg, #2DBE73 0%, #25A462 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 16px; font-weight: 600;">
+                Zobrazit detail obchodu
+            </a>
+        </td>
+    </tr>
+</table>
+{% endblock %}

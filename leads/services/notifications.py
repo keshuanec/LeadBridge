@@ -4,6 +4,7 @@ Služba pro odesílání emailových notifikací uživatelům.
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.urls import reverse
 from accounts.models import User
 
 
@@ -96,6 +97,8 @@ def notify_lead_created(lead, created_by):
     )
 
     subject = f"Nový lead: {lead.client_name}"
+
+    # Text fallback
     message = f"""
 Byl vytvořen nový lead.
 
@@ -105,10 +108,18 @@ Email: {lead.client_email or '—'}
 Doporučitel: {lead.referrer}
 Poradce: {lead.advisor or '—'}
 
-Pro zobrazení detailu otevřete aplikaci LeadBridge.
+Pro zobrazení detailu otevřete aplikaci LeadBridge: {settings.SITE_URL}
 """
 
-    send_notification_email(recipients, subject, message)
+    # HTML verze s odkazem
+    lead_url = f"{settings.SITE_URL}{reverse('lead_detail', kwargs={'pk': lead.pk})}"
+    html_message = render_to_string('emails/lead_created.html', {
+        'lead': lead,
+        'lead_url': lead_url,
+        'site_url': settings.SITE_URL,
+    })
+
+    send_notification_email(recipients, subject, message, html_message)
 
 
 def notify_lead_updated(lead, updated_by, changes_description=None):
@@ -120,6 +131,7 @@ def notify_lead_updated(lead, updated_by, changes_description=None):
     )
 
     subject = f"Lead aktualizován: {lead.client_name}"
+
     message = f"""
 Lead byl aktualizován.
 
@@ -127,10 +139,19 @@ Klient: {lead.client_name}
 Aktualizoval: {updated_by}
 {f'Změny: {changes_description}' if changes_description else ''}
 
-Pro zobrazení detailu otevřete aplikaci LeadBridge.
+Pro zobrazení detailu otevřete aplikaci LeadBridge: {settings.SITE_URL}
 """
 
-    send_notification_email(recipients, subject, message)
+    lead_url = f"{settings.SITE_URL}{reverse('lead_detail', kwargs={'pk': lead.pk})}"
+    html_message = render_to_string('emails/lead_updated.html', {
+        'lead': lead,
+        'updated_by': updated_by,
+        'changes_description': changes_description,
+        'lead_url': lead_url,
+        'site_url': settings.SITE_URL,
+    })
+
+    send_notification_email(recipients, subject, message, html_message)
 
 
 def notify_note_added(lead, note, added_by):
@@ -142,6 +163,7 @@ def notify_note_added(lead, note, added_by):
     )
 
     subject = f"Nová poznámka: {lead.client_name}"
+
     message = f"""
 Byla přidána nová poznámka k leadu.
 
@@ -149,10 +171,19 @@ Klient: {lead.client_name}
 Autor poznámky: {added_by}
 Poznámka: {note.text}
 
-Pro zobrazení detailu otevřete aplikaci LeadBridge.
+Pro zobrazení detailu otevřete aplikaci LeadBridge: {settings.SITE_URL}
 """
 
-    send_notification_email(recipients, subject, message)
+    lead_url = f"{settings.SITE_URL}{reverse('lead_detail', kwargs={'pk': lead.pk})}"
+    html_message = render_to_string('emails/note_added.html', {
+        'lead': lead,
+        'note': note,
+        'added_by': added_by,
+        'lead_url': lead_url,
+        'site_url': settings.SITE_URL,
+    })
+
+    send_notification_email(recipients, subject, message, html_message)
 
 
 def notify_meeting_scheduled(lead, scheduled_by):
@@ -164,6 +195,7 @@ def notify_meeting_scheduled(lead, scheduled_by):
     )
 
     subject = f"Schůzka naplánována: {lead.client_name}"
+
     message = f"""
 Byla naplánována schůzka.
 
@@ -172,10 +204,18 @@ Datum a čas: {lead.meeting_at.strftime('%d.%m.%Y %H:%M') if lead.meeting_at els
 Poznámka: {lead.meeting_note or '—'}
 Naplánoval: {scheduled_by}
 
-Pro zobrazení detailu otevřete aplikaci LeadBridge.
+Pro zobrazení detailu otevřete aplikaci LeadBridge: {settings.SITE_URL}
 """
 
-    send_notification_email(recipients, subject, message)
+    lead_url = f"{settings.SITE_URL}{reverse('lead_detail', kwargs={'pk': lead.pk})}"
+    html_message = render_to_string('emails/meeting_scheduled.html', {
+        'lead': lead,
+        'scheduled_by': scheduled_by,
+        'lead_url': lead_url,
+        'site_url': settings.SITE_URL,
+    })
+
+    send_notification_email(recipients, subject, message, html_message)
 
 
 def notify_meeting_completed(lead, completed_by, next_action):
@@ -187,6 +227,7 @@ def notify_meeting_completed(lead, completed_by, next_action):
     )
 
     subject = f"Schůzka proběhla: {lead.client_name}"
+
     message = f"""
 Schůzka byla označena jako proběhlá.
 
@@ -194,10 +235,19 @@ Klient: {lead.client_name}
 Další krok: {next_action}
 Označil: {completed_by}
 
-Pro zobrazení detailu otevřete aplikaci LeadBridge.
+Pro zobrazení detailu otevřete aplikaci LeadBridge: {settings.SITE_URL}
 """
 
-    send_notification_email(recipients, subject, message)
+    lead_url = f"{settings.SITE_URL}{reverse('lead_detail', kwargs={'pk': lead.pk})}"
+    html_message = render_to_string('emails/meeting_completed.html', {
+        'lead': lead,
+        'completed_by': completed_by,
+        'next_action': next_action,
+        'lead_url': lead_url,
+        'site_url': settings.SITE_URL,
+    })
+
+    send_notification_email(recipients, subject, message, html_message)
 
 
 def notify_deal_created(deal, lead, created_by):
@@ -210,6 +260,7 @@ def notify_deal_created(deal, lead, created_by):
     )
 
     subject = f"Založen obchod: {deal.client_name}"
+
     message = f"""
 Byl založen nový obchod!
 
@@ -218,10 +269,18 @@ Výše úvěru: {deal.loan_amount:,} Kč
 Banka: {deal.get_bank_display()}
 Založil: {created_by}
 
-Pro zobrazení detailu otevřete aplikaci LeadBridge.
+Pro zobrazení detailu otevřete aplikaci LeadBridge: {settings.SITE_URL}
 """
 
-    send_notification_email(recipients, subject, message)
+    deal_url = f"{settings.SITE_URL}{reverse('deal_detail', kwargs={'pk': deal.pk})}"
+    html_message = render_to_string('emails/deal_created.html', {
+        'deal': deal,
+        'created_by': created_by,
+        'deal_url': deal_url,
+        'site_url': settings.SITE_URL,
+    })
+
+    send_notification_email(recipients, subject, message, html_message)
 
 
 def notify_deal_updated(deal, updated_by, changes_description=None):
@@ -234,6 +293,7 @@ def notify_deal_updated(deal, updated_by, changes_description=None):
     )
 
     subject = f"Obchod aktualizován: {deal.client_name}"
+
     message = f"""
 Obchod byl aktualizován.
 
@@ -241,10 +301,19 @@ Klient: {deal.client_name}
 Aktualizoval: {updated_by}
 {f'Změny: {changes_description}' if changes_description else ''}
 
-Pro zobrazení detailu otevřete aplikaci LeadBridge.
+Pro zobrazení detailu otevřete aplikaci LeadBridge: {settings.SITE_URL}
 """
 
-    send_notification_email(recipients, subject, message)
+    deal_url = f"{settings.SITE_URL}{reverse('deal_detail', kwargs={'pk': deal.pk})}"
+    html_message = render_to_string('emails/deal_updated.html', {
+        'deal': deal,
+        'updated_by': updated_by,
+        'changes_description': changes_description,
+        'deal_url': deal_url,
+        'site_url': settings.SITE_URL,
+    })
+
+    send_notification_email(recipients, subject, message, html_message)
 
 
 def notify_commission_ready(deal, marked_by):
@@ -257,6 +326,7 @@ def notify_commission_ready(deal, marked_by):
     )
 
     subject = f"Provize připravena: {deal.client_name}"
+
     message = f"""
 Provize je připravena k vyplacení.
 
@@ -266,10 +336,18 @@ Provize celkem: {deal.calculated_commission_total:,} Kč
 
 Označil: {marked_by}
 
-Pro zobrazení detailu otevřete aplikaci LeadBridge.
+Pro zobrazení detailu otevřete aplikaci LeadBridge: {settings.SITE_URL}
 """
 
-    send_notification_email(recipients, subject, message)
+    deal_url = f"{settings.SITE_URL}{reverse('deal_detail', kwargs={'pk': deal.pk})}"
+    html_message = render_to_string('emails/commission_ready.html', {
+        'deal': deal,
+        'marked_by': marked_by,
+        'deal_url': deal_url,
+        'site_url': settings.SITE_URL,
+    })
+
+    send_notification_email(recipients, subject, message, html_message)
 
 
 def notify_commission_paid(deal, recipient_type, marked_by):
@@ -287,14 +365,26 @@ def notify_commission_paid(deal, recipient_type, marked_by):
         'office': 'kanceláři',
     }
 
-    subject = f"Provize vyplacena {recipient_names.get(recipient_type, '')}: {deal.client_name}"
+    recipient_label = recipient_names.get(recipient_type, '')
+
+    subject = f"Provize vyplacena {recipient_label}: {deal.client_name}"
+
     message = f"""
-Provize byla vyplacena {recipient_names.get(recipient_type, '')}.
+Provize byla vyplacena {recipient_label}.
 
 Klient: {deal.client_name}
 Označil: {marked_by}
 
-Pro zobrazení detailu otevřete aplikaci LeadBridge.
+Pro zobrazení detailu otevřete aplikaci LeadBridge: {settings.SITE_URL}
 """
 
-    send_notification_email(recipients, subject, message)
+    deal_url = f"{settings.SITE_URL}{reverse('deal_detail', kwargs={'pk': deal.pk})}"
+    html_message = render_to_string('emails/commission_paid.html', {
+        'deal': deal,
+        'marked_by': marked_by,
+        'recipient_label': recipient_label,
+        'deal_url': deal_url,
+        'site_url': settings.SITE_URL,
+    })
+
+    send_notification_email(recipients, subject, message, html_message)

@@ -157,6 +157,9 @@ else:
 
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@leadbridge.cz')
 
+# Site URL for absolute links in emails
+SITE_URL = config('SITE_URL', default='http://localhost:8000')
+
 # Security settings pro produkci
 if not DEBUG:
     SECURE_SSL_REDIRECT = True

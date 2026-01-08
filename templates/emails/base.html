@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LeadBridge{% endblock %}</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background-color: #f5f5f5;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 20px 0;">
+        <tr>
+            <td align="center">
+                <!-- Main container -->
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <!-- Header with logo -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #1F6F7A 0%, #0F4952 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: 600;">
+                                <span style="color: #1F6F7A; background: white; padding: 8px 16px; border-radius: 6px; display: inline-block;">Lead</span><span style="color: #2DBE73; background: white; padding: 8px 16px; border-radius: 6px; display: inline-block; margin-left: 4px;">Bridge</span>
+                            </h1>
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            {% block content %}{% endblock %}
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #fafafa; padding: 20px 30px; border-radius: 0 0 8px 8px; border-top: 1px solid #eee;">
+                            <p style="margin: 0; font-size: 12px; color: #6C757D; text-align: center;">
+                                Tato zpráva byla automaticky odeslána systémem LeadBridge.<br>
+                                Pro správu notifikací se přihlaste do aplikace.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Bottom padding -->
+                <table width="600" cellpadding="0" cellspacing="0" style="margin-top: 20px;">
+                    <tr>
+                        <td style="text-align: center; font-size: 12px; color: #6C757D;">
+                            © {% now "Y" %} LeadBridge · <a href="{{ site_url }}" style="color: #1F6F7A; text-decoration: none;">www.leadbridge.cz</a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
