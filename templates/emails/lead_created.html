@@ -35,6 +35,18 @@
                     <td style="padding: 8px 0; color: #6C757D; font-size: 14px; font-weight: 600;">Poradce:</td>
                     <td style="padding: 8px 0; color: #212529; font-size: 14px;">{{ lead.advisor.get_full_name|default:"—" }}</td>
                 </tr>
+                {% if lead.situation_description %}
+                <tr>
+                    <td colspan="2" style="padding: 16px 0 8px 0; color: #6C757D; font-size: 14px; font-weight: 600;">Popis situace:</td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding: 0 0 8px 0;">
+                        <div style="background-color: #ffffff; border-left: 4px solid #1F6F7A; padding: 12px; border-radius: 4px; color: #212529; font-size: 14px; line-height: 1.6;">
+                            {{ lead.situation_description }}
+                        </div>
+                    </td>
+                </tr>
+                {% endif %}
             </table>
         </td>
     </tr>
