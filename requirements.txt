@@ -15,3 +15,5 @@ gunicorn==21.2.0
 
 # Database URL parsing (pro Railway a Heroku)
 dj-database-url==2.1.0
+
+sendgrid==6.11.0
