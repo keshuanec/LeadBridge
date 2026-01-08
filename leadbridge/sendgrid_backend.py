@@ -47,19 +47,24 @@ class SendGridBackend(BaseEmailBackend):
                 from_email = Email(message.from_email)
                 to_emails = [To(email) for email in message.to]
 
-                # Get email content
-                if message.content_subtype == 'html':
-                    content = Content("text/html", message.body)
-                else:
-                    content = Content("text/plain", message.body)
+                # Get plain text body
+                plain_text = message.body
 
-                # Create Mail object
+                # Check for HTML content in alternatives
+                html_content = None
+                if hasattr(message, 'alternatives') and message.alternatives:
+                    for alternative in message.alternatives:
+                        if alternative[1] == 'text/html':
+                            html_content = alternative[0]
+                            break
+
+                # Create Mail object with both plain text and HTML
                 mail = Mail(
                     from_email=from_email,
                     to_emails=to_emails,
                     subject=message.subject,
-                    plain_text_content=message.body if message.content_subtype != 'html' else None,
-                    html_content=message.body if message.content_subtype == 'html' else None
+                    plain_text_content=plain_text,
+                    html_content=html_content
                 )
 
                 # Send email
