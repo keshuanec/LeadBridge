@@ -47,7 +47,7 @@ def edit_profile(request):
             # Přesměruj zpět na správný detail podle role
             from accounts.models import User
             if user.role == User.Role.REFERRER and hasattr(user, 'referrer_profile'):
-                return redirect('referrer_detail', pk=user.referrer_profile.pk)
+                return redirect('user_detail', pk=user.pk)
             elif user.role == User.Role.ADVISOR:
                 return redirect('advisor_detail', pk=user.pk)
             else:
@@ -77,7 +77,7 @@ def change_password(request):
             # Přesměruj zpět na správný detail podle role
             from accounts.models import User
             if user.role == User.Role.REFERRER and hasattr(user, 'referrer_profile'):
-                return redirect('referrer_detail', pk=user.referrer_profile.pk)
+                return redirect('user_detail', pk=user.pk)
             elif user.role == User.Role.ADVISOR:
                 return redirect('advisor_detail', pk=user.pk)
             else:

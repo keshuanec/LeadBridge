@@ -12,10 +12,20 @@ from django.db import transaction
 from accounts.models import User, ReferrerProfile
 import openpyxl
 from pathlib import Path
+import unicodedata
 
 
 class Command(BaseCommand):
     help = 'Import uživatelů z XLSX souboru'
+
+    def remove_diacritics(self, text):
+        """Odstraní diakritiku z textu (á → a, č → c, atd.)"""
+        if not text:
+            return text
+        # Normalizace na NFD (rozklad znaků s diakritikou)
+        nfd = unicodedata.normalize('NFD', text)
+        # Odstranění combining characters (diakritiky)
+        return ''.join(char for char in nfd if unicodedata.category(char) != 'Mn')
 
     def add_arguments(self, parser):
         parser.add_argument('xlsx_file', type=str, help='Cesta k XLSX souboru s uživateli')
@@ -45,26 +55,47 @@ class Command(BaseCommand):
         except Exception as e:
             raise CommandError(f'Nepodařilo se načíst XLSX soubor: {e}')
 
-        # Očekávané sloupce
-        expected_columns = [
-            'firstname', 'lastname', 'Mobil', 'E-mail',
-            'Uživatelská role', 'Manažer',
-            'provize makléř', 'provize manažer', 'provize kancelář'
-        ]
-
         # Načtení hlavičky
         header = [cell.value for cell in sheet[1]]
         self.stdout.write(f'Hlavička: {header}')
 
-        # Mapping sloupců (case-insensitive)
-        header_lower = [h.lower() if h else '' for h in header]
+        # Mapping sloupců (case-insensitive, s podporou variant)
+        header_lower = [h.lower().strip() if h else '' for h in header]
         col_mapping = {}
 
-        for expected in expected_columns:
-            try:
-                col_mapping[expected] = header_lower.index(expected.lower())
-            except ValueError:
-                raise CommandError(f'Sloupec "{expected}" nebyl nalezen v souboru!')
+        # Definice možných variant názvů sloupců
+        column_variants = {
+            'name': ['jméno', 'name', 'celé jméno'],
+            'firstname': ['firstname', 'křestní jméno', 'jmeno'],
+            'lastname': ['lastname', 'příjmení', 'prijmeni'],
+            'phone': ['mobil', 'phone', 'telefon'],
+            'email': ['e-mail pracovní', 'e-mail', 'email'],
+            'role': ['uživatelská role', 'role'],
+            'manager': ['manažer', 'manager'],
+            'commission_referrer': ['provize makléř', 'provize maklér', 'provize makler'],
+            'commission_manager': ['provize manažer', 'provize manazer'],
+            'commission_office': ['provize kancelář', 'provize kancelar'],
+        }
+
+        # Hledání sloupců podle variant
+        for key, variants in column_variants.items():
+            found = False
+            for variant in variants:
+                if variant in header_lower:
+                    col_mapping[key] = header_lower.index(variant)
+                    found = True
+                    self.stdout.write(f'  Sloupec "{key}" → "{header[col_mapping[key]]}"')
+                    break
+            # name, firstname, lastname jsou volitelné - alespoň jedna varianta musí existovat
+            if not found and key not in ['name', 'firstname', 'lastname']:
+                raise CommandError(f'Sloupec "{key}" nebyl nalezen! Podporované varianty: {variants}')
+
+        # Kontrola, jestli máme buď "name" nebo "firstname" + "lastname"
+        has_name = 'name' in col_mapping
+        has_firstname_lastname = 'firstname' in col_mapping and 'lastname' in col_mapping
+
+        if not has_name and not has_firstname_lastname:
+            raise CommandError('Chybí sloupec se jménem! Očekáván buď "Jméno" nebo "firstname" + "lastname"')
 
         users_data = []
 
@@ -74,25 +105,59 @@ class Command(BaseCommand):
                 continue
 
             try:
-                firstname = row[col_mapping['firstname']]
-                lastname = row[col_mapping['lastname']]
-                phone = row[col_mapping['Mobil']]
-                email = row[col_mapping['E-mail']]
-                role_str = row[col_mapping['Uživatelská role']]
-                manager_name = row[col_mapping['Manažer']]
-                commission_referrer = row[col_mapping['provize makléř']]
-                commission_manager = row[col_mapping['provize manažer']]
-                commission_office = row[col_mapping['provize kancelář']]
+                # Zpracování jména - buď z jednoho sloupce "Jméno" nebo z "firstname" + "lastname"
+                if has_name:
+                    # Formát: jeden sloupec "Jméno" - rozdělíme ho
+                    full_name = row[col_mapping['name']]
+                    if not full_name or not str(full_name).strip():
+                        self.stdout.write(
+                            self.style.WARNING(f'Řádek {row_num}: Chybí jméno, přeskakuji')
+                        )
+                        continue
 
-                # Validace povinných polí
-                if not firstname or not lastname:
+                    # Rozdělení celého jména na části
+                    name_parts = str(full_name).strip().split()
+                    if len(name_parts) < 2:
+                        self.stdout.write(
+                            self.style.WARNING(f'Řádek {row_num}: Neplatné jméno "{full_name}", přeskakuji')
+                        )
+                        continue
+
+                    firstname = name_parts[0]
+                    lastname = ' '.join(name_parts[1:])  # Zbytek jako příjmení
+                else:
+                    # Formát: oddělené sloupce "firstname" a "lastname"
+                    firstname = row[col_mapping['firstname']]
+                    lastname = row[col_mapping['lastname']]
+
+                    if not firstname or not lastname:
+                        self.stdout.write(
+                            self.style.WARNING(f'Řádek {row_num}: Chybí jméno nebo příjmení, přeskakuji')
+                        )
+                        continue
+
+                    firstname = str(firstname).strip()
+                    lastname = str(lastname).strip()
+
+                phone = row[col_mapping['phone']]
+                email = row[col_mapping['email']]
+                role_str = row[col_mapping['role']]
+                manager_name = row[col_mapping['manager']]
+                commission_referrer = row[col_mapping['commission_referrer']]
+                commission_manager = row[col_mapping['commission_manager']]
+                commission_office = row[col_mapping['commission_office']]
+
+                # Použití emailu jako username
+                if email and str(email).strip():
+                    username = str(email).strip()
+                else:
+                    # Fallback: generovat z jména (bez diakritiky)
+                    firstname_clean = self.remove_diacritics(firstname.lower())
+                    lastname_clean = self.remove_diacritics(lastname.lower()).replace(' ', '')
+                    username = f"{firstname_clean}{lastname_clean}@housevip.cz"
                     self.stdout.write(
-                        self.style.WARNING(f'Řádek {row_num}: Chybí jméno nebo příjmení, přeskakuji')
+                        self.style.WARNING(f'Řádek {row_num}: Chybí email, generuji username: {username}')
                     )
-                    continue
-
-                # Vytvoření username
-                username = f"{firstname.lower()}{lastname.lower()}@housevip.cz"
 
                 # Mapping rolí
                 role_mapping = {
