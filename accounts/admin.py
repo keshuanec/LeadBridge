@@ -55,6 +55,11 @@ class ReferrerProfileAdmin(admin.ModelAdmin):
     search_fields = ("user__username", "user__first_name", "user__last_name")
     filter_horizontal = ("advisors",)
 
+    def get_queryset(self, request):
+        """Optimalizovat dotazy - předem načíst advisory a managera"""
+        qs = super().get_queryset(request)
+        return qs.select_related("user", "manager").prefetch_related("advisors")
+
     def get_advisors(self, obj):
         return ", ".join([advisor.get_full_name() for advisor in obj.advisors.all()]) or "—"
     get_advisors.short_description = "Poradci"
