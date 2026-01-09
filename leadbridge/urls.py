@@ -3,12 +3,8 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from leads import views  # 👈 DŮLEŽITÉ
-from accounts.import_view import import_users_view
 
 urlpatterns = [
-    # Import view MUST be before admin/ to avoid being caught by admin.site.urls
-    path("admin-import-users/", import_users_view, name="import_users_view"),  # One-time import
-
     path("admin/", admin.site.urls),
 
     path("accounts/", include("django.contrib.auth.urls")),  # login/logout
