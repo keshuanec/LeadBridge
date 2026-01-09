@@ -1,0 +1,4431 @@
+[
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$3xSuqspa8GxfPm8os5NnCe$R5Tlv0ml/sijfr9JUYqDDYCYNRPHdjyFQ7jVDDjiQEs=",
+    "last_login": "2026-01-07T13:13:04Z",
+    "is_superuser": true,
+    "username": "admin",
+    "email": "jirkahavlas@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-11-27T09:55:35Z",
+    "first_name": "admin",
+    "last_name": "admin",
+    "role": "ADMIN",
+    "phone": "123123123",
+    "has_admin_access": false,
+    "commission_total_per_million": "0",
+    "commission_referrer_pct": "0.00",
+    "commission_manager_pct": "0.00",
+    "commission_office_pct": "0.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$4ynXo6oKnAXska7EvXgS3k$UjID3urfr3F5GLqCTYqDlcdcyh0lCE07k/60k0wd7Pw=",
+    "last_login": "2026-01-09T19:56:09.006Z",
+    "is_superuser": true,
+    "username": "poradce1",
+    "email": "finance@jirihavlas.cz",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-12-01T12:43:54Z",
+    "first_name": "Jiří",
+    "last_name": "Havlas",
+    "role": "ADVISOR",
+    "phone": "605877000",
+    "has_admin_access": true,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$nid1nlXChuPxRVL7NnSCeW$t8fYJIlYE2obaFUpG+mw6VWs6/y09eLDOO+ltl5iE5U=",
+    "last_login": "2026-01-07T11:35:06Z",
+    "is_superuser": false,
+    "username": "poradce2",
+    "email": "Michaela@Michaela.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-12-01T12:46:05Z",
+    "first_name": "Michaela",
+    "last_name": "Kubínová",
+    "role": "ADVISOR",
+    "phone": "123123123",
+    "has_admin_access": false,
+    "commission_total_per_million": "0",
+    "commission_referrer_pct": "0.00",
+    "commission_manager_pct": "0.00",
+    "commission_office_pct": "0.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$ZIGnHpbJcDYcNStvabqU8s$yxo+8faZgmb/OU/M2ikPdcP6M5GCVOg86TV1JZxCOIU=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "pavel.vins@housevip.cz",
+    "email": "pavel.vins@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:15.608Z",
+    "first_name": "Pavel",
+    "last_name": "Vinš",
+    "role": "OFFICE",
+    "phone": "725752973",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$YaEIbYXIbmlwvENWQ65SjS$JTtPOR43e0P7gwDJkm7urnmkYdTR6shfltYd3S4Gp5M=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "alexander.koenigstein@housevip.cz",
+    "email": "alexander.koenigstein@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:15.885Z",
+    "first_name": "Alexander",
+    "last_name": "Koenigstein",
+    "role": "REFERRER_MANAGER",
+    "phone": "777789911",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$k0VYR33yY5l08qGXydfWug$LddhIgBAHx1VecCm1MymgYom1N7FLuNhB/vyjhHGpAc=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "valeriy.karpenko@housevip.cz",
+    "email": "valeriy.karpenko@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:16.152Z",
+    "first_name": "Valeriy",
+    "last_name": "Karpenko",
+    "role": "REFERRER",
+    "phone": "608119912",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$sjVVnIu0CqGj0wTxiUmlQt$zvWJWe/PW6omVECWQlKI4UB8g8UpGHbrg6cyC+kUy/k=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "pavel.bujok@housevip.cz",
+    "email": "pavel.bujok@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:16.417Z",
+    "first_name": "Pavel",
+    "last_name": "Bujok",
+    "role": "REFERRER",
+    "phone": "602234144",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$tIQKG7B1jwOD6aHhlj6rYE$1mYsYPbCwe7xTseRiDPFF+KkesDuGyj3zbwfB0vXS8Y=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "veronika.loulova@housevip.cz",
+    "email": "veronika.loulova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:16.681Z",
+    "first_name": "Veronika",
+    "last_name": "Loulová",
+    "role": "REFERRER",
+    "phone": "776510074",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$dHh1MEhQ1ylHxEDe4TnMZE$T7HdRvaP24Pqqf2rKvufT487MS725Qas+IRapSjWmIc=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "artur.kurlikovskyy@housevip.cz",
+    "email": "artur.kurlikovskyy@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:16.947Z",
+    "first_name": "Artur",
+    "last_name": "Kurlikovskyy",
+    "role": "REFERRER",
+    "phone": "774311817",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$FIRS5dlWqMyBc4UJkxMccq$bCSE+J2DWmwNUFCTL4mncBv4OGxqR7wGC1sjk+/yz+I=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "jaroslav.javurek@housevip.cz",
+    "email": "jaroslav.javurek@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:17.211Z",
+    "first_name": "Jaroslav",
+    "last_name": "Javůrek",
+    "role": "REFERRER",
+    "phone": "723668949",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$38KZb4m4K5aebDuLHV3gfJ$Bkn5SsvQJeqecS8u0kthdWJllDWNB+vSqwoTjoNMSLc=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "kamila.hejnarova@housevip.cz",
+    "email": "kamila.hejnarova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:17.477Z",
+    "first_name": "Kamila",
+    "last_name": "Hejnarová",
+    "role": "REFERRER",
+    "phone": "734603784",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$mmVOFqiFfQK36qgbSMol7i$OAqQkHyMH+E50YxiZblYwQjIJZcMmvHuGIbgMQOr9vA=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "georgi.stoychev@housevip.cz",
+    "email": "georgi.stoychev@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:17.742Z",
+    "first_name": "Georgi",
+    "last_name": "Stoychev",
+    "role": "REFERRER",
+    "phone": "775678597",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$zMonN5JMNdsEOB1KGSwtGa$Ua/PGfH79DrR47tvp2MJkmI95zA70xOkeE9iFqs7Ef4=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "zdenek.maceska@housevip.cz",
+    "email": "zdenek.maceska@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:18.009Z",
+    "first_name": "Zdeněk",
+    "last_name": "Maceška",
+    "role": "REFERRER",
+    "phone": "721008573",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$jpTv45OrHGN4qMCjHlU5x0$neI/dM0CVrWrk/uz3nVx0/YyekFWPeiVTPuGOy19w6k=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "alla.fedorova@housevip.cz",
+    "email": "alla.fedorova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:18.273Z",
+    "first_name": "Alla",
+    "last_name": "Fedorova",
+    "role": "REFERRER",
+    "phone": "775034770",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$OSUNNszfqI6DTksi85UCWk$L+vmLGGQY2sHC3ofpye0v0HBkybBHumx0a04RHcACIo=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "josef.vostry@housevip.cz",
+    "email": "josef.vostry@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:18.547Z",
+    "first_name": "Josef",
+    "last_name": "Vostrý",
+    "role": "REFERRER",
+    "phone": "777219342",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$XqtxrY7jIGBHT65GjuWwMu$ViC6Av5TBlwS3ARsUHAYdXfmEdm+1JeagowRB8KHgZE=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "vladimir.stastny@housevip.cz",
+    "email": "vladimir.stastny@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:18.809Z",
+    "first_name": "Vladimír",
+    "last_name": "Šťastný",
+    "role": "REFERRER",
+    "phone": "722452998",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$szEbfcJ39tWpKWPkT9GfQ0$HsARj6I2lkGBcoYYd9siXYX77OpEPBP/D0hnMF8f4zo=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "katerina.chabova@housevip.cz",
+    "email": "katerina.chabova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:19.073Z",
+    "first_name": "Kateřina",
+    "last_name": "Chábová",
+    "role": "REFERRER",
+    "phone": "607224777",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$f51OY3cKWmVFKIeEtJoUTh$mh7COVlmVnRChSn5SxZa0ELTGg+E+cS5ccq4Gbcl+uk=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "kamila.kovacova@housevip.cz",
+    "email": "kamila.kovacova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:19.336Z",
+    "first_name": "Kamila",
+    "last_name": "Kováčová",
+    "role": "REFERRER",
+    "phone": "775802837",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$e2YTDeeaS0v432xfgzGrj6$Uglvl080S3nUu2rwRqs9IvoBAF6ciue0fEKyD8fbfdo=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "karel.hartman@housevip.cz",
+    "email": "karel.hartman@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:19.607Z",
+    "first_name": "Karel",
+    "last_name": "Hartman",
+    "role": "REFERRER",
+    "phone": "602127545",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$awc4hufwzSO0ck2fO0vNDK$RsoaStroa6+dohtQJfGuufHuaSC93ragXzsATxSw6jE=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "jiri.fleischhans@housevip.cz",
+    "email": "jiri.fleischhans@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:19.868Z",
+    "first_name": "Jiří",
+    "last_name": "Fleischhans",
+    "role": "REFERRER",
+    "phone": "734875640",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$RtoirQZ19kDvn2pn0Si5vK$82LnkyOzv2m8q54EOav/9ZktJRMR3dysGLtg/81lZh4=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "krzysztof.piegza@housevip.cz",
+    "email": "krzysztof.piegza@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:20.133Z",
+    "first_name": "Krzysztof",
+    "last_name": "Piegza",
+    "role": "REFERRER",
+    "phone": "770772741",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$kCDzG3PSm0sASEKdHdtVqK$k9ymIe+TRj2E9CUm9Gpyg4W9v6eXti+aDarkIXzNxpw=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "kristyna.stankova@housevip.cz",
+    "email": "kristyna.stankova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:20.399Z",
+    "first_name": "Kristýna",
+    "last_name": "Staňková",
+    "role": "REFERRER",
+    "phone": "778507351",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$29DVhmfoMbMxYv5xs2hZPz$YCzbtLGME0IGR5JNht6CudsqK8ezr4MXivlO0qLCZe8=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "lukas.mysik@housevip.cz",
+    "email": "lukas.mysik@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:20.664Z",
+    "first_name": "Lukáš",
+    "last_name": "Myšík",
+    "role": "REFERRER",
+    "phone": "722120080",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$KPW0a9IJBgrFbadbBejmEo$Wd2T/j7BceLqd+fDQhWVSRQ+HGvqJnGL2Umwi9TLgTM=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "milada.safrankova@housevip.cz",
+    "email": "milada.safrankova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:20.929Z",
+    "first_name": "Milada",
+    "last_name": "Šafránková",
+    "role": "REFERRER",
+    "phone": "737037047",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$YWaIbNpL5wCbG2T5fbHGMu$p0Dk0qrRnv6y/pwaR8/CAff+pVIe0C5z4aa356hQtPU=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "dana.gulamova@housevip.cz",
+    "email": "dana.gulamova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:21.194Z",
+    "first_name": "Dana",
+    "last_name": "Gulamova",
+    "role": "REFERRER",
+    "phone": "777441595",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$A3nBxOBAZdgoHjYPWZRCv1$MrEpmNCYPeCIz787FtndIrPcj8gmYRjOoUUNAenB/NA=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "daryna.konotop@housevip.cz",
+    "email": "daryna.konotop@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:21.462Z",
+    "first_name": "Daryna",
+    "last_name": "Konotop",
+    "role": "REFERRER",
+    "phone": "722365947",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$mozIXHx526bVaabDOcGFko$oarcuoaHiSwA97DtojCHjX+mKV3+dSY36coJXgWQaY4=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "natalia.levicky@housevip.cz",
+    "email": "natalia.levicky@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:21.726Z",
+    "first_name": "Natália",
+    "last_name": "Levický",
+    "role": "REFERRER",
+    "phone": "736679205",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$Z2jdumwR0UooqtYDMCBnlL$1yedCDvJ/cDFufeXCByQPL5gdiIcDTx/WaLN14tJowI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "nadiia.barychka@housevip.cz",
+    "email": "nadiia.barychka@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:21.992Z",
+    "first_name": "Nadiia",
+    "last_name": "Barychka",
+    "role": "REFERRER",
+    "phone": "728209773",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$dnP2A87iSJMPOepp8SMMsT$06Xjs78fSAr1ickxyRRWek+0eGZGSwvtMFWErxLGwfo=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "bojasova@seznam.cz",
+    "email": "bojasova@seznam.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:22.257Z",
+    "first_name": "Bytové družstvo",
+    "last_name": "Bojasova",
+    "role": "REFERRER",
+    "phone": "607970943",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$7MzOqF7viHd03tSw2PhmsI$y4pAWn+wkgnALfm/MWof/VQhMXc3T/+Kptv2L1YC6YU=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "natalia.vladychenko@housevip.cz",
+    "email": "natalia.vladychenko@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:22.520Z",
+    "first_name": "Natalia",
+    "last_name": "Vladychenko",
+    "role": "REFERRER",
+    "phone": "720611690",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$y5HzC7TUhyt8KydntJ9sgA$relKkZ8Vm0dQ8J9msVl8LY8BpxVJRbxQrPujIRWpbZo=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "simeon.kerzhbaum@housevip.cz",
+    "email": "simeon.kerzhbaum@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:22.782Z",
+    "first_name": "Simeon",
+    "last_name": "Kerzhbaum",
+    "role": "REFERRER",
+    "phone": "735072841",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$Fe94YwWyBvERemTrdPN3Sd$7T7UtnU83zxvSz6w+8NiRYv8LpO1DJJWIDR7LSYUOks=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "sabina.hoferikova@housevip.cz",
+    "email": "sabina.hoferikova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:23.048Z",
+    "first_name": "Sabina",
+    "last_name": "Hoferiková",
+    "role": "REFERRER",
+    "phone": "735889279",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$JnD1kyZgzpO6lUZrZYcHmN$UGn3/6H/rT5JUgUU37J8+vW3ydJyAwHdY3TEzy5aKRI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "karel.koenigstein@housevip.cz",
+    "email": "karel.koenigstein@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:23.314Z",
+    "first_name": "Karel",
+    "last_name": "Koenigstein",
+    "role": "REFERRER",
+    "phone": "727873008",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$IO8NxuAiU2ziGPzsCFnrCW$5S2OFf70DSITIzEYoNJB1mhSsMjVrRiQlZjEvikjwMo=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "nikola.fabingerova@housevip.cz",
+    "email": "nikola.fabingerova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:23.580Z",
+    "first_name": "Nikola",
+    "last_name": "Fabingerová",
+    "role": "REFERRER",
+    "phone": "777088456",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$PNDhExifT2nVUjPg6LNXEi$GQA7+QDaOX4ORYT8nfoPepDKqt8XSA1ycsBdrbRYw3Y=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "oryna.junevicius@housevip.cz",
+    "email": "oryna.junevicius@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:23.848Z",
+    "first_name": "Oryna",
+    "last_name": "Junevicius",
+    "role": "REFERRER",
+    "phone": "703637321",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$J3yqAPF3vojnaQrus17UoV$ZTWZaf6944lU19Ts5hLf0vJ1Q8Dn3JtuDdeHA/uxCgI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "ruslan.gataullin@housevip.cz",
+    "email": "ruslan.gataullin@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:24.113Z",
+    "first_name": "Ruslan",
+    "last_name": "Gataullin",
+    "role": "REFERRER",
+    "phone": "777556600",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$8YcYfWhW9jNMgLzWeYtCJE$y0A3bzWzQCyzQowMAMWqpJ4HVXlfhuFXKpE7vhI4gJ0=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "matus.hadusovsky@housevip.cz",
+    "email": "matus.hadusovsky@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:24.379Z",
+    "first_name": "Matúš",
+    "last_name": "Hadušovský",
+    "role": "REFERRER",
+    "phone": "774025209",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$WAzGHx5e1biAEEuq8T7JGT$ufwWGh8GwxH4QOV4GeHKWsuUm50VnrskfKc5IOgUawY=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "zuzana.pejkova@housevip.cz",
+    "email": "zuzana.pejkova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:24.646Z",
+    "first_name": "Zuzana",
+    "last_name": "Pejková",
+    "role": "REFERRER",
+    "phone": "774898573",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$qQ1NKjp6jxII8dP1jByzo3$J4D7UkPFwDAv1BIX47LAC+1WeUhiZqbkPKdJFlvrTO4=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "karolina.sikorova@housevip.cz",
+    "email": "karolina.sikorova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:24.912Z",
+    "first_name": "Karolína",
+    "last_name": "Sikorová",
+    "role": "REFERRER",
+    "phone": "773999910",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$UOjWuC6L8A3wXd4LrCIXt7$uj+jtd8U1BSx3gB/E5CVdYfoWFnTdWXYJEzXi1USKY0=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "lukas.dusek@housevip.cz",
+    "email": "lukas.dusek@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:25.174Z",
+    "first_name": "Lukas",
+    "last_name": "Dusek",
+    "role": "REFERRER",
+    "phone": "735510675",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$y3N0YBjS5pC19CAkUG7qKS$cnDFnvrDHFsHfXT+ntmF6fUZ0FhW4S+kDwb7g+IyHiU=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "vojtech.ruzicka@housevip.cz",
+    "email": "vojtech.ruzicka@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:25.439Z",
+    "first_name": "Vojtěch",
+    "last_name": "Růžička",
+    "role": "REFERRER",
+    "phone": "735191978",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$XQaGGg7GizzcDrPatyUchr$Jl9H5nZ/W2USHVWOHiQhW6gdfp3ffkPG5tnBox6eyXY=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "vanesa.koenigsteinova@housevip.cz",
+    "email": "vanesa.koenigsteinova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:25.703Z",
+    "first_name": "Vanesa",
+    "last_name": "Koenigsteinová",
+    "role": "REFERRER",
+    "phone": "770166071",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$ZRubJNtzprDc5vECBUGyZC$rS+tVtRphG7HZdrd8IPs+SmF+FQ4t9Vzfk9+Ek9FtdM=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "hoang.tranminh@housevip.cz",
+    "email": "hoang.tranminh@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:25.968Z",
+    "first_name": "Hoang",
+    "last_name": "Tran",
+    "role": "REFERRER",
+    "phone": "774827129",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$MxTFpvxp2odqP7nrHSBOMq$fT7xUpMj6TgIO+3QYtjJ9XZwIxOR/W7bjzdS3ZyvGS0=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "simona.ocelkova@housevip.cz",
+    "email": "simona.ocelkova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:26.233Z",
+    "first_name": "Simona",
+    "last_name": "Ocelková",
+    "role": "REFERRER",
+    "phone": "721189884",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$pFQaudg915EJQsanT72Tzi$1UvtSXvyvR3C86T6K1GhJn0VWJht0jvjhLcbm/DbtWk=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "miroslava.burtyn@housevip.cz",
+    "email": "miroslava.burtyn@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:26.497Z",
+    "first_name": "Miroslava",
+    "last_name": "Burtyn",
+    "role": "REFERRER",
+    "phone": "702176530",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$jUUzO4WKioAJbXuzO03hSz$HgmIOIN5SvgRvTvrUYqkxFDCSCO1YKaYNd0oB9nPNEc=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "sabina.lugarova@housevip.cz",
+    "email": "sabina.lugarova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:26.766Z",
+    "first_name": "Sabina",
+    "last_name": "Lugárová",
+    "role": "REFERRER",
+    "phone": "421902739744",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$LhSc6sfERrkKWqqimOrC3G$yAN9L54MIgmNXjwgioDb3Y6EbGySoUpeMaOhksdPjxY=",
+    "last_login": "2026-01-09T21:08:55.190Z",
+    "is_superuser": false,
+    "username": "babak.radek@housevip.cz",
+    "email": "babak.radek@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:27.030Z",
+    "first_name": "Radislav",
+    "last_name": "Babák",
+    "role": "REFERRER_MANAGER",
+    "phone": "777769581",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$drRVeygKhTeN7DJX1uK49T$LFwdmHQe/TECjk08jKwbLPDH8xuVjKCMF4oZf2CKRfY=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "radek.slemar@housevip.cz",
+    "email": "radek.slemar@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:27.295Z",
+    "first_name": "Radek",
+    "last_name": "Šlemar",
+    "role": "REFERRER",
+    "phone": "733721227",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$k0j2TTskcDICUycE5QMu3B$xDfd2w995QLkSEk2hKSPn4HN7ShO65adwOivOcUvt6k=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "sarka.slemarova@housevip.cz",
+    "email": "sarka.slemarova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:27.565Z",
+    "first_name": "Šárka",
+    "last_name": "Šlemarová",
+    "role": "REFERRER",
+    "phone": "737251015",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$26KqYY1uVb7UpAvyDa1gJV$4spIGz2PeZbQRT4ATCE8pY1gpY2FgTprB87lbC9EcvI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "bohdan.nestr@housevip.cz",
+    "email": "bohdan.nestr@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:27.831Z",
+    "first_name": "Bohdan",
+    "last_name": "Nestr",
+    "role": "REFERRER",
+    "phone": "739697594",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$z9uwF7iRtxraB5wbyJUJvB$pccRWCTSeIe0fHr6xe1Q2SahAf9z7TdYWVWH0GJ0edQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "edita.krystynkova@housevip.cz",
+    "email": "edita.krystynkova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:28.097Z",
+    "first_name": "Edita",
+    "last_name": "Krystynková",
+    "role": "REFERRER",
+    "phone": "724718888",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$aK94hbq2Igzg9U31cVZmsN$qI8dXTsIivWkBCHoPetOWEOm7ao2qSI0Iaoom8cVqv8=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "eva.jurkova@housevip.cz",
+    "email": "eva.jurkova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:28.362Z",
+    "first_name": "Eva",
+    "last_name": "Jurková",
+    "role": "REFERRER",
+    "phone": "725518679",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$hGrB5nBmFBYo66DOT7cyNy$GK9tSft31X7f+atuoPhOwPDhojKnDBUfGuD8Cp7IuQc=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "ivana.krsekova@housevip.cz",
+    "email": "ivana.krsekova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:28.629Z",
+    "first_name": "Ivana",
+    "last_name": "Krseková",
+    "role": "REFERRER",
+    "phone": "604712216",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$KTa8UsXk2RDebhgGpoTxiL$iiM3a5tesfaPY8+U+g0ZwrBXVEzK1tEyHBRBLTNc/q0=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "bohdan.bojsak@housevip.cz",
+    "email": "bohdan.bojsak@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:28.897Z",
+    "first_name": "Bohdan",
+    "last_name": "Bojsak",
+    "role": "REFERRER",
+    "phone": "775281487",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$CfPsA8xqRayIRItk9ahxoy$lXQ5YMQGYtXF4LDKpkhO5uOcIldTt+sxENAiUpBEjGA=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "martina.prusova@housevip.cz",
+    "email": "martina.prusova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:29.164Z",
+    "first_name": "Martina",
+    "last_name": "Průšová",
+    "role": "REFERRER",
+    "phone": "723870743",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$YACjZJUgYqlgCia5wCwsdY$k+ZRHJh7XMbofL11wGROdMWZQkYjDg5R43XAdpM2ja0=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "tomas.merkl@housevip.cz",
+    "email": "tomas.merkl@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:29.429Z",
+    "first_name": "Tomáš",
+    "last_name": "Merkl",
+    "role": "REFERRER",
+    "phone": "605168978",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$Kv0pu8DTTTNL8IMJabt14y$r32GQnKIMJgbolXfH8Astha/JNx+XzSqNR6u60gPQaI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "felicia.jocelyn.sengkey@housevip.cz",
+    "email": "felicia.jocelyn.sengkey@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:29.695Z",
+    "first_name": "Felicia",
+    "last_name": "Jocelyn",
+    "role": "REFERRER",
+    "phone": "737058838",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$MFHGH1lbOLyS0F4F0gaVgs$+FhK3kd6Lvq7myua16t0sGSGPjHESaLL4eMZqahMAR0=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "ondrej.herskovic@housevip.cz",
+    "email": "ondrej.herskovic@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:29.960Z",
+    "first_name": "Ondřej",
+    "last_name": "Herskovič",
+    "role": "REFERRER",
+    "phone": "724039730",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$9xHEPCYKNtQ1IlhtgrPXct$/6K4erT5iVMqpRPuab5cixL8K1RO/LJo6UKmh1L8fO0=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "pavel.gusti@housevip.cz",
+    "email": "pavel.gusti@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:30.227Z",
+    "first_name": "Pavel",
+    "last_name": "Gusti",
+    "role": "REFERRER",
+    "phone": "608018354",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$Ff38aHRuD7AwzjGjpQnl3x$wdQekbrwFX+coktDUlLcjDRc/qvQ6SKyjwOYx/tz2zU=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "anna.vershyhora@housevip.cz",
+    "email": "anna.vershyhora@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:30.493Z",
+    "first_name": "Anna",
+    "last_name": "Vershyhora",
+    "role": "REFERRER",
+    "phone": "608019000",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$XoFFmcDueQy5aO0YU1ErtO$umAW+7buHtE0jg65mJ2UwqnJSHA6Zx5h6/lgt7kWvcg=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "anastasiia.vozniuk@housevip.cz",
+    "email": "anastasiia.vozniuk@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:30.753Z",
+    "first_name": "Anastasiia",
+    "last_name": "Vozniuk",
+    "role": "REFERRER",
+    "phone": "725360224",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$38KVoG0qeML33RZ6MtB3fE$7ojGrMgzVmwbXbUxb4s+GXik007/Lwu+A3rA6WdqeXs=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "stepan.svoboda@housevip.cz",
+    "email": "stepan.svoboda@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:31.019Z",
+    "first_name": "Štěpán",
+    "last_name": "Svoboda",
+    "role": "REFERRER",
+    "phone": "776484266",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$OXgkNjaxFOnE1YQfXIa5Ao$womo4HSRk6s2MafhcD58SSKSruMoSYtN6G4U/DUO0j0=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "diana.ertel@housevip.cz",
+    "email": "diana.ertel@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:31.286Z",
+    "first_name": "Diana",
+    "last_name": "Ertel",
+    "role": "REFERRER",
+    "phone": "773481043",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$rHH6wBxqGf5TW47QztZDDE$OA7AfEEPUjC+7m4wHHzxrPEix7OP21BjqqBOmMuX7Ok=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "mariia.khomenko@housevip.cz",
+    "email": "mariia.khomenko@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:31.551Z",
+    "first_name": "Mariia",
+    "last_name": "Khomenko",
+    "role": "REFERRER",
+    "phone": "604125152",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$K99yZ9faAZVsvNxNvxwR5p$EhcxjiaUXthVCLk8mpm++sv1sE087mD8zz3PrqwOjVc=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "stanislav.svoboda@housevip.cz",
+    "email": "stanislav.svoboda@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:31.816Z",
+    "first_name": "Stanislav",
+    "last_name": "Svoboda",
+    "role": "REFERRER",
+    "phone": "704175815",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$qhP0vrGaFskuxlMne99m0d$8jnUzawSnkWXoX0IzBp4bwTFZ8iXxszYIpcD70MRCP4=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "maria.martyniuk@housevip.cz",
+    "email": "maria.martyniuk@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:32.079Z",
+    "first_name": "Maria",
+    "last_name": "Martyniuk",
+    "role": "REFERRER",
+    "phone": "778593047",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$qGHo9Qt1DXqKxlXXDprytD$U+rPgC9nRAiuFZdywaRyBGZezOaP9vtwX/hzS7R6p1g=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "karolina.kubynets@housevip.cz",
+    "email": "karolina.kubynets@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:32.342Z",
+    "first_name": "Karolína",
+    "last_name": "Kubynets",
+    "role": "REFERRER",
+    "phone": "725597362",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$2WhaJNl2AcY6RakQ4wJDcV$6eaES4HlsqHi+XxZAhEVuX725wiI/HJ993VC4ztcAig=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "elisabeth.dostalova@housevip.cz",
+    "email": "elisabeth.dostalova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:32.602Z",
+    "first_name": "Elisabeth",
+    "last_name": "Dostalová",
+    "role": "REFERRER",
+    "phone": "778044020",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$ofkrMHkhxHmW3rmwKyganc$zuOddYpWFlGjIpUpvBXrd+GUlMS2/V3+Vyveeo/cElo=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "jiri.pavlacka@housevip.cz",
+    "email": "jiri.pavlacka@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:32.865Z",
+    "first_name": "Jiří",
+    "last_name": "Pavlačka",
+    "role": "REFERRER",
+    "phone": "731440200",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$4TVxXkfD7ATVsbKgHKiCeo$w01FvZE3aM8De3eSUGWXRHh4/cobnvV7f1Hl73gtehg=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "adam.link@housevip.cz",
+    "email": "adam.link@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:33.129Z",
+    "first_name": "Adam",
+    "last_name": "Link",
+    "role": "REFERRER",
+    "phone": "603832497",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$FiyNrGtjxmUQlCqh8tZuCw$rsO2h5SOl3g3HsZJJFn0sHaP/L2VspbYew436CfDnf4=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "sabri.abaza@housevip.cz",
+    "email": "sabri.abaza@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:33.394Z",
+    "first_name": "Sabri",
+    "last_name": "Abaza",
+    "role": "REFERRER",
+    "phone": "734130819",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$rwKzpuJIATSBxb3MZSxSB3$af4KiSFraD+6xTtTFgYXd6A0XzTObC6MrHO8JBvhG8E=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "barbara.zamborova@housevip.cz",
+    "email": "barbara.zamborova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:33.659Z",
+    "first_name": "Barbara",
+    "last_name": "Žamborová",
+    "role": "REFERRER",
+    "phone": "720859876",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$1yW7U1fJ0NHbRCFnZ9Jq7s$cfvPHSWrPBoENaTAoyoBGXs4iCL1t0r2JUQD+SlGJGE=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "christian.gabriel.kozel@housevip.cz",
+    "email": "christian.gabriel.kozel@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:33.923Z",
+    "first_name": "Christian",
+    "last_name": "Gabriel",
+    "role": "REFERRER",
+    "phone": "735203821",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$xGc7yFgFjqArmDcpfvLOam$XXu6Y2/WgAD35YBJ/1zqP2wuY1eMmi+sgRGm50VVcPQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "martin.jech@housevip.cz",
+    "email": "martin.jech@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:34.186Z",
+    "first_name": "Martin",
+    "last_name": "Jech",
+    "role": "REFERRER",
+    "phone": "605364001",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$jVnYI6lStQlVDqClwbFTn8$BeEzsWNTdOCToCWTdnIdIjRxKEVI8V9k68Re2o2tskU=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "ilona.chladkova@housevip.cz",
+    "email": "ilona.chladkova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:34.446Z",
+    "first_name": "Ilona",
+    "last_name": "Chládková",
+    "role": "REFERRER",
+    "phone": "607051774",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$vKJtoXIgyctVm0OPqcha9z$DF/vJKfHQoZXABNJrruyjHp1RW4CDUajFx3YmvhWE4o=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "anna.patsegon@housevip.cz",
+    "email": "anna.patsegon@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:34.712Z",
+    "first_name": "Anna",
+    "last_name": "Patsegon",
+    "role": "REFERRER",
+    "phone": "773976397",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$Dq2UY4lmsYyKwqbSSy8W0N$5wfbjVyadmkrOLhuJdgacB0sFzt8lNw91m7MkAnH/+U=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "diana.onyshchuk@housevip.cz",
+    "email": "diana.onyshchuk@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:34.975Z",
+    "first_name": "Diana",
+    "last_name": "Onyshchuk",
+    "role": "REFERRER",
+    "phone": "777598891",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$hfAlGIE34db8lMfNNMnT2S$N4/5CWoXcY544ci7DAjcmteHAMpc7rjZSkHSh5HYR0g=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "helena.baxova@housevip.cz",
+    "email": "helena.baxova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:35.241Z",
+    "first_name": "Helena",
+    "last_name": "Baxová",
+    "role": "REFERRER",
+    "phone": "739368210",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$u75qVYEB0MsOEuTlFvzvZG$Skl/9LU+h2QelwDbACIb4bnkdh+bRhD6F1MA3CL2wBs=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "viktor.dimitrov@housevip.cz",
+    "email": "viktor.dimitrov@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:35.504Z",
+    "first_name": "Viktor",
+    "last_name": "Dimitrov",
+    "role": "REFERRER",
+    "phone": "773682733",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$cjgTTOB2HaWh3JgGowTjBU$YPWxSXVptbw3E+Fy33lr8cpwvluDyWDGsXAnt5TAoio=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "josef.mandinec@housevip.cz",
+    "email": "josef.mandinec@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:35.768Z",
+    "first_name": "Josef",
+    "last_name": "Mandinec",
+    "role": "REFERRER",
+    "phone": "739639838",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$WTMQE9vJE70Mj6IavLgUrM$wslxKz+CB3cu7Yn/0JysXhiWaeRUgg17qBBCsVaVh28=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "denis.panagopulos@housevip.cz",
+    "email": "denis.panagopulos@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:36.034Z",
+    "first_name": "Denis",
+    "last_name": "Panagopulos",
+    "role": "REFERRER",
+    "phone": "732655303",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$iCF4aOluwQSBFtmxjSHYJJ$EEG8wO2OAIpQCuxJN8R0a7hFTdg8YvefN74mKzjUYRI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "yulia.solozobova@housevip.cz",
+    "email": "yulia.solozobova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:36.302Z",
+    "first_name": "Yulia",
+    "last_name": "Solozobova",
+    "role": "REFERRER",
+    "phone": "777615620",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$dPfitq1udX1QWRkUGZzRjY$72srI+vMKb5y5JcCZTrlAtkIFpkQuwo30WR5YbziyxU=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "patrick.walus@housevip.cz",
+    "email": "patrick.walus@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:36.567Z",
+    "first_name": "Patrick",
+    "last_name": "Walus",
+    "role": "REFERRER",
+    "phone": "775885150",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$QeIjzFxmSAwTs8933GvVG9$hZRXlf6BpwawB+CGWDsgxjgr/Yi90BDePirAbP0n8fk=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "oliver.simek@housevip.cz",
+    "email": "oliver.simek@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:36.831Z",
+    "first_name": "Oliver",
+    "last_name": "Šimek",
+    "role": "REFERRER",
+    "phone": "606715012",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$PHVR0h6xYEsSKS6bk6YpjF$Xwz9JHAqzLNAexyVkWVDEWtV4pslNNkwffUi/beBDvE=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "jan.otakar.pisa@housevip.cz",
+    "email": "jan.otakar.pisa@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:37.094Z",
+    "first_name": "Jan",
+    "last_name": "Otakar",
+    "role": "REFERRER",
+    "phone": "731802013",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$fhd92AIOExpfIeBQ2A4Gaq$OzRUV6lHwsgKU76lMIyVBqoz6ReQXo+8+XNolNLl32c=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "nataliia.yasinska@housevip.cz",
+    "email": "nataliia.yasinska@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:37.365Z",
+    "first_name": "Nataliia",
+    "last_name": "Yasinska",
+    "role": "REFERRER",
+    "phone": "724179555",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$rype9sZAf3ZGcSO2boM0wZ$wcJ1bSVlRGfH4UO8w8KQXSbgOSBrM5MrFua/FB+Oz/c=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "lukas.riedl@housevip.cz",
+    "email": "lukas.riedl@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:37.629Z",
+    "first_name": "Lukáš",
+    "last_name": "Riedl",
+    "role": "REFERRER",
+    "phone": "777648541",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$Q0SzE9ZTxf5tSBxHWhJCYd$xcOKOYM2aCRrGEeX1x0U88tTohDXWCJP9lFptwD48bs=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "ubajdulla.muratov@housevip.cz",
+    "email": "ubajdulla.muratov@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:37.893Z",
+    "first_name": "Ubajdulla",
+    "last_name": "Muratov",
+    "role": "REFERRER",
+    "phone": "774127211",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$NkrwK9b0KfXJd8Ak6BEQkW$0T+OSwHIHi7jrDv8CMuJK5sXgTP3fZMvczF4znpVsXY=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "amina.stoletsova@housevip.cz",
+    "email": "amina.stoletsova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:38.157Z",
+    "first_name": "Amina",
+    "last_name": "Stoletsová",
+    "role": "REFERRER",
+    "phone": "608077414",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$nVhHLjE1C64VdBDXi1zx4O$RETdd3UeW4Wqb+XMfMdCdmhEQiPRuXW7QrSQnfTzKOA=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "marjan.stevanoski@housevip.cz",
+    "email": "marjan.stevanoski@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:38.420Z",
+    "first_name": "Marjan",
+    "last_name": "Stevanoski",
+    "role": "REFERRER_MANAGER",
+    "phone": "774793221",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$TAuehkRInymH6WI11UXHZS$pSIIJw9t3Y56cZ7CfELbotRAm9e4tHP13oLnrNxlnLw=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "petr.poklop@housevip.cz",
+    "email": "petr.poklop@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:38.685Z",
+    "first_name": "Petr",
+    "last_name": "Poklop",
+    "role": "REFERRER",
+    "phone": "607026037",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$jY79DaJfYhK1cY2A0o0xgE$chlIB2qXFP46XBoIPcn972av8lFfQRCyz1sHbPBfv9s=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "valerie.zobkova@housevip.cz",
+    "email": "valerie.zobkova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:38.950Z",
+    "first_name": "Valerie",
+    "last_name": "Zobkova",
+    "role": "REFERRER",
+    "phone": "731379981",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$RO197IhXqC6wdqqw8YVOO6$+F0BaLSvYooeAuLw5JmVS+RmjZGfwMufIF6SJ0odm6M=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "nataliia.kolodynska@housevip.cz",
+    "email": "nataliia.kolodynska@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:39.215Z",
+    "first_name": "Nataliia",
+    "last_name": "Kolodynska",
+    "role": "REFERRER",
+    "phone": "733472694",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$pJLE8bjcPYYvRHAdPx84F3$zRAPBWDtd9/Ax/jRoAfVgWO1gjTuu4ZJZjhuC88Jxgg=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "marek.petruj@housevip.cz",
+    "email": "marek.petruj@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:39.483Z",
+    "first_name": "Marek",
+    "last_name": "Petrůj",
+    "role": "REFERRER_MANAGER",
+    "phone": "608941400",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$LDyXpycSoGBtsTsb9nAHTV$lGymKjOaOXj+WleIKT7Ba6OAGT2aG83018x5Lmc99rk=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "jana.skvirsky@housevip.cz",
+    "email": "jana.skvirsky@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:39.742Z",
+    "first_name": "Jana",
+    "last_name": "Skvirsky",
+    "role": "REFERRER",
+    "phone": "775574893",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$MzBywsQIVojCM9vIeWmAKh$AZz7jfiTOy0j8C8JsKdDYwEaroo3Ys4L6A4iim1pJkI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "janetta.cekalova@housevip.cz",
+    "email": "janetta.cekalova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:40.009Z",
+    "first_name": "Janetta",
+    "last_name": "Čekalová",
+    "role": "REFERRER",
+    "phone": "774159872",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$NSwIU6NfveDN2zVJpsRV8F$/cn36ZtL9ne8BlR6AuiRUdeE249eg5Mj/Jd7/eNIYoc=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "alzbeta.frtusova@housevip.cz",
+    "email": "alzbeta.frtusova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:40.272Z",
+    "first_name": "Alžbeta",
+    "last_name": "Frtúsová",
+    "role": "REFERRER",
+    "phone": "608291967",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$BONGCBAZXuQVKf8mzM3nB5$McgyXIbxN/VWHYtv7nnzYXjAlZbXpWTivQrTN/G2jfg=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "tereza.polaskova@housevip.cz",
+    "email": "tereza.polaskova@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:40.536Z",
+    "first_name": "Tereza",
+    "last_name": "Polášková",
+    "role": "REFERRER",
+    "phone": "774483933",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$D1bCizKId7BWRpT79LeEuF$ZH2J28xtJCVMAYATkwVolrxZNnAs7Bru415hK43Eu+o=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "roman.vagenknecht@housevip.cz",
+    "email": "roman.vagenknecht@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:40.801Z",
+    "first_name": "Roman",
+    "last_name": "Vagenknecht",
+    "role": "REFERRER",
+    "phone": "724216553",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$P7Xo5eiEYEkaQrrMpFRnR1$6WwvL3WLRY6zrRD67w73rNlB61PN9tVGGi97oLi8gfA=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "noel.peszeki@housevip.cz",
+    "email": "noel.peszeki@housevip.cz",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-01-09T20:59:41.066Z",
+    "first_name": "Noel",
+    "last_name": "Peszeki",
+    "role": "REFERRER",
+    "phone": "603288446",
+    "has_admin_access": false,
+    "commission_total_per_million": "7000",
+    "commission_referrer_pct": "50.00",
+    "commission_manager_pct": "10.00",
+    "commission_office_pct": "40.00",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 17,
+  "fields": {
+    "user": [
+      "pavel.vins@housevip.cz"
+    ],
+    "manager": null,
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 18,
+  "fields": {
+    "user": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 19,
+  "fields": {
+    "user": [
+      "valeriy.karpenko@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 20,
+  "fields": {
+    "user": [
+      "pavel.bujok@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 21,
+  "fields": {
+    "user": [
+      "veronika.loulova@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 22,
+  "fields": {
+    "user": [
+      "artur.kurlikovskyy@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 23,
+  "fields": {
+    "user": [
+      "jaroslav.javurek@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 24,
+  "fields": {
+    "user": [
+      "kamila.hejnarova@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 25,
+  "fields": {
+    "user": [
+      "georgi.stoychev@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 26,
+  "fields": {
+    "user": [
+      "zdenek.maceska@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 27,
+  "fields": {
+    "user": [
+      "alla.fedorova@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 28,
+  "fields": {
+    "user": [
+      "josef.vostry@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 29,
+  "fields": {
+    "user": [
+      "vladimir.stastny@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 30,
+  "fields": {
+    "user": [
+      "katerina.chabova@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 31,
+  "fields": {
+    "user": [
+      "kamila.kovacova@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 32,
+  "fields": {
+    "user": [
+      "karel.hartman@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 33,
+  "fields": {
+    "user": [
+      "jiri.fleischhans@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 34,
+  "fields": {
+    "user": [
+      "krzysztof.piegza@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 35,
+  "fields": {
+    "user": [
+      "kristyna.stankova@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 36,
+  "fields": {
+    "user": [
+      "lukas.mysik@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 37,
+  "fields": {
+    "user": [
+      "milada.safrankova@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 38,
+  "fields": {
+    "user": [
+      "dana.gulamova@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 39,
+  "fields": {
+    "user": [
+      "daryna.konotop@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 40,
+  "fields": {
+    "user": [
+      "natalia.levicky@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 41,
+  "fields": {
+    "user": [
+      "nadiia.barychka@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 42,
+  "fields": {
+    "user": [
+      "bojasova@seznam.cz"
+    ],
+    "manager": null,
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 43,
+  "fields": {
+    "user": [
+      "natalia.vladychenko@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 44,
+  "fields": {
+    "user": [
+      "simeon.kerzhbaum@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 45,
+  "fields": {
+    "user": [
+      "sabina.hoferikova@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 46,
+  "fields": {
+    "user": [
+      "karel.koenigstein@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 47,
+  "fields": {
+    "user": [
+      "nikola.fabingerova@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 48,
+  "fields": {
+    "user": [
+      "oryna.junevicius@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 49,
+  "fields": {
+    "user": [
+      "ruslan.gataullin@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 50,
+  "fields": {
+    "user": [
+      "matus.hadusovsky@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 51,
+  "fields": {
+    "user": [
+      "zuzana.pejkova@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 52,
+  "fields": {
+    "user": [
+      "karolina.sikorova@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 53,
+  "fields": {
+    "user": [
+      "lukas.dusek@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 54,
+  "fields": {
+    "user": [
+      "vojtech.ruzicka@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 55,
+  "fields": {
+    "user": [
+      "vanesa.koenigsteinova@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 56,
+  "fields": {
+    "user": [
+      "hoang.tranminh@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 57,
+  "fields": {
+    "user": [
+      "simona.ocelkova@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 58,
+  "fields": {
+    "user": [
+      "miroslava.burtyn@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 59,
+  "fields": {
+    "user": [
+      "sabina.lugarova@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 60,
+  "fields": {
+    "user": [
+      "babak.radek@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 61,
+  "fields": {
+    "user": [
+      "radek.slemar@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 62,
+  "fields": {
+    "user": [
+      "sarka.slemarova@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 63,
+  "fields": {
+    "user": [
+      "bohdan.nestr@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 64,
+  "fields": {
+    "user": [
+      "edita.krystynkova@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 65,
+  "fields": {
+    "user": [
+      "eva.jurkova@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 66,
+  "fields": {
+    "user": [
+      "ivana.krsekova@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 67,
+  "fields": {
+    "user": [
+      "bohdan.bojsak@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 68,
+  "fields": {
+    "user": [
+      "martina.prusova@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 69,
+  "fields": {
+    "user": [
+      "tomas.merkl@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 70,
+  "fields": {
+    "user": [
+      "felicia.jocelyn.sengkey@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 71,
+  "fields": {
+    "user": [
+      "ondrej.herskovic@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 72,
+  "fields": {
+    "user": [
+      "pavel.gusti@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 73,
+  "fields": {
+    "user": [
+      "anna.vershyhora@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 74,
+  "fields": {
+    "user": [
+      "anastasiia.vozniuk@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 75,
+  "fields": {
+    "user": [
+      "stepan.svoboda@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 76,
+  "fields": {
+    "user": [
+      "diana.ertel@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 77,
+  "fields": {
+    "user": [
+      "mariia.khomenko@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 78,
+  "fields": {
+    "user": [
+      "stanislav.svoboda@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 79,
+  "fields": {
+    "user": [
+      "maria.martyniuk@housevip.cz"
+    ],
+    "manager": null,
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 80,
+  "fields": {
+    "user": [
+      "karolina.kubynets@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 81,
+  "fields": {
+    "user": [
+      "elisabeth.dostalova@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 82,
+  "fields": {
+    "user": [
+      "jiri.pavlacka@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 83,
+  "fields": {
+    "user": [
+      "adam.link@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 84,
+  "fields": {
+    "user": [
+      "sabri.abaza@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 85,
+  "fields": {
+    "user": [
+      "barbara.zamborova@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 86,
+  "fields": {
+    "user": [
+      "christian.gabriel.kozel@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 87,
+  "fields": {
+    "user": [
+      "martin.jech@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 88,
+  "fields": {
+    "user": [
+      "ilona.chladkova@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 89,
+  "fields": {
+    "user": [
+      "anna.patsegon@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 90,
+  "fields": {
+    "user": [
+      "diana.onyshchuk@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 91,
+  "fields": {
+    "user": [
+      "helena.baxova@housevip.cz"
+    ],
+    "manager": null,
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 92,
+  "fields": {
+    "user": [
+      "viktor.dimitrov@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 93,
+  "fields": {
+    "user": [
+      "josef.mandinec@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 94,
+  "fields": {
+    "user": [
+      "denis.panagopulos@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 95,
+  "fields": {
+    "user": [
+      "yulia.solozobova@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 96,
+  "fields": {
+    "user": [
+      "patrick.walus@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 97,
+  "fields": {
+    "user": [
+      "oliver.simek@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 98,
+  "fields": {
+    "user": [
+      "jan.otakar.pisa@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 99,
+  "fields": {
+    "user": [
+      "nataliia.yasinska@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 100,
+  "fields": {
+    "user": [
+      "lukas.riedl@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 101,
+  "fields": {
+    "user": [
+      "ubajdulla.muratov@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 102,
+  "fields": {
+    "user": [
+      "amina.stoletsova@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 103,
+  "fields": {
+    "user": [
+      "marjan.stevanoski@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 104,
+  "fields": {
+    "user": [
+      "petr.poklop@housevip.cz"
+    ],
+    "manager": [
+      "marjan.stevanoski@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 105,
+  "fields": {
+    "user": [
+      "valerie.zobkova@housevip.cz"
+    ],
+    "manager": [
+      "marjan.stevanoski@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 106,
+  "fields": {
+    "user": [
+      "nataliia.kolodynska@housevip.cz"
+    ],
+    "manager": [
+      "marjan.stevanoski@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 107,
+  "fields": {
+    "user": [
+      "marek.petruj@housevip.cz"
+    ],
+    "manager": [
+      "pavel.vins@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 108,
+  "fields": {
+    "user": [
+      "jana.skvirsky@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 109,
+  "fields": {
+    "user": [
+      "janetta.cekalova@housevip.cz"
+    ],
+    "manager": [
+      "babak.radek@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 110,
+  "fields": {
+    "user": [
+      "alzbeta.frtusova@housevip.cz"
+    ],
+    "manager": [
+      "marjan.stevanoski@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 111,
+  "fields": {
+    "user": [
+      "tereza.polaskova@housevip.cz"
+    ],
+    "manager": [
+      "marek.petruj@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 112,
+  "fields": {
+    "user": [
+      "roman.vagenknecht@housevip.cz"
+    ],
+    "manager": [
+      "marek.petruj@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+},
+{
+  "model": "accounts.referrerprofile",
+  "pk": 113,
+  "fields": {
+    "user": [
+      "noel.peszeki@housevip.cz"
+    ],
+    "manager": [
+      "alexander.koenigstein@housevip.cz"
+    ],
+    "last_chosen_advisor": null,
+    "advisors": [
+      [
+        "poradce1"
+      ],
+      [
+        "poradce2"
+      ]
+    ]
+  }
+}
+]
