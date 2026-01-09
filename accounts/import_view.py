@@ -8,6 +8,7 @@ from django.db import transaction
 from accounts.models import User, ReferrerProfile
 import json
 import os
+import traceback
 
 
 @staff_member_required
@@ -104,13 +105,14 @@ def import_users_view(request):
         """)
 
     except Exception as e:
+        error_traceback = traceback.format_exc()
         return HttpResponse(f"""
             <html>
             <head><title>Import Failed</title></head>
             <body style="font-family: sans-serif; padding: 40px;">
                 <h1 style="color: red;">✗ Import Failed</h1>
                 <p><strong>Error:</strong> {str(e)}</p>
-                <pre>{import traceback; traceback.format_exc()}</pre>
+                <pre>{error_traceback}</pre>
                 <p><a href="/admin/">Back to Admin</a></p>
             </body>
             </html>
