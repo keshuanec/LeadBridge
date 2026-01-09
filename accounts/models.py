@@ -179,3 +179,50 @@ class ManagerProfile(models.Model):
 
     def __str__(self):
         return f"Profil manažera: {self.user}"
+
+
+class BrandingSettings(models.Model):
+    """
+    Nastavení brandingu (barvy, logo) pro advisora s administrativním přístupem.
+    Branding se aplikuje na všechny podřízené uživatele (referrers, advisors bez admin přístupu).
+    """
+    owner = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="branding_settings",
+        limit_choices_to={"role": User.Role.ADVISOR, "has_admin_access": True},
+        verbose_name="Vlastník brandingu",
+        help_text="Advisor s administrativním přístupem, který může upravovat branding pro svůj tým.",
+    )
+
+    navbar_color = models.CharField(
+        "Barva navbaru",
+        max_length=7,
+        default="#1F6F7A",
+        help_text="Hex kód barvy pro tmavou část navbaru (např. #1F6F7A).",
+    )
+
+    navbar_text_color = models.CharField(
+        "Barva textu v navbaru",
+        max_length=7,
+        default="#FFFFFF",
+        help_text="Hex kód barvy pro text v navbaru (např. #FFFFFF pro bílou).",
+    )
+
+    logo = models.ImageField(
+        "Vlastní logo",
+        upload_to="branding/logos/",
+        null=True,
+        blank=True,
+        help_text="Vlastní logo, které se zobrazí místo defaultního LeadBridge loga.",
+    )
+
+    created_at = models.DateTimeField("Vytvořeno", auto_now_add=True)
+    updated_at = models.DateTimeField("Aktualizováno", auto_now=True)
+
+    class Meta:
+        verbose_name = "Nastavení brandingu"
+        verbose_name_plural = "Nastavení brandingu"
+
+    def __str__(self):
+        return f"Branding: {self.owner.get_full_name()}"

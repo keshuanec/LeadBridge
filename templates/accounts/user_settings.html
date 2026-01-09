@@ -21,9 +21,13 @@
         <p><strong>Telefon:</strong> {{ user.phone|default:"—" }}</p>
         <p><strong>Role:</strong> {{ user.get_role_display }}</p>
 
-        <div style="margin-top: 24px; display: flex; gap: 12px;">
+        <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">
             <a href="{% url 'edit_profile' %}" class="btn btn-primary">Upravit údaje</a>
             <a href="{% url 'change_password' %}" class="btn btn-secondary">Změnit heslo</a>
+            {# TODO: Branding system - zakomentováno pro budoucí použití #}
+            {# {% if user.role == user.Role.ADVISOR and user.has_admin_access %} #}
+            {#     <a href="{% url 'branding_settings' %}" class="btn btn-primary" style="background: var(--green-primary);">Nastavení brandingu</a> #}
+            {# {% endif %} #}
         </div>
     </div>
 

@@ -334,6 +334,12 @@
             <!-- Logo / název aplikace -->
             <a href="{% url 'overview' %}" class="brand">
                 <img src="{% static 'logo.svg' %}" alt="LeadBridge">
+                {# TODO: Branding system - custom logo zakomentováno pro budoucí použití #}
+                {# {% if custom_logo %} #}
+                {#     <img src="{{ custom_logo }}" alt="Logo"> #}
+                {# {% else %} #}
+                {#     <img src="{% static 'logo.svg' %}" alt="LeadBridge"> #}
+                {# {% endif %} #}
             </a>
         </div>
 

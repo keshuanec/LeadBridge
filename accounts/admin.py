@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .models import User, ReferrerProfile, Office, ManagerProfile
+from .models import User, ReferrerProfile, Office, ManagerProfile, BrandingSettings
 
 
 @admin.register(User)
@@ -78,3 +78,10 @@ class ManagerProfileAdmin(admin.ModelAdmin):
     list_filter = ("office",)
     search_fields = ("user__username", "user__first_name", "user__last_name")
     autocomplete_fields = ["user", "office"]
+
+@admin.register(BrandingSettings)
+class BrandingSettingsAdmin(admin.ModelAdmin):
+    list_display = ("owner", "navbar_color", "navbar_text_color", "logo", "updated_at")
+    search_fields = ("owner__username", "owner__first_name", "owner__last_name")
+    autocomplete_fields = ["owner"]
+    readonly_fields = ("created_at", "updated_at")

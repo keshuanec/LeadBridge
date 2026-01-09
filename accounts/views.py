@@ -4,6 +4,8 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django import forms
+from django.http import HttpResponseForbidden
+from accounts.models import BrandingSettings, User
 
 
 class UserProfileForm(forms.Form):
@@ -84,3 +86,51 @@ def change_password(request):
         form = PasswordChangeForm(user)
 
     return render(request, "accounts/change_password.html", {"form": form, "user": user})
+
+
+class BrandingSettingsForm(forms.ModelForm):
+    """Formulář pro nastavení brandingu"""
+    class Meta:
+        model = BrandingSettings
+        fields = ['navbar_color', 'navbar_text_color', 'logo']
+        widgets = {
+            'navbar_color': forms.TextInput(attrs={
+                'type': 'color',
+                'class': 'color-picker',
+            }),
+            'navbar_text_color': forms.TextInput(attrs={
+                'type': 'color',
+                'class': 'color-picker',
+            }),
+        }
+
+
+@login_required
+def branding_settings(request):
+    """
+    Zobrazí a upraví nastavení brandingu.
+    Pouze pro advisora s administrativním přístupem.
+    """
+    user = request.user
+
+    # Kontrola oprávnění
+    if user.role != User.Role.ADVISOR or not user.has_admin_access:
+        return HttpResponseForbidden("Nemáte oprávnění k úpravě nastavení brandingu.")
+
+    # Získat nebo vytvořit BrandingSettings pro tohoto uživatele
+    branding, created = BrandingSettings.objects.get_or_create(owner=user)
+
+    if request.method == "POST":
+        form = BrandingSettingsForm(request.POST, request.FILES, instance=branding)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Nastavení brandingu bylo úspěšně uloženo.")
+            return redirect('branding_settings')
+    else:
+        form = BrandingSettingsForm(instance=branding)
+
+    return render(request, "accounts/branding_settings.html", {
+        "form": form,
+        "user": user,
+        "branding": branding,
+    })

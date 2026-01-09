@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Nastavení brandingu{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+    <h2>Nastavení brandingu</h2>
+
+    <p style="color: var(--gray-secondary); margin-bottom: 24px;">
+        Přizpůsobte vzhled aplikace pro všechny své podřízené poradce a doporučitele.
+    </p>
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="{{ form.navbar_color.id_for_label }}">{{ form.navbar_color.label }}</label>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                {{ form.navbar_color }}
+                <span style="color: var(--gray-secondary); font-size: 14px;">
+                    Aktuální: {{ branding.navbar_color }}
+                </span>
+            </div>
+            {% if form.navbar_color.help_text %}
+                <small style="color: var(--gray-secondary);">{{ form.navbar_color.help_text }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.navbar_text_color.id_for_label }}">{{ form.navbar_text_color.label }}</label>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                {{ form.navbar_text_color }}
+                <span style="color: var(--gray-secondary); font-size: 14px;">
+                    Aktuální: {{ branding.navbar_text_color }}
+                </span>
+            </div>
+            {% if form.navbar_text_color.help_text %}
+                <small style="color: var(--gray-secondary);">{{ form.navbar_text_color.help_text }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.logo.id_for_label }}">{{ form.logo.label }}</label>
+
+            {% if branding.logo %}
+                <div style="margin-bottom: 12px; padding: 12px; background: #f8f9fa; border-radius: 4px;">
+                    <p style="margin: 0 0 8px 0; font-weight: 500;">Aktuální logo:</p>
+                    <img src="{{ branding.logo.url }}" alt="Aktuální logo" style="max-height: 60px; max-width: 200px;">
+                </div>
+            {% endif %}
+
+            {{ form.logo }}
+            {% if form.logo.help_text %}
+                <small style="color: var(--gray-secondary); display: block; margin-top: 4px;">
+                    {{ form.logo.help_text }}
+                </small>
+            {% endif %}
+        </div>
+
+        <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid #ddd; display: flex; gap: 12px;">
+            <button type="submit" class="btn btn-primary">Uložit nastavení</button>
+            <a href="{% url 'user_settings' %}" class="btn btn-secondary">Zpět na profil</a>
+        </div>
+    </form>
+
+    <div style="margin-top: 32px; padding: 16px; background: var(--teal-light); border-radius: 4px; border-left: 4px solid var(--teal-primary);">
+        <h3 style="margin: 0 0 8px 0; font-size: 16px;">ℹ️ Informace</h3>
+        <p style="margin: 0; font-size: 14px; line-height: 1.6;">
+            Tyto změny se projeví u všech vašich podřízených uživatelů (poradců bez administr. přístupu,
+            doporučitelů, manažerů a kanceláří). Ostatní uživatelé uvidí defaultní branding aplikace.
+        </p>
+    </div>
+</div>
+
+<style>
+    .color-picker {
+        width: 80px;
+        height: 40px;
+        border: 1px solid var(--gray-border);
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .color-picker:hover {
+        border-color: var(--teal-primary);
+    }
+</style>
+{% endblock %}
