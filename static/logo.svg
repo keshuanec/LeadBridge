@@ -1,12 +1,12 @@
 <svg width="1200" height="260" viewBox="0 0 1200 260" xmlns="http://www.w3.org/2000/svg">
   <style>
     .lead {
-      fill: #1F6F7A;
+      fill: #02375B;
       font-family: 'Inter', Arial, Helvetica, sans-serif;
       font-weight: 600;
     }
     .bridge {
-      fill: #2DBE73;
+      fill: #00AD70;
       font-family: 'Inter', Arial, Helvetica, sans-serif;
       font-weight: 600;
     }
