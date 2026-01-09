@@ -15,7 +15,7 @@ def fix_advisors(apps, schema_editor):
         print(f"SKIP: Could not find advisors - {e}")
         return
 
-    print(f"Found advisors: {jiri.get_full_name()} ({jiri.username}), {michaela.get_full_name()} ({michaela.username})")
+    print(f"Found advisors: {jiri.first_name} {jiri.last_name} ({jiri.username}), {michaela.first_name} {michaela.last_name} ({michaela.username})")
 
     # Delete duplicate advisors from import (poradce1, poradce2)
     duplicates_deleted = 0
@@ -24,7 +24,7 @@ def fix_advisors(apps, schema_editor):
             duplicate = User.objects.get(username=username)
             # Safety check - only delete if no leads are associated
             if not duplicate.leads_assigned.exists():
-                duplicate_name = duplicate.get_full_name()
+                duplicate_name = f"{duplicate.first_name} {duplicate.last_name}"
                 duplicate.delete()
                 duplicates_deleted += 1
                 print(f"  Deleted duplicate advisor: {duplicate_name} ({username})")
