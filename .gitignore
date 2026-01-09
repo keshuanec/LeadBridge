@@ -13,6 +13,9 @@ venv/
 .env*/
 .envrc
 
+# Claude Code
+.claude/
+
 # Django
 db.sqlite3
 db.sqlite3-journal
