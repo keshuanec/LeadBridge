@@ -8,6 +8,7 @@
 
     <h3>Domluvené schůzky</h3>
     {% if meetings %}
+        <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
@@ -44,6 +45,7 @@
             {% endfor %}
             </tbody>
         </table>
+        </div>
     {% else %}
         <p>Žádné schůzky.</p>
     {% endif %}
@@ -52,6 +54,7 @@
 
     <h3>Nově vložené leady</h3>
     {% if new_leads %}
+        <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
@@ -89,6 +92,7 @@
             {% endfor %}
             </tbody>
         </table>
+        </div>
     {% else %}
         <p>Žádné nové leady.</p>
     {% endif %}
@@ -97,6 +101,7 @@
 
     <h3>Běžící obchody</h3>
     {% if deals %}
+        <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
@@ -143,6 +148,7 @@
             {% endfor %}
             </tbody>
         </table>
+        </div>
     {% else %}
         <p>Žádné běžící obchody.</p>
     {% endif %}

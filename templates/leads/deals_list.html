@@ -6,7 +6,10 @@
     <h2>Obchody</h2>
 
 {# Filtry #}
-<form method="get" style="margin-bottom:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;">
+<button type="button" class="btn btn-secondary filters-toggle">Zobrazit filtry</button>
+
+<form method="get" class="filter-form">
+    <div class="filters-content">
     {% if "status" in allowed %}
         <div>
             <label style="font-size:12px; display:block;">Stav obchodu</label>
@@ -86,10 +89,12 @@
 
     <button type="submit" class="btn btn-primary">Filtrovat</button>
     <a href="{% url 'deals_list' %}" class="btn btn-secondary">Zrušit filtry</a>
+    </div>
 </form>
 
 {# Výsledky #}
     {% if deals %}
+        <div class="table-wrapper">
         <table>
             <thead>
                 <tr>
@@ -249,6 +254,7 @@
             {% endfor %}
             </tbody>
         </table>
+        </div>
     {% else %}
         <p>Zatím nemáte žádné obchody.</p>
     {% endif %}

@@ -6,17 +6,103 @@
 <div class="card">
     <h2>Doporučitelé</h2>
 
+{# Filtry #}
+<button type="button" class="btn btn-secondary filters-toggle">Zobrazit filtry</button>
+
+<form method="get" class="filter-form">
+    <div class="filters-content">
+        <div>
+            <label style="font-size:12px; display:block;">Manažer</label>
+            <select name="manager">
+                <option value="">– všichni –</option>
+                <option value="__none__" {% if current_manager == "__none__" %}selected{% endif %}>— bez manažera —</option>
+                {% for m in manager_options %}
+                    <option value="{{ m.id }}" {% if current_manager == m.id|stringformat:"s" %}selected{% endif %}>{{ m.get_full_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label style="font-size:12px; display:block;">Kancelář</label>
+            <select name="office">
+                <option value="">– všechny –</option>
+                <option value="__none__" {% if current_office == "__none__" %}selected{% endif %}>— bez kanceláře —</option>
+                {% for o in office_options %}
+                    <option value="{{ o.id }}" {% if current_office == o.id|stringformat:"s" %}selected{% endif %}>{{ o.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <input type="hidden" name="sort" value="{{ current_sort }}">
+        <input type="hidden" name="dir" value="{{ current_dir }}">
+
+        <button type="submit" class="btn btn-primary">Filtrovat</button>
+        <a href="{% url 'referrers_list' %}" class="btn btn-secondary">Zrušit filtry</a>
+    </div>
+</form>
+
+{# Výsledky #}
     {% if referrer_profiles %}
+        <div class="table-wrapper">
         <table>
     <thead>
     <tr>
-        <th>Doporučitel</th>
-        <th>Manažer</th>
-        <th>Poradci</th>
-        <th>Předané leady</th>
-        <th>Domluvené schůzky</th>
-        <th>Realizované schůzky</th>
-        <th>Dokončené obchody</th>
+        <th>
+            <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=referrer&dir={% if current_sort == 'referrer' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                Doporučitel
+                {% if current_sort == 'referrer' %}
+                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                {% endif %}
+            </a>
+        </th>
+        <th>
+            <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=manager&dir={% if current_sort == 'manager' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                Manažer
+                {% if current_sort == 'manager' %}
+                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                {% endif %}
+            </a>
+        </th>
+        <th>
+            <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=office&dir={% if current_sort == 'office' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                Kancelář
+                {% if current_sort == 'office' %}
+                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                {% endif %}
+            </a>
+        </th>
+        <th>
+            <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=leads&dir={% if current_sort == 'leads' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                Předané leady
+                {% if current_sort == 'leads' %}
+                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                {% endif %}
+            </a>
+        </th>
+        <th>
+            <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=meetings_planned&dir={% if current_sort == 'meetings_planned' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                Domluvené schůzky
+                {% if current_sort == 'meetings_planned' %}
+                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                {% endif %}
+            </a>
+        </th>
+        <th>
+            <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=meetings_done&dir={% if current_sort == 'meetings_done' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                Realizované schůzky
+                {% if current_sort == 'meetings_done' %}
+                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                {% endif %}
+            </a>
+        </th>
+        <th>
+            <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=deals&dir={% if current_sort == 'deals' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
+                Dokončené obchody
+                {% if current_sort == 'deals' %}
+                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
+                {% endif %}
+            </a>
+        </th>
     </tr>
     </thead>
     <tbody>
@@ -35,11 +121,11 @@
                 {% endif %}
             </td>
             <td>
-                {% for advisor in profile.advisors.all %}
-                    {{ advisor.get_full_name }}{% if not forloop.last %}, {% endif %}
-                {% empty %}
+                {% if profile.manager and profile.manager.manager_profile.office %}
+                    {{ profile.manager.manager_profile.office.name }}
+                {% else %}
                     —
-                {% endfor %}
+                {% endif %}
             </td>
 
             <td>{{ profile.leads_sent|default:0 }}</td>
@@ -50,9 +136,14 @@
     {% endfor %}
     </tbody>
     </table>
+    </div>
 
     {% else %}
-        <p>Zatím tu nejsou žádní doporučitelé.</p>
+        {% if current_manager or current_office %}
+            <p>Pro zvolené filtry nebyli nalezeni žádní doporučitelé.</p>
+        {% else %}
+            <p>Zatím tu nejsou žádní doporučitelé.</p>
+        {% endif %}
     {% endif %}
 </div>
 {% endblock %}

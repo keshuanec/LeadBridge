@@ -165,29 +165,81 @@
         margin-bottom: 16px;
     }
 
+    /* Základní tabulka bez wrapperu */
     table {
         width: 100%;
         border-collapse: collapse;
     }
 
-    th, td {
+    /* Wrapper pro horizontální scroll */
+    .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 16px;
+        width: 100%;
+    }
+
+    /* Tabulka uvnitř wrapperu - automatická šířka podle obsahu */
+    .table-wrapper > table {
+        width: auto;
+        min-width: 100%;
+        border-collapse: collapse;
+        display: table;
+    }
+
+    .table-wrapper > table > thead {
+        display: table-header-group;
+    }
+
+    .table-wrapper > table > tbody {
+        display: table-row-group;
+    }
+
+    .table-wrapper > table > thead > tr,
+    .table-wrapper > table > tbody > tr {
+        display: table-row;
+    }
+
+    /* Všechny buňky v tabulce uvnitř wrapperu */
+    .table-wrapper > table > thead > tr > th,
+    .table-wrapper > table > tbody > tr > th,
+    .table-wrapper > table > thead > tr > td,
+    .table-wrapper > table > tbody > tr > td {
+        display: table-cell !important;
+        padding: 8px 12px !important;
+        border-bottom: 1px solid #eee !important;
+        text-align: left !important;
+        font-size: 14px !important;
+        white-space: nowrap !important;
+        vertical-align: top !important;
+    }
+
+    /* První sloupec (klient) s víceřádkovým textem */
+    .table-wrapper > table > tbody > tr > td:first-child {
+        white-space: normal !important;
+        min-width: 180px !important;
+        max-width: 250px !important;
+    }
+
+    th {
+        font-weight: 600;
+        background: #fafafa;
         padding: 8px 6px;
         border-bottom: 1px solid #eee;
         text-align: left;
         font-size: 14px;
     }
 
-    th {
-        font-weight: 600;
-        background: #fafafa;
+    td {
+        padding: 8px 6px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+        font-size: 14px;
     }
 
-    /* STICKY HLAVIČKA TABULKY */
+    /* STICKY HLAVIČKA TABULKY VYPNUTA - způsobovala problémy */
     table thead th {
-        position: sticky;
-        top: 62px; /* výška headeru */
-        background: #fafafa;
-        z-index: 900;
+        position: static;
     }
 
     .badge {
@@ -271,8 +323,21 @@
 
     /* Filtry - jednotná šířka select prvků */
     form[method="get"] select {
-        width: 180px;
-        max-width: 180px;
+        width: 160px;
+        max-width: 160px;
+    }
+
+    /* Formulář s filtry */
+    .filter-form {
+        margin-bottom: 12px;
+    }
+
+    /* Filtry na desktopech vždy viditelné */
+    .filters-content {
+        display: flex !important;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: flex-end;
     }
 
     input:focus,
@@ -324,6 +389,255 @@
         text-decoration: underline;
     }
 
+    /* Rozbalovací filtry - defaultně skryté na desktopech */
+    .filters-toggle {
+        display: none;
+    }
+
+    /* === HAMBURGER MENU === */
+    .hamburger {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        z-index: 1001;
+    }
+
+    .hamburger span {
+        display: block;
+        width: 25px;
+        height: 3px;
+        background: var(--teal-dark);
+        margin: 5px 0;
+        transition: 0.3s;
+    }
+
+    .hamburger.active span:nth-child(1) {
+        transform: rotate(-45deg) translate(-5px, 6px);
+    }
+
+    .hamburger.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+        transform: rotate(45deg) translate(-5px, -6px);
+    }
+
+    /* === RESPONSIVE STYLY === */
+    @media (max-width: 992px) {
+        .nav-container {
+            flex-wrap: wrap;
+        }
+
+        .nav-center {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 280px;
+            height: 100vh;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            padding: 80px 24px 24px;
+            margin-left: 0;
+            gap: 12px;
+            transition: left 0.3s ease-in-out;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .nav-center::before {
+            display: none;
+        }
+
+        .nav-center.active {
+            left: 0;
+        }
+
+        .nav-center a {
+            font-size: 16px;
+            padding: 12px 0;
+            width: 100%;
+        }
+
+        .hamburger {
+            display: block;
+        }
+
+        .nav-right {
+            order: 3;
+            width: 100%;
+            justify-content: center;
+            padding: 12px 24px;
+            background: var(--teal-dark);
+        }
+
+        .nav-left {
+            flex: 1;
+            justify-content: space-between;
+        }
+
+        /* Overlay pro zavření menu */
+        .nav-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .nav-overlay.active {
+            display: block;
+        }
+
+        /* Vypnout sticky header na menších obrazovkách */
+        table thead th {
+            position: static;
+        }
+    }
+
+    @media (max-width: 768px) {
+        main {
+            padding: 0 12px;
+            margin: 16px auto;
+        }
+
+        .card {
+            padding: 12px 16px;
+            border-radius: 6px;
+            max-width: 100% !important;
+        }
+
+        /* Tabulky - menší font a padding na mobilu */
+        table {
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 8px 4px;
+            font-size: 13px;
+        }
+
+        /* Tlačítka - full-width na mobilech kromě těch ve filtrovacích formulářích */
+        .btn:not(form[method="get"] .btn):not(form[method="post"] button) {
+            padding: 8px 12px;
+            font-size: 13px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Tlačítka ve filtrech zůstávají inline */
+        form[method="get"] .btn {
+            padding: 8px 12px;
+            font-size: 13px;
+            width: auto;
+        }
+
+        /* Inline formulářová tlačítka (např. submit ve detail stránkách) */
+        form[method="post"] button {
+            padding: 8px 12px;
+            font-size: 13px;
+            width: auto;
+        }
+
+        /* Rozbalovací filtry na mobilu */
+        .filters-toggle {
+            display: block !important;
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .filters-content {
+            display: none !important;
+        }
+
+        .filters-content.active {
+            display: flex !important;
+        }
+
+        /* Formuláře - filtry stackované na mobilu, zarovnané vlevo */
+        form[method="get"] .filters-content {
+            flex-direction: column !important;
+            gap: 12px;
+            align-items: flex-start !important;
+        }
+
+        form[method="get"] select {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        /* Wrapper pro tlačítka filtrů - zarovnat vlevo */
+        form[method="get"] .filters-content > div {
+            width: 100%;
+        }
+
+        /* Tlačítka filtrů se zarovnají vlevo, ne full-width */
+        form[method="get"] .btn {
+            width: auto !important;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="date"],
+        input[type="datetime-local"],
+        textarea,
+        select {
+            font-size: 16px; /* Zabrání auto-zoomu na iOS */
+        }
+
+        h1 {
+            font-size: 24px;
+        }
+
+        h2 {
+            font-size: 20px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .nav-left {
+            padding: 12px 16px;
+        }
+
+        .brand img {
+            height: 32px;
+        }
+
+        .nav-right {
+            padding: 12px 16px;
+            font-size: 14px;
+        }
+
+        .nav-center {
+            width: 240px;
+        }
+
+        main {
+            padding: 0 8px;
+        }
+
+        .card {
+            padding: 12px;
+        }
+
+        table {
+            font-size: 12px;
+        }
+
+        th, td {
+            padding: 6px 3px;
+            font-size: 12px;
+        }
+    }
+
 </style>
 
 </head>
@@ -341,6 +655,12 @@
                 {#     <img src="{% static 'logo.svg' %}" alt="LeadBridge"> #}
                 {# {% endif %} #}
             </a>
+            <!-- Hamburger menu pro mobilní zařízení -->
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
 
         <nav class="nav-center">
@@ -387,8 +707,70 @@
         </div>
     </div>
 </header>
+
+<!-- Overlay pro zavření mobilního menu -->
+<div class="nav-overlay" id="navOverlay"></div>
+
 <main>
     {% block content %}{% endblock %}
 </main>
+
+<script>
+    // Hamburger menu functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const hamburger = document.getElementById('hamburger');
+        const navCenter = document.querySelector('.nav-center');
+        const navOverlay = document.getElementById('navOverlay');
+        const navLinks = document.querySelectorAll('.nav-center a');
+
+        function toggleMenu() {
+            hamburger.classList.toggle('active');
+            navCenter.classList.toggle('active');
+            navOverlay.classList.toggle('active');
+            document.body.style.overflow = navCenter.classList.contains('active') ? 'hidden' : '';
+        }
+
+        function closeMenu() {
+            hamburger.classList.remove('active');
+            navCenter.classList.remove('active');
+            navOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        if (hamburger) {
+            hamburger.addEventListener('click', toggleMenu);
+        }
+
+        if (navOverlay) {
+            navOverlay.addEventListener('click', closeMenu);
+        }
+
+        // Zavřít menu při kliknutí na odkaz
+        navLinks.forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+
+        // Zavřít menu při změně velikosti okna nad 992px
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 992) {
+                closeMenu();
+            }
+        });
+    });
+
+    // Rozbalovací filtry na mobilech
+    document.addEventListener('DOMContentLoaded', function() {
+        const filtersToggle = document.querySelector('.filters-toggle');
+        const filtersContent = document.querySelector('.filters-content');
+
+        if (filtersToggle && filtersContent) {
+            filtersToggle.addEventListener('click', function() {
+                filtersContent.classList.toggle('active');
+                const isActive = filtersContent.classList.contains('active');
+                this.textContent = isActive ? 'Skrýt filtry' : 'Zobrazit filtry';
+            });
+        }
+    });
+</script>
 </body>
 </html>

@@ -744,11 +744,11 @@ def referrers_list(request):
     if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR, User.Role.REFERRER_MANAGER, User.Role.OFFICE]):
         return HttpResponseForbidden("Nemáš oprávnění zobrazit doporučitele.")
 
-    from accounts.models import ReferrerProfile
+    from accounts.models import ReferrerProfile, Office
 
     queryset = (
         ReferrerProfile.objects
-        .select_related("user", "manager")
+        .select_related("user", "manager", "manager__manager_profile__office")
         .prefetch_related("advisors")
         .annotate(
             leads_sent=Count("user__leads_created", distinct=True),
@@ -782,8 +782,69 @@ def referrers_list(request):
     if user.role == User.Role.OFFICE and not user.is_superuser:
         queryset = queryset.filter(manager__manager_profile__office__owner=user)
 
+    # === FILTRY ===
+    current_manager = request.GET.get("manager", "")
+    current_office = request.GET.get("office", "")
+
+    if current_manager:
+        if current_manager == "__none__":
+            queryset = queryset.filter(manager__isnull=True)
+        else:
+            queryset = queryset.filter(manager_id=current_manager)
+
+    if current_office:
+        if current_office == "__none__":
+            queryset = queryset.filter(manager__manager_profile__office__isnull=True)
+        else:
+            queryset = queryset.filter(manager__manager_profile__office_id=current_office)
+
+    # === ŘAZENÍ ===
+    current_sort = request.GET.get("sort", "referrer")
+    current_dir = request.GET.get("dir", "asc")
+
+    sort_mapping = {
+        "referrer": "user__last_name" if current_dir == "asc" else "-user__last_name",
+        "manager": "manager__last_name" if current_dir == "asc" else "-manager__last_name",
+        "office": "manager__manager_profile__office__name" if current_dir == "asc" else "-manager__manager_profile__office__name",
+        "leads": "leads_sent" if current_dir == "asc" else "-leads_sent",
+        "meetings_planned": "meetings_planned" if current_dir == "asc" else "-meetings_planned",
+        "meetings_done": "meetings_done" if current_dir == "asc" else "-meetings_done",
+        "deals": "deals_done" if current_dir == "asc" else "-deals_done",
+    }
+
+    order_by = sort_mapping.get(current_sort, "user__last_name")
+    queryset = queryset.order_by(order_by)
+
+    # === MOŽNOSTI PRO FILTRY ===
+    # Manažeři
+    manager_qs = User.objects.filter(role=User.Role.REFERRER_MANAGER)
+    if user.role == User.Role.OFFICE and not user.is_superuser:
+        manager_qs = manager_qs.filter(manager_profile__office__owner=user)
+    manager_options = manager_qs.order_by("last_name", "first_name")
+
+    # Kanceláře
+    office_qs = Office.objects.all()
+    if user.role == User.Role.OFFICE and not user.is_superuser:
+        office_qs = office_qs.filter(owner=user)
+    office_options = office_qs.order_by("name")
+
+    # Sestavení query stringu bez sort a dir
+    qs_keep_parts = []
+    if current_manager:
+        qs_keep_parts.append(f"manager={current_manager}")
+    if current_office:
+        qs_keep_parts.append(f"office={current_office}")
+    qs_keep = "&".join(qs_keep_parts)
+
     context = {
         "referrer_profiles": queryset,
+        "current_manager": current_manager,
+        "current_office": current_office,
+        "current_sort": current_sort,
+        "current_dir": current_dir,
+        "manager_options": manager_options,
+        "office_options": office_options,
+        "qs_keep": qs_keep,
     }
     return render(request, "leads/referrers_list.html", context)
 
