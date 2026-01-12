@@ -91,26 +91,31 @@ def my_leads(request):
     elif user.role == User.Role.ADVISOR:
         # Pokud má advisor administrativní přístup, vidí i leady svých podřízených doporučitelů
         if user.has_admin_access:
+            # Vidí své leady, leady svých podřízených doporučitelů A vlastní kontakty podřízených advisorů
             leads_qs = Lead.objects.filter(
-                Q(advisor=user) | Q(referrer__referrer_profile__advisors=user)
+                Q(advisor=user) |
+                Q(referrer__referrer_profile__advisors=user) |
+                Q(is_personal_contact=True, advisor__referrer_profile__advisors=user)
             ).distinct()
         else:
-            # Bez admin přístupu vidí jen své leady
+            # Bez admin přístupu vidí jen své leady (včetně vlastních kontaktů)
             leads_qs = Lead.objects.filter(advisor=user)
 
     elif user.role == User.Role.REFERRER:
         leads_qs = Lead.objects.filter(referrer=user)
 
     elif user.role == User.Role.REFERRER_MANAGER:
+        # Manažer nevidí vlastní kontakty poradců
         leads_qs = Lead.objects.filter(
             Q(referrer__referrer_profile__manager=user) | Q(referrer=user)
-        ).distinct()
+        ).exclude(is_personal_contact=True).distinct()
 
     elif user.role == User.Role.OFFICE:
+        # Kancelář nevidí vlastní kontakty poradců
         leads_qs = Lead.objects.filter(
             Q(referrer__referrer_profile__manager__manager_profile__office__owner=user)
             | Q(referrer=user)
-        ).distinct()
+        ).exclude(is_personal_contact=True).distinct()
 
     # --- base queryset (na options do filtrů) ---
     base_leads_qs = leads_qs
@@ -760,20 +765,34 @@ def referrers_list(request):
         .select_related("user", "manager", "manager__manager_profile__office")
         .prefetch_related("advisors")
         .annotate(
-            leads_sent=Count("user__leads_created", distinct=True),
+            # Vlastní kontakty (is_personal_contact=True) se nezapočítávají do statistik
+            leads_sent=Count(
+                "user__leads_created",
+                filter=Q(user__leads_created__is_personal_contact=False),
+                distinct=True
+            ),
             meetings_planned=Count(
                 "user__leads_created",
-                filter=Q(user__leads_created__communication_status=Lead.CommunicationStatus.MEETING),
+                filter=Q(
+                    user__leads_created__communication_status=Lead.CommunicationStatus.MEETING,
+                    user__leads_created__is_personal_contact=False
+                ),
                 distinct=True,
             ),
             meetings_done=Count(
                 "user__leads_created",
-                filter=Q(user__leads_created__meeting_done=True),
+                filter=Q(
+                    user__leads_created__meeting_done=True,
+                    user__leads_created__is_personal_contact=False
+                ),
                 distinct=True,
             ),
             deals_done=Count(
                 "user__leads_created__deal",
-                filter=Q(user__leads_created__deal__status=Deal.DealStatus.DRAWN),
+                filter=Q(
+                    user__leads_created__deal__status=Deal.DealStatus.DRAWN,
+                    user__leads_created__is_personal_contact=False
+                ),
                 distinct=True,
             ),
         )
@@ -867,33 +886,79 @@ def advisors_list(request):
     if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.REFERRER, User.Role.REFERRER_MANAGER, User.Role.OFFICE]):
         return HttpResponseForbidden("Nemáš oprávnění zobrazit poradce.")
 
+    # Pro manažery a kanceláře: vyloučit vlastní kontakty z statistik
+    # Pro admin/superuser/referrer: zahrnout všechny leady včetně vlastních kontaktů
+    exclude_personal = user.role in [User.Role.REFERRER_MANAGER, User.Role.OFFICE] and not user.is_superuser
+
     # Základní queryset všech poradců se statistikami
-    queryset = (
-        User.objects
-        .filter(role=User.Role.ADVISOR)
-        .annotate(
-            leads_received=Count("leads_assigned", distinct=True),
-            meetings_planned=Count(
-                "leads_assigned",
-                filter=Q(leads_assigned__communication_status=Lead.CommunicationStatus.MEETING),
-                distinct=True,
-            ),
-            meetings_done=Count(
-                "leads_assigned",
-                filter=Q(leads_assigned__meeting_done=True),
-                distinct=True,
-            ),
-            deals_created=Count(
-                "leads_assigned__deal",
-                distinct=True,
-            ),
-            deals_completed=Count(
-                "leads_assigned__deal",
-                filter=Q(leads_assigned__deal__status=Deal.DealStatus.DRAWN),
-                distinct=True,
-            ),
+    if exclude_personal:
+        queryset = (
+            User.objects
+            .filter(role=User.Role.ADVISOR)
+            .annotate(
+                leads_received=Count(
+                    "leads_assigned",
+                    filter=Q(leads_assigned__is_personal_contact=False),
+                    distinct=True
+                ),
+                meetings_planned=Count(
+                    "leads_assigned",
+                    filter=Q(
+                        leads_assigned__communication_status=Lead.CommunicationStatus.MEETING,
+                        leads_assigned__is_personal_contact=False
+                    ),
+                    distinct=True,
+                ),
+                meetings_done=Count(
+                    "leads_assigned",
+                    filter=Q(
+                        leads_assigned__meeting_done=True,
+                        leads_assigned__is_personal_contact=False
+                    ),
+                    distinct=True,
+                ),
+                deals_created=Count(
+                    "leads_assigned__deal",
+                    filter=Q(leads_assigned__is_personal_contact=False),
+                    distinct=True,
+                ),
+                deals_completed=Count(
+                    "leads_assigned__deal",
+                    filter=Q(
+                        leads_assigned__deal__status=Deal.DealStatus.DRAWN,
+                        leads_assigned__is_personal_contact=False
+                    ),
+                    distinct=True,
+                ),
+            )
         )
-    )
+    else:
+        queryset = (
+            User.objects
+            .filter(role=User.Role.ADVISOR)
+            .annotate(
+                leads_received=Count("leads_assigned", distinct=True),
+                meetings_planned=Count(
+                    "leads_assigned",
+                    filter=Q(leads_assigned__communication_status=Lead.CommunicationStatus.MEETING),
+                    distinct=True,
+                ),
+                meetings_done=Count(
+                    "leads_assigned",
+                    filter=Q(leads_assigned__meeting_done=True),
+                    distinct=True,
+                ),
+                deals_created=Count(
+                    "leads_assigned__deal",
+                    distinct=True,
+                ),
+                deals_completed=Count(
+                    "leads_assigned__deal",
+                    filter=Q(leads_assigned__deal__status=Deal.DealStatus.DRAWN),
+                    distinct=True,
+                ),
+            )
+        )
 
     # Filtrování podle role
     if user.role == User.Role.REFERRER and not user.is_superuser:
@@ -1180,21 +1245,25 @@ def overview(request):
         # Pokud má advisor administrativní přístup, vidí i leady svých podřízených doporučitelů
         if user.has_admin_access:
             leads_qs = Lead.objects.filter(
-                Q(advisor=user) | Q(referrer__referrer_profile__advisors=user)
+                Q(advisor=user) |
+                Q(referrer__referrer_profile__advisors=user) |
+                Q(is_personal_contact=True, advisor__referrer_profile__advisors=user)
             ).distinct()
         else:
-            # Bez admin přístupu vidí jen své leady
+            # Bez admin přístupu vidí jen své leady (včetně vlastních kontaktů)
             leads_qs = Lead.objects.filter(advisor=user)
     elif user.role == User.Role.REFERRER:
         leads_qs = Lead.objects.filter(referrer=user)
     elif user.role == User.Role.REFERRER_MANAGER:
+        # Manažer nevidí vlastní kontakty poradců
         leads_qs = Lead.objects.filter(
             Q(referrer__referrer_profile__manager=user) | Q(referrer=user)
-        ).distinct()
+        ).exclude(is_personal_contact=True).distinct()
     elif user.role == User.Role.OFFICE:
+        # Kancelář nevidí vlastní kontakty poradců
         leads_qs = Lead.objects.filter(
             Q(referrer__referrer_profile__manager__manager_profile__office__owner=user) | Q(referrer=user)
-        ).distinct()
+        ).exclude(is_personal_contact=True).distinct()
 
     leads_qs = leads_qs.select_related(
         "referrer",
@@ -1234,20 +1303,24 @@ def overview(request):
         # Pokud má advisor administrativní přístup, vidí i dealy svých podřízených doporučitelů
         if user.has_admin_access:
             deals_qs = deals_qs.filter(
-                Q(lead__advisor=user) | Q(lead__referrer__referrer_profile__advisors=user)
+                Q(lead__advisor=user) |
+                Q(lead__referrer__referrer_profile__advisors=user) |
+                Q(lead__is_personal_contact=True, lead__advisor__referrer_profile__advisors=user)
             ).distinct()
         else:
-            # Bez admin přístupu vidí jen své dealy
+            # Bez admin přístupu vidí jen své dealy (včetně vlastních kontaktů)
             deals_qs = deals_qs.filter(lead__advisor=user)
     elif user.role == User.Role.REFERRER:
         deals_qs = deals_qs.filter(lead__referrer=user)
     elif user.role == User.Role.REFERRER_MANAGER:
-        deals_qs = deals_qs.filter(lead__referrer__referrer_profile__manager=user).distinct()
+        # Manažer nevidí vlastní kontakty poradců
+        deals_qs = deals_qs.filter(lead__referrer__referrer_profile__manager=user).exclude(lead__is_personal_contact=True).distinct()
     elif user.role == User.Role.OFFICE:
+        # Kancelář nevidí vlastní kontakty poradců
         deals_qs = deals_qs.filter(
             Q(lead__referrer__referrer_profile__manager__manager_profile__office__owner=user)
             | Q(lead__referrer=user)
-        ).distinct()
+        ).exclude(lead__is_personal_contact=True).distinct()
     else:
         deals_qs = Deal.objects.none()
 
