@@ -31,11 +31,23 @@
                     {% endif %}
 
                     {% if show_manager %}
-                        <td>{{ lead.referrer_manager|default:"—" }}</td>
+                        <td>
+                            {% if lead.is_personal_contact %}
+                                <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
+                            {% else %}
+                                {{ lead.referrer_manager|default:"—" }}
+                            {% endif %}
+                        </td>
                     {% endif %}
 
                     {% if show_office %}
-                        <td>{{ lead.referrer_office|default:"—" }}</td>
+                        <td>
+                            {% if lead.is_personal_contact %}
+                                <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
+                            {% else %}
+                                {{ lead.referrer_office|default:"—" }}
+                            {% endif %}
+                        </td>
                     {% endif %}
 
                     {% if show_advisor %}
@@ -76,11 +88,23 @@
                     {% endif %}
 
                     {% if show_manager %}
-                        <td>{{ lead.referrer_manager|default:"—" }}</td>
+                        <td>
+                            {% if lead.is_personal_contact %}
+                                <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
+                            {% else %}
+                                {{ lead.referrer_manager|default:"—" }}
+                            {% endif %}
+                        </td>
                     {% endif %}
 
                     {% if show_office %}
-                        <td>{{ lead.referrer_office|default:"—" }}</td>
+                        <td>
+                            {% if lead.is_personal_contact %}
+                                <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
+                            {% else %}
+                                {{ lead.referrer_office|default:"—" }}
+                            {% endif %}
+                        </td>
                     {% endif %}
 
                     {% if show_advisor %}
@@ -132,11 +156,23 @@
                     {% endif %}
 
                     {% if show_manager %}
-                        <td>{{ d.lead.referrer_manager|default:"—" }}</td>
+                        <td>
+                            {% if d.lead.is_personal_contact %}
+                                <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
+                            {% else %}
+                                {{ d.lead.referrer_manager|default:"—" }}
+                            {% endif %}
+                        </td>
                     {% endif %}
 
                     {% if show_office %}
-                        <td>{{ d.lead.referrer_office|default:"—" }}</td>
+                        <td>
+                            {% if d.lead.is_personal_contact %}
+                                <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
+                            {% else %}
+                                {{ d.lead.referrer_office|default:"—" }}
+                            {% endif %}
+                        </td>
                     {% endif %}
 
                     {% if show_advisor %}

@@ -229,11 +229,23 @@
                     {% endif %}
 
                     {% if show_manager_col %}
-                        <td>{{ d.manager_name|default:"—" }}</td>
+                        <td>
+                            {% if d.lead.is_personal_contact %}
+                                <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
+                            {% else %}
+                                {{ d.manager_name|default:"—" }}
+                            {% endif %}
+                        </td>
                     {% endif %}
 
                     {% if show_office_col %}
-                        <td>{{ d.office_name|default:"—" }}</td>
+                        <td>
+                            {% if d.lead.is_personal_contact %}
+                                <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
+                            {% else %}
+                                {{ d.office_name|default:"—" }}
+                            {% endif %}
+                        </td>
                     {% endif %}
 
                     <td>{{ d.created_at|date:"d.m.Y H:i" }}</td>

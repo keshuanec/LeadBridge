@@ -200,13 +200,21 @@
 
             {% if show_manager_col %}
             <td>
-                {{ lead.referrer_manager|default:"—" }}
+                {% if lead.is_personal_contact %}
+                    <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
+                {% else %}
+                    {{ lead.referrer_manager|default:"—" }}
+                {% endif %}
             </td>
             {% endif %}
 
             {% if show_office_col %}
             <td>
-                {{ lead.referrer.referrer_profile.manager.manager_profile.office.name|default:"—" }}
+                {% if lead.is_personal_contact %}
+                    <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
+                {% else %}
+                    {{ lead.referrer.referrer_profile.manager.manager_profile.office.name|default:"—" }}
+                {% endif %}
             </td>
             {% endif %}
 
