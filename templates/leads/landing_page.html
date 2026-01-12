@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LeadBridge - Správa leadů a obchodů</title>
     {% load static %}
+    <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{% static 'favicon-96x96.png' %}">
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}">
     <style>
         * {
             margin: 0;
@@ -224,10 +228,10 @@
 <body>
     <header>
         <div class="header-content">
-            <div class="logo">
+            <a href="{% url 'landing_page' %}" class="logo" style="text-decoration: none;">
                 <img src="{% static 'logo.svg' %}" alt="LeadBridge">
                 LeadBridge
-            </div>
+            </a>
             <a href="{% url 'login' %}" class="login-btn">Přihlásit se</a>
         </div>
     </header>
