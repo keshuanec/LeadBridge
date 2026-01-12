@@ -886,79 +886,48 @@ def advisors_list(request):
     if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.REFERRER, User.Role.REFERRER_MANAGER, User.Role.OFFICE]):
         return HttpResponseForbidden("Nemáš oprávnění zobrazit poradce.")
 
-    # Pro manažery a kanceláře: vyloučit vlastní kontakty z statistik
-    # Pro admin/superuser/referrer: zahrnout všechny leady včetně vlastních kontaktů
-    exclude_personal = user.role in [User.Role.REFERRER_MANAGER, User.Role.OFFICE] and not user.is_superuser
-
-    # Základní queryset všech poradců se statistikami
-    if exclude_personal:
-        queryset = (
-            User.objects
-            .filter(role=User.Role.ADVISOR)
-            .annotate(
-                leads_received=Count(
-                    "leads_assigned",
-                    filter=Q(leads_assigned__is_personal_contact=False),
-                    distinct=True
+    # Vlastní kontakty se NIKDY nezapočítávají do statistik poradců
+    # Statistiky mají ukazovat práci s kontakty, které poradce obdržel, ne s vlastními
+    queryset = (
+        User.objects
+        .filter(role=User.Role.ADVISOR)
+        .annotate(
+            leads_received=Count(
+                "leads_assigned",
+                filter=Q(leads_assigned__is_personal_contact=False),
+                distinct=True
+            ),
+            meetings_planned=Count(
+                "leads_assigned",
+                filter=Q(
+                    leads_assigned__communication_status=Lead.CommunicationStatus.MEETING,
+                    leads_assigned__is_personal_contact=False
                 ),
-                meetings_planned=Count(
-                    "leads_assigned",
-                    filter=Q(
-                        leads_assigned__communication_status=Lead.CommunicationStatus.MEETING,
-                        leads_assigned__is_personal_contact=False
-                    ),
-                    distinct=True,
+                distinct=True,
+            ),
+            meetings_done=Count(
+                "leads_assigned",
+                filter=Q(
+                    leads_assigned__meeting_done=True,
+                    leads_assigned__is_personal_contact=False
                 ),
-                meetings_done=Count(
-                    "leads_assigned",
-                    filter=Q(
-                        leads_assigned__meeting_done=True,
-                        leads_assigned__is_personal_contact=False
-                    ),
-                    distinct=True,
+                distinct=True,
+            ),
+            deals_created=Count(
+                "leads_assigned__deal",
+                filter=Q(leads_assigned__is_personal_contact=False),
+                distinct=True,
+            ),
+            deals_completed=Count(
+                "leads_assigned__deal",
+                filter=Q(
+                    leads_assigned__deal__status=Deal.DealStatus.DRAWN,
+                    leads_assigned__is_personal_contact=False
                 ),
-                deals_created=Count(
-                    "leads_assigned__deal",
-                    filter=Q(leads_assigned__is_personal_contact=False),
-                    distinct=True,
-                ),
-                deals_completed=Count(
-                    "leads_assigned__deal",
-                    filter=Q(
-                        leads_assigned__deal__status=Deal.DealStatus.DRAWN,
-                        leads_assigned__is_personal_contact=False
-                    ),
-                    distinct=True,
-                ),
-            )
+                distinct=True,
+            ),
         )
-    else:
-        queryset = (
-            User.objects
-            .filter(role=User.Role.ADVISOR)
-            .annotate(
-                leads_received=Count("leads_assigned", distinct=True),
-                meetings_planned=Count(
-                    "leads_assigned",
-                    filter=Q(leads_assigned__communication_status=Lead.CommunicationStatus.MEETING),
-                    distinct=True,
-                ),
-                meetings_done=Count(
-                    "leads_assigned",
-                    filter=Q(leads_assigned__meeting_done=True),
-                    distinct=True,
-                ),
-                deals_created=Count(
-                    "leads_assigned__deal",
-                    distinct=True,
-                ),
-                deals_completed=Count(
-                    "leads_assigned__deal",
-                    filter=Q(leads_assigned__deal__status=Deal.DealStatus.DRAWN),
-                    distinct=True,
-                ),
-            )
-        )
+    )
 
     # Filtrování podle role
     if user.role == User.Role.REFERRER and not user.is_superuser:
