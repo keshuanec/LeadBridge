@@ -82,6 +82,10 @@ class User(AbstractUser):
                 f"Součet procent provizí ({total}%) nesmí překročit 100%."
             )
 
+    def get_full_name(self):
+        """Vrací celé jméno ve formátu 'Příjmení Jméno'"""
+        return f"{self.last_name} {self.first_name}".strip()
+
     def __str__(self):
         return self.get_full_name()
 

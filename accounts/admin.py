@@ -41,11 +41,13 @@ class UserAdmin(BaseUserAdmin):
 
     list_display = ("get_full_name", "email", "phone", "role", "has_admin_access", "commission_referrer_pct", "is_staff")
     list_filter = ("role", "has_admin_access", "is_staff", "is_superuser", "is_active")
+    search_fields = ("username", "first_name", "last_name", "email")
+    ordering = ("last_name", "first_name")
 
     def get_full_name(self, obj):
         return obj.get_full_name()
     get_full_name.short_description = "Jméno"
-    get_full_name.admin_order_field = "first_name"
+    get_full_name.admin_order_field = "last_name"
 
 
 @admin.register(ReferrerProfile)
