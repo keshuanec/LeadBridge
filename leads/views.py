@@ -11,6 +11,15 @@ from django.utils.http import urlencode
 from django.utils import timezone
 from .services import notifications
 
+User = get_user_model()
+
+
+def landing_page(request):
+    """Landing page pro nepřihlášené uživatele"""
+    if request.user.is_authenticated:
+        return redirect('overview')
+    return render(request, 'leads/landing_page.html')
+
 
 def get_lead_for_user_or_404(user, pk: int) -> Lead:
     qs = Lead.objects.select_related("referrer", "advisor")

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeadBridge - Správa leadů a obchodů</title>
+    {% load static %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --teal-primary: #2C7A7B;
+            --teal-dark: #234E52;
+            --teal-hover: #2C5F63;
+            --teal-light: #E6FFFA;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #2D3748;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: var(--teal-dark);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        .login-btn {
+            background: white;
+            color: var(--teal-dark);
+            padding: 10px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background: var(--teal-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            color: var(--teal-dark);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: #4A5568;
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Features */
+        .features {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .feature-card h3 {
+            color: var(--teal-primary);
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: #4A5568;
+            line-height: 1.8;
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        /* Contact Section */
+        .contact {
+            max-width: 800px;
+            margin: 80px auto;
+            padding: 40px 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .contact h2 {
+            color: var(--teal-dark);
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .contact p {
+            color: #4A5568;
+            font-size: 18px;
+            line-height: 1.8;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--teal-light);
+            border-radius: 8px;
+        }
+
+        .contact-item strong {
+            color: var(--teal-dark);
+            min-width: 80px;
+        }
+
+        .contact-item a {
+            color: var(--teal-primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .contact-item a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--teal-dark);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 80px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <img src="{% static 'logo.svg' %}" alt="LeadBridge">
+                LeadBridge
+            </div>
+            <a href="{% url 'login' %}" class="login-btn">Přihlásit se</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Efektivní správa leadů a obchodů</h1>
+        <p>
+            LeadBridge je komplexní systém pro správu leadů, doporučitelů, poradců a obchodních příležitostí.
+            Sledujte výkonnost vašeho týmu, spravujte schůzky a provize na jednom místě.
+        </p>
+    </section>
+
+    <section class="features">
+        <div class="feature-card">
+            <div class="feature-icon">👥</div>
+            <h3>Správa týmu</h3>
+            <p>
+                Organizujte doporučitele, manažery, poradce a kanceláře. Role-based přístup zajišťuje,
+                že každý vidí pouze relevantní data.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Sledování leadů</h3>
+            <p>
+                Kompletní přehled o stavu každého leadu - od prvního kontaktu až po dokončený obchod.
+                Plánujte schůzky a zaznamenávejte jejich výsledky.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">💼</div>
+            <h3>Správa obchodů</h3>
+            <p>
+                Evidujte výši úvěrů, banky, typy nemovitostí a sledujte stav každého obchodu
+                v reálném čase.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">💰</div>
+            <h3>Provizní systém</h3>
+            <p>
+                Automatický výpočet provizí pro makléře, manažery a kanceláře. Sledujte stav
+                vyplacení a generujte reporty.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Mobilní přístup</h3>
+            <p>
+                Plně responzivní design umožňuje práci s aplikací na jakémkoliv zařízení -
+                počítač, tablet nebo telefon.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🔔</div>
+            <h3>Notifikace</h3>
+            <p>
+                E-mailové upozornění na důležité události - nové leady, domluv schůzky,
+                připravené provize a další.
+            </p>
+        </div>
+    </section>
+
+    <section class="contact">
+        <h2>Máte zájem o využití aplikace?</h2>
+        <p>
+            LeadBridge je vyvíjen na zakázku. Pokud vás aplikace zaujala a máte zájem
+            o její nasazení ve vaší společnosti, neváhejte mě kontaktovat.
+        </p>
+
+        <div class="contact-info">
+            <div class="contact-item">
+                <strong>Email:</strong>
+                <a href="mailto:kontakt@leadbridge.cz">kontakt@leadbridge.cz</a>
+            </div>
+            <div class="contact-item">
+                <strong>Telefon:</strong>
+                <a href="tel:+420777123456">+420 777 123 456</a>
+            </div>
+        </div>
+        <p style="margin-top: 20px; font-size: 16px; color: #718096;">
+            Rád vám pomohu s nasazením a přizpůsobením aplikace vašim potřebám.
+        </p>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 LeadBridge. Všechna práva vyhrazena.</p>
+    </footer>
+</body>
+</html>

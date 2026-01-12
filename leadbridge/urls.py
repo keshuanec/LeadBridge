@@ -10,8 +10,11 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),  # login/logout
     path("account/", include("accounts.urls")),              # user settings
 
-    # DOMOVSKÁ STRÁNKA
-    path("", views.overview, name="overview"),
+    # LANDING PAGE (pro nepřihlášené uživatele)
+    path("", views.landing_page, name="landing_page"),
+
+    # PŘEHLED (domovská stránka pro přihlášené)
+    path("overview/", views.overview, name="overview"),
 
     # LEADS A DALŠÍ FUNKCE
     path("leads/", include("leads.urls")),
