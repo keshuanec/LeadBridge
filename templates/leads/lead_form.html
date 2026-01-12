@@ -4,28 +4,29 @@
 {% block title %}{% if is_edit %}Upravit klienta{% else %}Nový lead{% endif %}{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/styles/choices.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
-    .choices__inner {
-        background: white;
+    .select2-container .select2-selection--single {
+        height: 38px;
         border: 1px solid #ddd;
         border-radius: 4px;
-        padding: 8px 12px;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+        padding-left: 12px;
         font-size: 14px;
-        min-height: 38px;
     }
-    .choices__list--dropdown .choices__item--selectable {
-        padding: 8px 12px;
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px;
     }
-    .choices[data-type*=select-one] .choices__input {
-        background: white;
-        border: none;
-        padding: 4px 0;
-    }
-    .choices__list--dropdown {
+    .select2-dropdown {
         border: 1px solid #ddd;
         border-radius: 4px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .select2-search--dropdown .select2-search__field {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 8px;
     }
 </style>
 <div class="card" style="max-width: 600px; margin: 0 auto;">
@@ -147,7 +148,8 @@
     </form>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const statusField = document.getElementById("{{ form.communication_status.id_for_label }}");
@@ -168,44 +170,61 @@ document.addEventListener("DOMContentLoaded", function () {
     statusField.addEventListener("change", checkStatus);
     checkStatus(); // pro jistotu spustíme hned při načtení
 
-    // Inicializace Choices.js pro referrer a advisor select
-    const referrerSelect = document.getElementById("{{ form.referrer.id_for_label }}");
-    const advisorSelect = document.getElementById("{{ form.advisor.id_for_label }}");
+    // Inicializace Select2 pro referrer a advisor select
+    const referrerSelect = $("#{{ form.referrer.id_for_label }}");
+    const advisorSelect = $("#{{ form.advisor.id_for_label }}");
 
-    // Vlastní vyhledávací funkce - hledá v celém textu, ne jen na začátku
-    function customSearch(searchTerm, item) {
-        const label = item.label.toLowerCase();
-        const term = searchTerm.toLowerCase();
-        return label.includes(term);
-    }
-
-    if (referrerSelect && referrerSelect.tagName === 'SELECT' && !referrerSelect.type.includes('hidden')) {
-        new Choices(referrerSelect, {
-            searchEnabled: true,
-            searchPlaceholderValue: 'Začni psát jméno...',
-            noResultsText: 'Žádný výsledek',
-            itemSelectText: 'Klikni pro výběr',
-            shouldSort: false, // už je seřazené z backendu
-            fuseOptions: {
-                threshold: 0.3,
-                distance: 100
+    if (referrerSelect.length && referrerSelect.prop('tagName') === 'SELECT' && referrerSelect.attr('type') !== 'hidden') {
+        referrerSelect.select2({
+            placeholder: 'Začni psát jméno...',
+            allowClear: false,
+            width: '100%',
+            language: {
+                noResults: function() {
+                    return "Žádný výsledek";
+                },
+                searching: function() {
+                    return "Hledám...";
+                }
             },
-            searchFn: customSearch
+            matcher: function(params, data) {
+                // Pokud není zadaný search term, zobraz vše
+                if ($.trim(params.term) === '') {
+                    return data;
+                }
+
+                // Hledej v celém textu
+                if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                    return data;
+                }
+
+                return null;
+            }
         });
     }
 
-    if (advisorSelect && advisorSelect.tagName === 'SELECT' && !advisorSelect.type.includes('hidden')) {
-        new Choices(advisorSelect, {
-            searchEnabled: true,
-            searchPlaceholderValue: 'Začni psát jméno...',
-            noResultsText: 'Žádný výsledek',
-            itemSelectText: 'Klikni pro výběr',
-            shouldSort: false,
-            fuseOptions: {
-                threshold: 0.3,
-                distance: 100
+    if (advisorSelect.length && advisorSelect.prop('tagName') === 'SELECT' && advisorSelect.attr('type') !== 'hidden') {
+        advisorSelect.select2({
+            placeholder: 'Začni psát jméno...',
+            allowClear: false,
+            width: '100%',
+            language: {
+                noResults: function() {
+                    return "Žádný výsledek";
+                },
+                searching: function() {
+                    return "Hledám...";
+                }
             },
-            searchFn: customSearch
+            matcher: function(params, data) {
+                if ($.trim(params.term) === '') {
+                    return data;
+                }
+                if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                    return data;
+                }
+                return null;
+            }
         });
     }
 });
