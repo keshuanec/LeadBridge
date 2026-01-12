@@ -646,7 +646,7 @@
     <div class="nav-container">
         <div class="nav-left">
             <!-- Logo / název aplikace -->
-            <a href="{% url 'overview' %}" class="brand">
+            <a href="{% if user.is_authenticated %}{% url 'overview' %}{% else %}{% url 'landing_page' %}{% endif %}" class="brand">
                 <img src="{% static 'logo.svg' %}" alt="LeadBridge">
                 {# TODO: Branding system - custom logo zakomentováno pro budoucí použití #}
                 {# {% if custom_logo %} #}
