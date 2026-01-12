@@ -172,6 +172,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const referrerSelect = document.getElementById("{{ form.referrer.id_for_label }}");
     const advisorSelect = document.getElementById("{{ form.advisor.id_for_label }}");
 
+    // Vlastní vyhledávací funkce - hledá v celém textu, ne jen na začátku
+    function customSearch(searchTerm, item) {
+        const label = item.label.toLowerCase();
+        const term = searchTerm.toLowerCase();
+        return label.includes(term);
+    }
+
     if (referrerSelect && referrerSelect.tagName === 'SELECT' && !referrerSelect.type.includes('hidden')) {
         new Choices(referrerSelect, {
             searchEnabled: true,
@@ -179,6 +186,11 @@ document.addEventListener("DOMContentLoaded", function () {
             noResultsText: 'Žádný výsledek',
             itemSelectText: 'Klikni pro výběr',
             shouldSort: false, // už je seřazené z backendu
+            fuseOptions: {
+                threshold: 0.3,
+                distance: 100
+            },
+            searchFn: customSearch
         });
     }
 
@@ -189,6 +201,11 @@ document.addEventListener("DOMContentLoaded", function () {
             noResultsText: 'Žádný výsledek',
             itemSelectText: 'Klikni pro výběr',
             shouldSort: false,
+            fuseOptions: {
+                threshold: 0.3,
+                distance: 100
+            },
+            searchFn: customSearch
         });
     }
 });
