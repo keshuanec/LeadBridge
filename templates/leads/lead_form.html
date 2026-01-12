@@ -4,31 +4,6 @@
 {% block title %}{% if is_edit %}Upravit klienta{% else %}Nový lead{% endif %}{% endblock %}
 
 {% block content %}
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<style>
-    .select2-container .select2-selection--single {
-        height: 38px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-    }
-    .select2-container--default .select2-selection--single .select2-selection__rendered {
-        line-height: 38px;
-        padding-left: 12px;
-        font-size: 14px;
-    }
-    .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: 36px;
-    }
-    .select2-dropdown {
-        border: 1px solid #ddd;
-        border-radius: 4px;
-    }
-    .select2-search--dropdown .select2-search__field {
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 8px;
-    }
-</style>
 <div class="card" style="max-width: 600px; margin: 0 auto;">
     <h2>{% if is_edit %}Upravit klienta{% else %}Nový lead{% endif %}</h2>
 
@@ -148,84 +123,24 @@
     </form>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const statusField = document.getElementById("{{ form.communication_status.id_for_label }}");
     const wrapper = document.getElementById("extra-note-wrapper");
 
-    if (!statusField || !wrapper) return;
+    if (statusField && wrapper) {
+        const originalValue = "{{ form.initial.communication_status|default_if_none:'' }}";
 
-    const originalValue = "{{ form.initial.communication_status|default_if_none:'' }}";
-
-    function checkStatus() {
-        if (statusField.value && statusField.value !== originalValue) {
-            wrapper.style.display = "block";
-        } else {
-            wrapper.style.display = "none";
+        function checkStatus() {
+            if (statusField.value && statusField.value !== originalValue) {
+                wrapper.style.display = "block";
+            } else {
+                wrapper.style.display = "none";
+            }
         }
-    }
 
-    statusField.addEventListener("change", checkStatus);
-    checkStatus(); // pro jistotu spustíme hned při načtení
-
-    // Inicializace Select2 pro referrer a advisor select
-    const referrerSelect = $("#{{ form.referrer.id_for_label }}");
-    const advisorSelect = $("#{{ form.advisor.id_for_label }}");
-
-    if (referrerSelect.length && referrerSelect.prop('tagName') === 'SELECT' && referrerSelect.attr('type') !== 'hidden') {
-        referrerSelect.select2({
-            placeholder: 'Začni psát jméno...',
-            allowClear: false,
-            width: '100%',
-            language: {
-                noResults: function() {
-                    return "Žádný výsledek";
-                },
-                searching: function() {
-                    return "Hledám...";
-                }
-            },
-            matcher: function(params, data) {
-                // Pokud není zadaný search term, zobraz vše
-                if ($.trim(params.term) === '') {
-                    return data;
-                }
-
-                // Hledej v celém textu
-                if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
-                    return data;
-                }
-
-                return null;
-            }
-        });
-    }
-
-    if (advisorSelect.length && advisorSelect.prop('tagName') === 'SELECT' && advisorSelect.attr('type') !== 'hidden') {
-        advisorSelect.select2({
-            placeholder: 'Začni psát jméno...',
-            allowClear: false,
-            width: '100%',
-            language: {
-                noResults: function() {
-                    return "Žádný výsledek";
-                },
-                searching: function() {
-                    return "Hledám...";
-                }
-            },
-            matcher: function(params, data) {
-                if ($.trim(params.term) === '') {
-                    return data;
-                }
-                if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
-                    return data;
-                }
-                return null;
-            }
-        });
+        statusField.addEventListener("change", checkStatus);
+        checkStatus(); // pro jistotu spustíme hned při načtení
     }
 });
 </script>
