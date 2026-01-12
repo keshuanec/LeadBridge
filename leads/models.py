@@ -50,6 +50,12 @@ class Lead(models.Model):
         help_text="Poradce, který lead obsluhuje.",
     )
 
+    is_personal_contact = models.BooleanField(
+        "Vlastní kontakt",
+        default=False,
+        help_text="Pokud je zaškrtnuto, lead je osobní kontakt poradce a nevyplácí se z něj žádné provize."
+    )
+
     description = models.TextField("Poznámka", blank=True)
 
     communication_status = models.CharField(
@@ -256,8 +262,19 @@ class Deal(models.Model):
         Vrací dict s částkami pro každou roli.
 
         Všechny procenta se berou z referrera (ne z manažera/kanceláře).
+
+        Pokud je lead označen jako "vlastní kontakt", nepočítají se žádné provize.
         """
         referrer = self.lead.referrer
+
+        # Vlastní kontakt poradce - žádné provize
+        if self.lead.is_personal_contact:
+            return {
+                'referrer': 0,
+                'manager': 0,
+                'office': 0,
+                'total': 0
+            }
 
         if not referrer or not self.loan_amount:
             return {

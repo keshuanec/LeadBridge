@@ -75,9 +75,26 @@
                 {% endif %}
             </div>
 
+            {% if user.role == "ADVISOR" %}
+            <div class="form-group">
+                <label>
+                    {{ form.is_personal_contact }}
+                    {{ form.is_personal_contact.label }}
+                </label>
+                <br><small style="color: #666;">{{ form.fields.is_personal_contact.help_text }}</small>
+                {% if form.is_personal_contact.errors %}
+                    <div class="alert alert-error">{{ form.is_personal_contact.errors }}</div>
+                {% endif %}
+            </div>
+            {% else %}
+                {# ostatní role nemají viditelný checkbox, jen hidden input #}
+                {{ form.is_personal_contact }}
+            {% endif %}
+
         {% else %}
             {# referrer pole neupravuje, jen skrytý input #}
             {{ form.referrer }}
+            {{ form.is_personal_contact }}
         {% endif %}
 
         {% if user.role == "ADVISOR" %}

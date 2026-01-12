@@ -17,6 +17,7 @@ class LeadForm(forms.ModelForm):
             "client_email",
             "advisor",
             "referrer",
+            "is_personal_contact",
             "communication_status",
             "description",
         ]
@@ -26,8 +27,12 @@ class LeadForm(forms.ModelForm):
             "client_email": "E-mail klienta",
             "advisor": "Poradce",
             "referrer": "Doporučitel (makléř)",
+            "is_personal_contact": "Vlastní kontakt (bez provizí)",
             "communication_status": "Stav leadu",
             "description": "Popis situace",
+        }
+        help_texts = {
+            "is_personal_contact": "Zaškrtni, pokud je to tvůj vlastní kontakt bez provizí pro manažera/kancelář.",
         }
 
     extra_note = forms.CharField(
@@ -103,6 +108,10 @@ class LeadForm(forms.ModelForm):
 
             # doporučitel nemění stav leadu
             self.fields["communication_status"].widget = forms.HiddenInput()
+
+            # Doporučitel nemůže označit lead jako vlastní kontakt
+            self.fields["is_personal_contact"].widget = forms.HiddenInput()
+            self.fields["is_personal_contact"].initial = False
 
         # =========================
         #  ROLE: PORADCE
@@ -202,6 +211,10 @@ class LeadForm(forms.ModelForm):
             # Stav leadu manažer zatím nemění – necháme hidden:
             self.fields["communication_status"].widget = forms.HiddenInput()
 
+            # Manažer nemůže označit lead jako vlastní kontakt
+            self.fields["is_personal_contact"].widget = forms.HiddenInput()
+            self.fields["is_personal_contact"].initial = False
+
         # =========================
         #  ROLE: KANCELÁŘ
         # =========================
@@ -246,11 +259,31 @@ class LeadForm(forms.ModelForm):
 
             self.fields["communication_status"].widget = forms.HiddenInput()
 
+            # Kancelář nemůže označit lead jako vlastní kontakt
+            self.fields["is_personal_contact"].widget = forms.HiddenInput()
+            self.fields["is_personal_contact"].initial = False
+
         # =========================
         #  JINÉ ROLE (admin atd.)
         # =========================
         else:
             self.fields["communication_status"].widget = forms.HiddenInput()
+
+            # Ostatní role nemohou označit lead jako vlastní kontakt
+            self.fields["is_personal_contact"].widget = forms.HiddenInput()
+            self.fields["is_personal_contact"].initial = False
+
+    def clean(self):
+        """Validace a automatické nastavení referrer pro vlastní kontakty"""
+        cleaned_data = super().clean()
+        is_personal_contact = cleaned_data.get("is_personal_contact")
+        advisor = cleaned_data.get("advisor")
+
+        # Pokud je to vlastní kontakt, nastavíme referrer = advisor
+        if is_personal_contact and advisor:
+            cleaned_data["referrer"] = advisor
+
+        return cleaned_data
 
 
 class LeadNoteForm(forms.ModelForm):
