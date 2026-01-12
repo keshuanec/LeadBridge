@@ -159,6 +159,41 @@ document.addEventListener("DOMContentLoaded", function () {
         statusField.addEventListener("change", checkStatus);
         checkStatus(); // pro jistotu spustíme hned při načtení
     }
+
+    // Logika pro "vlastní kontakt" - skryje/zobrazí pole doporučitel
+    const personalContactCheckbox = document.getElementById("{{ form.is_personal_contact.id_for_label }}");
+    const referrerField = document.getElementById("{{ form.referrer.id_for_label }}");
+    const advisorField = document.getElementById("{{ form.advisor.id_for_label }}");
+    const referrerGroup = referrerField ? referrerField.closest('.form-group') : null;
+
+    if (personalContactCheckbox && referrerField && advisorField) {
+        function toggleReferrerField() {
+            if (personalContactCheckbox.checked) {
+                // Skrýt pole doporučitel a nastavit na stejnou hodnotu jako advisor
+                if (referrerGroup) {
+                    referrerGroup.style.display = "none";
+                }
+                referrerField.value = advisorField.value;
+            } else {
+                // Zobrazit pole doporučitel
+                if (referrerGroup) {
+                    referrerGroup.style.display = "block";
+                }
+            }
+        }
+
+        personalContactCheckbox.addEventListener("change", toggleReferrerField);
+
+        // Když se změní advisor a je zaškrtnutý vlastní kontakt, aktualizuj i referrer
+        advisorField.addEventListener("change", function() {
+            if (personalContactCheckbox.checked) {
+                referrerField.value = advisorField.value;
+            }
+        });
+
+        // Spustit hned při načtení stránky
+        toggleReferrerField();
+    }
 });
 </script>
 {% endblock %}
