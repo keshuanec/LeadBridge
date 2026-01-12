@@ -1,8 +1,33 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}{% if is_edit %}Upravit klienta{% else %}Nový lead{% endif %}{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/styles/choices.min.css">
+<style>
+    .choices__inner {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 8px 12px;
+        font-size: 14px;
+        min-height: 38px;
+    }
+    .choices__list--dropdown .choices__item--selectable {
+        padding: 8px 12px;
+    }
+    .choices[data-type*=select-one] .choices__input {
+        background: white;
+        border: none;
+        padding: 4px 0;
+    }
+    .choices__list--dropdown {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+</style>
 <div class="card" style="max-width: 600px; margin: 0 auto;">
     <h2>{% if is_edit %}Upravit klienta{% else %}Nový lead{% endif %}</h2>
 
@@ -122,6 +147,7 @@
     </form>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const statusField = document.getElementById("{{ form.communication_status.id_for_label }}");
@@ -141,6 +167,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
     statusField.addEventListener("change", checkStatus);
     checkStatus(); // pro jistotu spustíme hned při načtení
+
+    // Inicializace Choices.js pro referrer a advisor select
+    const referrerSelect = document.getElementById("{{ form.referrer.id_for_label }}");
+    const advisorSelect = document.getElementById("{{ form.advisor.id_for_label }}");
+
+    if (referrerSelect && referrerSelect.tagName === 'SELECT' && !referrerSelect.type.includes('hidden')) {
+        new Choices(referrerSelect, {
+            searchEnabled: true,
+            searchPlaceholderValue: 'Začni psát jméno...',
+            noResultsText: 'Žádný výsledek',
+            itemSelectText: 'Klikni pro výběr',
+            shouldSort: false, // už je seřazené z backendu
+        });
+    }
+
+    if (advisorSelect && advisorSelect.tagName === 'SELECT' && !advisorSelect.type.includes('hidden')) {
+        new Choices(advisorSelect, {
+            searchEnabled: true,
+            searchPlaceholderValue: 'Začni psát jméno...',
+            noResultsText: 'Žádný výsledek',
+            itemSelectText: 'Klikni pro výběr',
+            shouldSort: false,
+        });
+    }
 });
 </script>
 {% endblock %}

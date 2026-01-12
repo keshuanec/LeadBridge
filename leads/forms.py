@@ -44,8 +44,8 @@ class LeadForm(forms.ModelForm):
         self.single_advisor = None
 
         # Základní querysety
-        self.fields["advisor"].queryset = User.objects.filter(role=User.Role.ADVISOR)
-        self.fields["referrer"].queryset = User.objects.filter(role=User.Role.REFERRER)
+        self.fields["advisor"].queryset = User.objects.filter(role=User.Role.ADVISOR).order_by("first_name", "last_name")
+        self.fields["referrer"].queryset = User.objects.filter(role=User.Role.REFERRER).order_by("first_name", "last_name")
 
         # Poradce není povinný – může se doplnit později
         self.fields["advisor"].required = True
@@ -76,11 +76,11 @@ class LeadForm(forms.ModelForm):
         #  ROLE: DOPORUČITEL
         # =========================
         if user.role == User.Role.REFERRER:
-            advisors_qs = User.objects.filter(role=User.Role.ADVISOR)
+            advisors_qs = User.objects.filter(role=User.Role.ADVISOR).order_by("first_name", "last_name")
 
             profile: ReferrerProfile | None = getattr(user, "referrer_profile", None)
             if profile and profile.advisors.exists():
-                advisors_qs = profile.advisors.all()
+                advisors_qs = profile.advisors.all().order_by("first_name", "last_name")
 
             # nastavíme queryset (i kdyby byl prázdný nebo s jedním)
             self.fields["advisor"].queryset = advisors_qs
@@ -113,18 +113,18 @@ class LeadForm(forms.ModelForm):
             referrer_profiles = ReferrerProfile.objects.filter(advisors=user)
             referrer_user_ids = referrer_profiles.values_list("user_id", flat=True)
 
-            referrers_qs = User.objects.filter(id__in=referrer_user_ids)
+            referrers_qs = User.objects.filter(id__in=referrer_user_ids).order_by("first_name", "last_name")
 
             # pokud má poradce svůj ReferrerProfile, přidáme i jeho samotného
             profile: ReferrerProfile | None = getattr(user, "referrer_profile", None)
             if profile:
                 referrers_qs = User.objects.filter(
                     Q(id__in=referrer_user_ids) | Q(id=user.id)
-                ).distinct()
+                ).distinct().order_by("first_name", "last_name")
 
                 # Poradce s ReferrerProfile může vybrat advisora ze svých přiřazených advisorů
                 if profile.advisors.exists():
-                    advisors_qs = profile.advisors.all()
+                    advisors_qs = profile.advisors.all().order_by("first_name", "last_name")
 
                     # nastavíme queryset
                     self.fields["advisor"].queryset = advisors_qs
@@ -182,7 +182,7 @@ class LeadForm(forms.ModelForm):
             # referrers = managed referrers + manažer sám
             referrers_qs = User.objects.filter(
                 Q(id__in=referrer_ids) | Q(id=user.id)
-            ).distinct()
+            ).distinct().order_by("first_name", "last_name")
 
             self.fields["referrer"].queryset = referrers_qs
 
@@ -195,7 +195,7 @@ class LeadForm(forms.ModelForm):
             advisors_qs = User.objects.filter(
                 id__in=advisor_ids,
                 role=User.Role.ADVISOR,
-            ).distinct()
+            ).distinct().order_by("first_name", "last_name")
 
             self.fields["advisor"].queryset = advisors_qs
 
@@ -219,7 +219,7 @@ class LeadForm(forms.ModelForm):
             # referrery = doporučitelé pod kanceláří + kancelář sama
             referrers_qs = User.objects.filter(
                 Q(id__in=referrer_ids) | Q(id=user.id)
-            ).distinct()
+            ).distinct().order_by("first_name", "last_name")
 
             self.fields["referrer"].queryset = referrers_qs
 
@@ -238,7 +238,7 @@ class LeadForm(forms.ModelForm):
 
                 role=User.Role.ADVISOR,
 
-            ).distinct()
+            ).distinct().order_by("first_name", "last_name")
 
             self.fields["advisor"].queryset = advisors_qs
 
