@@ -166,19 +166,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const advisorField = document.getElementById("{{ form.advisor.id_for_label }}");
     const referrerGroup = referrerField ? referrerField.closest('.form-group') : null;
 
-    if (personalContactCheckbox && referrerField && advisorField) {
+    // Kontrola: JavaScript funguje jen pokud jsou checkbox a pole viditelné (ne hidden)
+    const isCheckboxVisible = personalContactCheckbox && personalContactCheckbox.type === "checkbox";
+    const isAdvisorVisible = advisorField && advisorField.type === "select-one";
+    const isReferrerVisible = referrerField && referrerField.type === "select-one";
+
+    if (isCheckboxVisible && isReferrerVisible && isAdvisorVisible && referrerGroup) {
         function toggleReferrerField() {
             if (personalContactCheckbox.checked) {
                 // Skrýt pole doporučitel a nastavit na stejnou hodnotu jako advisor
-                if (referrerGroup) {
-                    referrerGroup.style.display = "none";
-                }
+                referrerGroup.style.display = "none";
                 referrerField.value = advisorField.value;
             } else {
                 // Zobrazit pole doporučitel
-                if (referrerGroup) {
-                    referrerGroup.style.display = "block";
-                }
+                referrerGroup.style.display = "block";
             }
         }
 
