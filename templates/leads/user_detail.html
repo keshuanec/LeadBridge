@@ -23,6 +23,8 @@
 
     <hr>
 
+{% include "leads/includes/date_filter.html" %}
+
     {% if manager %}
     <p><strong>Manažer:</strong>
         <a href="{% url 'user_detail' manager.pk %}">{{ manager.get_full_name }}</a>

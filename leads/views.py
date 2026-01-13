@@ -9,7 +9,9 @@ from .forms import LeadForm, LeadNoteForm, LeadMeetingForm, DealCreateForm, Deal
 from django.db.models import Q, Count
 from django.utils.http import urlencode
 from django.utils import timezone
+from datetime import timedelta
 from .services import notifications
+from .stats_filters import parse_date_filters
 
 User = get_user_model()
 
@@ -760,6 +762,25 @@ def referrers_list(request):
 
     from accounts.models import ReferrerProfile, Office
 
+    # === ČASOVÉ FILTROVÁNÍ ===
+    date_filter = parse_date_filters(request)
+    date_from = date_filter['date_from']
+    date_to = date_filter['date_to']
+
+    # Q objekty pro časové filtrování leadů
+    lead_date_q = Q()
+    if date_from:
+        lead_date_q &= Q(user__leads_created__created_at__gte=date_from)
+    if date_to:
+        lead_date_q &= Q(user__leads_created__created_at__lt=date_to + timedelta(days=1))
+
+    # Q objekty pro časové filtrování dealů
+    deal_date_q = Q()
+    if date_from:
+        deal_date_q &= Q(user__leads_created__deal__created_at__gte=date_from)
+    if date_to:
+        deal_date_q &= Q(user__leads_created__deal__created_at__lt=date_to + timedelta(days=1))
+
     queryset = (
         ReferrerProfile.objects
         .select_related("user", "manager", "manager__manager_profile__office")
@@ -768,7 +789,7 @@ def referrers_list(request):
             # Vlastní kontakty (is_personal_contact=True) se nezapočítávají do statistik
             leads_sent=Count(
                 "user__leads_created",
-                filter=Q(user__leads_created__is_personal_contact=False),
+                filter=Q(user__leads_created__is_personal_contact=False) & lead_date_q,
                 distinct=True
             ),
             meetings_planned=Count(
@@ -776,7 +797,7 @@ def referrers_list(request):
                 filter=Q(
                     user__leads_created__communication_status=Lead.CommunicationStatus.MEETING,
                     user__leads_created__is_personal_contact=False
-                ),
+                ) & lead_date_q,
                 distinct=True,
             ),
             meetings_done=Count(
@@ -784,7 +805,7 @@ def referrers_list(request):
                 filter=Q(
                     user__leads_created__meeting_done=True,
                     user__leads_created__is_personal_contact=False
-                ),
+                ) & lead_date_q,
                 distinct=True,
             ),
             deals_done=Count(
@@ -792,7 +813,7 @@ def referrers_list(request):
                 filter=Q(
                     user__leads_created__deal__status=Deal.DealStatus.DRAWN,
                     user__leads_created__is_personal_contact=False
-                ),
+                ) & deal_date_q,
                 distinct=True,
             ),
         )
@@ -873,6 +894,7 @@ def referrers_list(request):
         "manager_options": manager_options,
         "office_options": office_options,
         "qs_keep": qs_keep,
+        "date_filter": date_filter,
     }
     return render(request, "leads/referrers_list.html", context)
 
@@ -886,6 +908,25 @@ def advisors_list(request):
     if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.REFERRER, User.Role.REFERRER_MANAGER, User.Role.OFFICE]):
         return HttpResponseForbidden("Nemáš oprávnění zobrazit poradce.")
 
+    # === ČASOVÉ FILTROVÁNÍ ===
+    date_filter = parse_date_filters(request)
+    date_from = date_filter['date_from']
+    date_to = date_filter['date_to']
+
+    # Q objekty pro časové filtrování leadů
+    lead_date_q = Q()
+    if date_from:
+        lead_date_q &= Q(leads_assigned__created_at__gte=date_from)
+    if date_to:
+        lead_date_q &= Q(leads_assigned__created_at__lt=date_to + timedelta(days=1))
+
+    # Q objekty pro časové filtrování dealů
+    deal_date_q = Q()
+    if date_from:
+        deal_date_q &= Q(leads_assigned__deal__created_at__gte=date_from)
+    if date_to:
+        deal_date_q &= Q(leads_assigned__deal__created_at__lt=date_to + timedelta(days=1))
+
     # Vlastní kontakty se NIKDY nezapočítávají do statistik poradců
     # Statistiky mají ukazovat práci s kontakty, které poradce obdržel, ne s vlastními
     queryset = (
@@ -894,7 +935,7 @@ def advisors_list(request):
         .annotate(
             leads_received=Count(
                 "leads_assigned",
-                filter=Q(leads_assigned__is_personal_contact=False),
+                filter=Q(leads_assigned__is_personal_contact=False) & lead_date_q,
                 distinct=True
             ),
             meetings_planned=Count(
@@ -902,7 +943,7 @@ def advisors_list(request):
                 filter=Q(
                     leads_assigned__communication_status=Lead.CommunicationStatus.MEETING,
                     leads_assigned__is_personal_contact=False
-                ),
+                ) & lead_date_q,
                 distinct=True,
             ),
             meetings_done=Count(
@@ -910,12 +951,12 @@ def advisors_list(request):
                 filter=Q(
                     leads_assigned__meeting_done=True,
                     leads_assigned__is_personal_contact=False
-                ),
+                ) & lead_date_q,
                 distinct=True,
             ),
             deals_created=Count(
                 "leads_assigned__deal",
-                filter=Q(leads_assigned__is_personal_contact=False),
+                filter=Q(leads_assigned__is_personal_contact=False) & deal_date_q,
                 distinct=True,
             ),
             deals_completed=Count(
@@ -923,7 +964,7 @@ def advisors_list(request):
                 filter=Q(
                     leads_assigned__deal__status=Deal.DealStatus.DRAWN,
                     leads_assigned__is_personal_contact=False
-                ),
+                ) & deal_date_q,
                 distinct=True,
             ),
         )
@@ -954,6 +995,7 @@ def advisors_list(request):
 
     context = {
         "advisors": queryset.order_by("last_name", "first_name", "username"),
+        "date_filter": date_filter,
     }
     return render(request, "leads/advisors_list.html", context)
 
@@ -992,34 +1034,65 @@ def advisor_detail(request, pk: int):
     if not has_access:
         return HttpResponseForbidden("Nemáš oprávnění zobrazit detail tohoto poradce.")
 
+    # === ČASOVÉ FILTROVÁNÍ ===
+    date_filter = parse_date_filters(request)
+    date_from = date_filter['date_from']
+    date_to = date_filter['date_to']
+
     # Statistiky pro konkrétního poradce
     leads_qs = Lead.objects.filter(advisor=advisor)
+    if date_from:
+        leads_qs = leads_qs.filter(created_at__gte=date_from)
+    if date_to:
+        leads_qs = leads_qs.filter(created_at__lt=date_to + timedelta(days=1))
 
     advisor_stats = {
         "leads_received": leads_qs.count(),
         "meetings_planned": leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
         "meetings_done": leads_qs.filter(meeting_done=True).count(),
-        "deals_created": Deal.objects.filter(lead__advisor=advisor).count(),
-        "deals_completed": Deal.objects.filter(lead__advisor=advisor, status=Deal.DealStatus.DRAWN).count(),
     }
+
+    # Pro deals použít časový filtr na Deal.created_at
+    deals_qs = Deal.objects.filter(lead__advisor=advisor)
+    if date_from:
+        deals_qs = deals_qs.filter(created_at__gte=date_from)
+    if date_to:
+        deals_qs = deals_qs.filter(created_at__lt=date_to + timedelta(days=1))
+
+    advisor_stats["deals_created"] = deals_qs.count()
+    advisor_stats["deals_completed"] = deals_qs.filter(status=Deal.DealStatus.DRAWN).count()
 
     # Pokud má poradce také ReferrerProfile, počítáme i statistiky jako doporučitel
     referrer_stats = None
     referrer_profile = getattr(advisor, "referrer_profile", None)
     if referrer_profile:
         referrer_leads_qs = Lead.objects.filter(referrer=advisor)
+        if date_from:
+            referrer_leads_qs = referrer_leads_qs.filter(created_at__gte=date_from)
+        if date_to:
+            referrer_leads_qs = referrer_leads_qs.filter(created_at__lt=date_to + timedelta(days=1))
+
         referrer_stats = {
             "leads_sent": referrer_leads_qs.count(),
             "meetings_planned": referrer_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
             "meetings_done": referrer_leads_qs.filter(meeting_done=True).count(),
-            "deals_done": Deal.objects.filter(lead__in=referrer_leads_qs, status=Deal.DealStatus.DRAWN).count(),
         }
+
+        # Deals pro referrera
+        referrer_deals_qs = Deal.objects.filter(lead__in=referrer_leads_qs)
+        if date_from:
+            referrer_deals_qs = referrer_deals_qs.filter(created_at__gte=date_from)
+        if date_to:
+            referrer_deals_qs = referrer_deals_qs.filter(created_at__lt=date_to + timedelta(days=1))
+
+        referrer_stats["deals_done"] = referrer_deals_qs.filter(status=Deal.DealStatus.DRAWN).count()
 
     return render(request, "leads/advisor_detail.html", {
         "advisor": advisor,
         "stats": advisor_stats,
         "referrer_stats": referrer_stats,
         "referrer_profile": referrer_profile,
+        "date_filter": date_filter,
     })
 
 
@@ -1623,6 +1696,26 @@ def user_detail(request, pk: int):
     # Všichni přihlášení uživatelé mohou vidět profily všech
     # Tlačítka pro úpravy jsou v šabloně zobrazena jen když user == viewed_user
 
+    # === ČASOVÉ FILTROVÁNÍ ===
+    date_filter = parse_date_filters(request)
+    date_from = date_filter['date_from']
+    date_to = date_filter['date_to']
+
+    # Helper funkce pro aplikaci časového filtru
+    def filter_leads_by_date(qs):
+        if date_from:
+            qs = qs.filter(created_at__gte=date_from)
+        if date_to:
+            qs = qs.filter(created_at__lt=date_to + timedelta(days=1))
+        return qs
+
+    def filter_deals_by_date(qs):
+        if date_from:
+            qs = qs.filter(created_at__gte=date_from)
+        if date_to:
+            qs = qs.filter(created_at__lt=date_to + timedelta(days=1))
+        return qs
+
     # Získat profily pokud existují
     referrer_profile = getattr(viewed_user, "referrer_profile", None)
     manager_profile = getattr(viewed_user, "manager_profile", None)
@@ -1650,46 +1743,53 @@ def user_detail(request, pk: int):
 
     if viewed_user.role == User.Role.ADVISOR:
         # Statistiky poradce
-        leads_qs = Lead.objects.filter(advisor=viewed_user)
+        leads_qs = filter_leads_by_date(Lead.objects.filter(advisor=viewed_user))
+        deals_qs = filter_deals_by_date(Deal.objects.filter(lead__advisor=viewed_user))
+
         advisor_stats = {
             "leads_received": leads_qs.count(),
             "meetings_planned": leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
             "meetings_done": leads_qs.filter(meeting_done=True).count(),
-            "deals_created": Deal.objects.filter(lead__advisor=viewed_user).count(),
-            "deals_completed": Deal.objects.filter(lead__advisor=viewed_user, status=Deal.DealStatus.DRAWN).count(),
+            "deals_created": deals_qs.count(),
+            "deals_completed": deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
         }
 
         # Statistiky jako doporučitel (pokud má ReferrerProfile)
         if referrer_profile:
-            referrer_leads_qs = Lead.objects.filter(referrer=viewed_user)
+            referrer_leads_qs = filter_leads_by_date(Lead.objects.filter(referrer=viewed_user))
+            referrer_deals_qs = filter_deals_by_date(Deal.objects.filter(lead__in=referrer_leads_qs))
+
             referrer_stats = {
                 "leads_sent": referrer_leads_qs.count(),
                 "meetings_planned": referrer_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
                 "meetings_done": referrer_leads_qs.filter(meeting_done=True).count(),
-                "deals_done": Deal.objects.filter(lead__in=referrer_leads_qs, status=Deal.DealStatus.DRAWN).count(),
+                "deals_done": referrer_deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
             }
 
     elif viewed_user.role == User.Role.REFERRER_MANAGER:
         # Statistiky týmu (bez obchodů manažera samotného)
         managed_profiles = ReferrerProfile.objects.filter(manager=viewed_user)
         team_referrer_ids = managed_profiles.values_list("user_id", flat=True)
-        team_leads_qs = Lead.objects.filter(referrer_id__in=team_referrer_ids)
+        team_leads_qs = filter_leads_by_date(Lead.objects.filter(referrer_id__in=team_referrer_ids))
+        team_deals_qs = filter_deals_by_date(Deal.objects.filter(lead__in=team_leads_qs))
 
         team_stats = {
             "leads_sent": team_leads_qs.count(),
             "meetings_planned": team_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
             "meetings_done": team_leads_qs.filter(meeting_done=True).count(),
-            "deals_done": Deal.objects.filter(lead__in=team_leads_qs, status=Deal.DealStatus.DRAWN).count(),
+            "deals_done": team_deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
         }
 
         # Statistiky jako doporučitel (pokud má ReferrerProfile)
         if referrer_profile:
-            referrer_leads_qs = Lead.objects.filter(referrer=viewed_user)
+            referrer_leads_qs = filter_leads_by_date(Lead.objects.filter(referrer=viewed_user))
+            referrer_deals_qs = filter_deals_by_date(Deal.objects.filter(lead__in=referrer_leads_qs))
+
             referrer_stats = {
                 "leads_sent": referrer_leads_qs.count(),
                 "meetings_planned": referrer_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
                 "meetings_done": referrer_leads_qs.filter(meeting_done=True).count(),
-                "deals_done": Deal.objects.filter(lead__in=referrer_leads_qs, status=Deal.DealStatus.DRAWN).count(),
+                "deals_done": referrer_deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
             }
 
     elif viewed_user.role == User.Role.OFFICE:
@@ -1698,47 +1798,53 @@ def user_detail(request, pk: int):
             manager__manager_profile__office__owner=viewed_user
         )
         office_referrer_ids = office_referrer_profiles.values_list("user_id", flat=True)
-        office_leads_qs = Lead.objects.filter(referrer_id__in=office_referrer_ids)
+        office_leads_qs = filter_leads_by_date(Lead.objects.filter(referrer_id__in=office_referrer_ids))
+        office_deals_qs = filter_deals_by_date(Deal.objects.filter(lead__in=office_leads_qs))
 
         office_stats = {
             "leads_sent": office_leads_qs.count(),
             "meetings_planned": office_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
             "meetings_done": office_leads_qs.filter(meeting_done=True).count(),
-            "deals_done": Deal.objects.filter(lead__in=office_leads_qs, status=Deal.DealStatus.DRAWN).count(),
+            "deals_done": office_deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
         }
 
         # Pokud kancelář funguje i jako manažer (má přiřazené doporučitele)
         managed_profiles = ReferrerProfile.objects.filter(manager=viewed_user)
         if managed_profiles.exists():
             team_referrer_ids = managed_profiles.values_list("user_id", flat=True)
-            team_leads_qs = Lead.objects.filter(referrer_id__in=team_referrer_ids)
+            team_leads_qs = filter_leads_by_date(Lead.objects.filter(referrer_id__in=team_referrer_ids))
+            team_deals_qs = filter_deals_by_date(Deal.objects.filter(lead__in=team_leads_qs))
 
             team_stats = {
                 "leads_sent": team_leads_qs.count(),
                 "meetings_planned": team_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
                 "meetings_done": team_leads_qs.filter(meeting_done=True).count(),
-                "deals_done": Deal.objects.filter(lead__in=team_leads_qs, status=Deal.DealStatus.DRAWN).count(),
+                "deals_done": team_deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
             }
 
         # Statistiky jako doporučitel (pokud má ReferrerProfile)
         if referrer_profile:
-            referrer_leads_qs = Lead.objects.filter(referrer=viewed_user)
+            referrer_leads_qs = filter_leads_by_date(Lead.objects.filter(referrer=viewed_user))
+            referrer_deals_qs = filter_deals_by_date(Deal.objects.filter(lead__in=referrer_leads_qs))
+
             referrer_stats = {
                 "leads_sent": referrer_leads_qs.count(),
                 "meetings_planned": referrer_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
                 "meetings_done": referrer_leads_qs.filter(meeting_done=True).count(),
-                "deals_done": Deal.objects.filter(lead__in=referrer_leads_qs, status=Deal.DealStatus.DRAWN).count(),
+                "deals_done": referrer_deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
             }
 
     elif viewed_user.role == User.Role.REFERRER:
         # Běžný doporučitel - zobrazit jen jeho statistiky
         if referrer_profile:
-            referrer_leads_qs = Lead.objects.filter(referrer=viewed_user)
+            referrer_leads_qs = filter_leads_by_date(Lead.objects.filter(referrer=viewed_user))
+            referrer_deals_qs = filter_deals_by_date(Deal.objects.filter(lead__in=referrer_leads_qs))
+
             referrer_stats = {
                 "leads_sent": referrer_leads_qs.count(),
                 "meetings_planned": referrer_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
                 "meetings_done": referrer_leads_qs.filter(meeting_done=True).count(),
-                "deals_done": Deal.objects.filter(lead__in=referrer_leads_qs, status=Deal.DealStatus.DRAWN).count(),
+                "deals_done": referrer_deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
             }
 
     context = {
@@ -1751,6 +1857,7 @@ def user_detail(request, pk: int):
         "team_stats": team_stats,
         "advisor_stats": advisor_stats,
         "referrer_stats": referrer_stats,
+        "date_filter": date_filter,
     }
 
     return render(request, "leads/user_detail.html", context)

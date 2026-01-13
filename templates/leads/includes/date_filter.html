@@ -1,0 +1,65 @@
+<div class="date-filter-panel" style="margin-bottom: 20px; padding: 16px; background: #fff; border-radius: 8px; border: 1px solid #ddd;">
+    <form method="get" id="dateFilterForm">
+        {# Zachovat existující GET parametry #}
+        {% for key, value in request.GET.items %}
+            {% if key not in 'date_preset,date_from,date_to' %}
+                <input type="hidden" name="{{ key }}" value="{{ value }}">
+            {% endif %}
+        {% endfor %}
+
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <label style="font-weight: 600; margin-right: 8px;">Časové období:</label>
+
+            <button type="submit" name="date_preset" value="all"
+                class="btn {% if date_filter.preset == 'all' %}btn-primary{% else %}btn-secondary{% endif %}"
+                style="padding: 8px 16px;">
+                Vše
+            </button>
+
+            <button type="submit" name="date_preset" value="year"
+                class="btn {% if date_filter.preset == 'year' %}btn-primary{% else %}btn-secondary{% endif %}"
+                style="padding: 8px 16px;">
+                Tento rok
+            </button>
+
+            <button type="submit" name="date_preset" value="month"
+                class="btn {% if date_filter.preset == 'month' %}btn-primary{% else %}btn-secondary{% endif %}"
+                style="padding: 8px 16px;">
+                Tento měsíc
+            </button>
+
+            <button type="button" id="customRangeBtn"
+                class="btn {% if date_filter.preset == 'custom' %}btn-primary{% else %}btn-secondary{% endif %}"
+                style="padding: 8px 16px;">
+                Vlastní rozsah
+            </button>
+        </div>
+
+        <div id="customRangeInputs" style="display: {% if date_filter.preset == 'custom' %}flex{% else %}none{% endif %}; gap: 12px; margin-top: 12px; align-items: center;">
+            <div>
+                <label style="font-size: 12px; display: block; margin-bottom: 4px;">Od:</label>
+                <input type="date" name="date_from" value="{{ date_filter.date_from|date:'Y-m-d' }}"
+                    style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div>
+                <label style="font-size: 12px; display: block; margin-bottom: 4px;">Do:</label>
+                <input type="date" name="date_to" value="{{ date_filter.date_to|date:'Y-m-d' }}"
+                    style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <button type="submit" name="date_preset" value="custom" class="btn btn-primary" style="padding: 8px 16px; margin-top: 20px;">
+                Použít
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var customBtn = document.getElementById('customRangeBtn');
+    if (customBtn) {
+        customBtn.addEventListener('click', function() {
+            document.getElementById('customRangeInputs').style.display = 'flex';
+        });
+    }
+});
+</script>
