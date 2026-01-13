@@ -1620,9 +1620,8 @@ def user_detail(request, pk: int):
     user: User = request.user
     viewed_user = get_object_or_404(User, pk=pk)
 
-    # Kontrola oprávnění - jen admin, advisor, manager, office mohou vidět detaily jiných uživatelů
-    if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR, User.Role.REFERRER_MANAGER, User.Role.OFFICE]):
-        return HttpResponseForbidden("Nemáš oprávnění zobrazit detail uživatele.")
+    # Všichni přihlášení uživatelé mohou vidět profily všech
+    # Tlačítka pro úpravy jsou v šabloně zobrazena jen když user == viewed_user
 
     # Získat profily pokud existují
     referrer_profile = getattr(viewed_user, "referrer_profile", None)
