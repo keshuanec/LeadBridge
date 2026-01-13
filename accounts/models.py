@@ -164,12 +164,13 @@ class ManagerProfile(models.Model):
     """
     Rozšíření pro manažera doporučitelů.
     Umožňuje nám přiřadit manažera ke kanceláři.
+    Uživatel s rolí OFFICE může také působit jako manažer ve své kanceláři.
     """
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
         related_name="manager_profile",
-        limit_choices_to={"role": User.Role.REFERRER_MANAGER},
+        limit_choices_to={"role__in": [User.Role.REFERRER_MANAGER, User.Role.OFFICE]},
         verbose_name="Manažer",
     )
     office = models.ForeignKey(
