@@ -7,18 +7,14 @@
     <h2>{{ lead.client_name }}</h2>
 
     <p>
+        <strong>Telefon:</strong> {{ lead.client_phone|default:"—" }}<br>
+        <strong>E-mail:</strong> {{ lead.client_email|default:"—" }}<br>
+
         <strong>Doporučitel:</strong>
         {% if lead.referrer.role == "ADVISOR" %}
             <a href="{% url 'advisor_detail' lead.referrer.pk %}">{{ lead.referrer.get_full_name }}</a>
         {% else %}
             <a href="{% url 'user_detail' lead.referrer.pk %}">{{ lead.referrer.get_full_name }}</a>
-        {% endif %}<br>
-
-        <strong>Poradce:</strong>
-        {% if lead.advisor %}
-            <a href="{% url 'advisor_detail' lead.advisor.pk %}">{{ lead.advisor.get_full_name }}</a>
-        {% else %}
-            —
         {% endif %}<br>
 
         {% if lead.referrer_manager %}
@@ -32,11 +28,17 @@
             (<a href="{% url 'user_detail' lead.referrer_office.owner.pk %}">{{ lead.referrer_office.owner.get_full_name }}</a>)<br>
         {% endif %}
 
+        <strong>Poradce:</strong>
+        {% if lead.advisor %}
+            <a href="{% url 'advisor_detail' lead.advisor.pk %}">{{ lead.advisor.get_full_name }}</a>
+        {% else %}
+            —
+        {% endif %}<br><br>
+
         <strong>Stav leadu:</strong>
         {{ lead.get_communication_status_display }}<br>
 
-        <strong>Telefon:</strong> {{ lead.client_phone|default:"—" }}<br>
-        <strong>E-mail:</strong> {{ lead.client_email|default:"—" }}<br>
+
         {% if lead.meeting_at %}
             <p><strong>Termín schůzky:</strong>
                 {{ lead.meeting_at|date:"d.m.Y H:i" }}
