@@ -4,49 +4,61 @@
 {% block content %}
 <style>
     /* Kompaktní sloupce v tabulce obchodů */
-    .deals-table {
-        table-layout: fixed;
-        width: 100%;
+    .table-wrapper > table.deals-table {
+        table-layout: fixed !important;
+        width: 100% !important;
     }
 
-    .deals-table th:nth-child(1),
-    .deals-table td:nth-child(1) {
-        width: 80px;
-        padding: 6px 4px;
+    /* Stav obchodu */
+    .table-wrapper > table.deals-table th:nth-child(1),
+    .table-wrapper > table.deals-table td:nth-child(1) {
+        width: 80px !important;
+        max-width: 80px !important;
+        padding: 6px 4px !important;
+        white-space: normal !important;
     }
 
-    .deals-table th:nth-child(2),
-    .deals-table td:nth-child(2) {
-        width: 140px;
+    /* Klient */
+    .table-wrapper > table.deals-table th:nth-child(2),
+    .table-wrapper > table.deals-table td:nth-child(2) {
+        width: 120px !important;
+        white-space: normal !important;
     }
 
-    .deals-table th:nth-child(3),
-    .deals-table td:nth-child(3) {
-        width: 105px;
+    /* Výše úvěru */
+    .table-wrapper > table.deals-table th:nth-child(3),
+    .table-wrapper > table.deals-table td:nth-child(3) {
+        width: 95px !important;
+        white-space: nowrap !important;
     }
 
-    .deals-table td {
-        white-space: nowrap;
-        font-size: 13px;
-        padding: 6px 8px;
+    .table-wrapper > table.deals-table td {
+        font-size: 13px !important;
+        padding: 6px 8px !important;
+        white-space: normal !important;
+        line-height: 1.3 !important;
     }
 
-    .deals-table th {
-        font-size: 12px;
-        white-space: nowrap;
-        padding: 8px 8px;
+    .table-wrapper > table.deals-table th {
+        font-size: 12px !important;
+        padding: 8px 8px !important;
+        white-space: normal !important;
+        line-height: 1.3 !important;
     }
 
-    .deals-table .badge {
-        font-size: 10px;
-        padding: 3px 5px;
+    .table-wrapper > table.deals-table .badge {
+        font-size: 10px !important;
+        padding: 3px 5px !important;
+        white-space: normal !important;
     }
 
     /* Úzké sloupce provizí */
-    .deals-table .commission-col {
-        width: 85px;
-        font-size: 12px;
-        padding: 6px 4px;
+    .table-wrapper > table.deals-table .commission-col {
+        width: 80px !important;
+        max-width: 80px !important;
+        font-size: 12px !important;
+        padding: 6px 4px !important;
+        white-space: nowrap !important;
     }
 </style>
 
@@ -290,7 +302,7 @@
                         </td>
                     {% endif %}
 
-                    <td>{{ d.created_at|date:"d.m.Y H:i" }}</td>
+                    <td>{{ d.created_at|date:"d.m.Y" }}</td>
                     <td>
                     {% if d.status != "SIGNED" and d.status != "SIGNED_NO_PROPERTY" and d.status != "DRAWN" %}
                         {# Obchod ještě není podepsán #}

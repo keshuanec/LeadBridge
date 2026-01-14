@@ -157,15 +157,6 @@
             </th>
 
             <th>
-                <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=commission&dir={% if current_sort == 'commission' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
-                    Stav provize
-                    {% if current_sort == 'commission' %}
-                    {% if current_dir == 'asc' %}▲{% else %}▼{% endif %}
-                    {% endif %}
-                </a>
-            </th>
-
-            <th>
                 <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=created_at&dir={% if current_sort == 'created_at' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                     Vytvořeno
                     {% if current_sort == 'created_at' %}
@@ -219,7 +210,6 @@
             {% endif %}
 
             <td><span class="badge">{{ lead.get_communication_status_display }}</span></td>
-            <td><span class="badge">{{ lead.get_commission_status_display }}</span></td>
             <td>{{ lead.created_at|date:"d.m.Y H:i" }}</td>
         </tr>
         {% endfor %}
