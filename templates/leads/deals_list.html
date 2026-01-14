@@ -2,6 +2,54 @@
 {% block title %}Obchody{% endblock %}
 
 {% block content %}
+<style>
+    /* Kompaktní sloupce v tabulce obchodů */
+    .deals-table {
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    .deals-table th:nth-child(1),
+    .deals-table td:nth-child(1) {
+        width: 80px;
+        padding: 6px 4px;
+    }
+
+    .deals-table th:nth-child(2),
+    .deals-table td:nth-child(2) {
+        width: 140px;
+    }
+
+    .deals-table th:nth-child(3),
+    .deals-table td:nth-child(3) {
+        width: 105px;
+    }
+
+    .deals-table td {
+        white-space: nowrap;
+        font-size: 13px;
+        padding: 6px 8px;
+    }
+
+    .deals-table th {
+        font-size: 12px;
+        white-space: nowrap;
+        padding: 8px 8px;
+    }
+
+    .deals-table .badge {
+        font-size: 10px;
+        padding: 3px 5px;
+    }
+
+    /* Úzké sloupce provizí */
+    .deals-table .commission-col {
+        width: 85px;
+        font-size: 12px;
+        padding: 6px 4px;
+    }
+</style>
+
 <div class="card">
     <h2>Obchody</h2>
 
@@ -95,7 +143,7 @@
 {# Výsledky #}
     {% if deals %}
         <div class="table-wrapper">
-        <table>
+        <table class="deals-table">
             <thead>
                 <tr>
                     <th>
@@ -124,15 +172,12 @@
                     </th>
 
                     {# Provize - role-based zobrazení #}
-                    <th>Provize makléře</th>
+                    <th class="commission-col">Prov. makl.</th>
                     {% if user.role != "REFERRER" %}
-                        <th>Provize manažera</th>
+                        <th class="commission-col">Prov. man.</th>
                     {% endif %}
                     {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
-                        <th>Provize kanceláře</th>
-                    {% endif %}
-                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
-                        <th>Provize celkem</th>
+                        <th class="commission-col">Prov. kanc.</th>
                     {% endif %}
 
                     {% if show_referrer_col %}
@@ -194,14 +239,14 @@
                     <td>{{ d.loan_amount|floatformat:0 }} Kč</td>
 
                     {# Zobrazení provizí - role-based #}
-                    <td>
+                    <td class="commission-col">
                         {{ d.calculated_commission_referrer|floatformat:0 }} Kč
                         {% if d.paid_referrer %}
                             <span class="badge badge-ready" style="margin-left: 6px;">paid</span>
                         {% endif %}
                     </td>
                     {% if user.role != "REFERRER" %}
-                        <td>
+                        <td class="commission-col">
                             {% if d.calculated_commission_manager > 0 %}
                                 {{ d.calculated_commission_manager|floatformat:0 }} Kč
                                 {% if d.paid_manager %}
@@ -211,7 +256,7 @@
                         </td>
                     {% endif %}
                     {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
-                        <td>
+                        <td class="commission-col">
                             {% if d.calculated_commission_office > 0 %}
                                 {{ d.calculated_commission_office|floatformat:0 }} Kč
                                 {% if d.paid_office %}
@@ -219,9 +264,6 @@
                                 {% endif %}
                             {% else %}—{% endif %}
                         </td>
-                    {% endif %}
-                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
-                        <td>{{ d.calculated_commission_total|floatformat:0 }} Kč</td>
                     {% endif %}
 
                     {% if show_referrer_col %}

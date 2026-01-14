@@ -202,7 +202,7 @@ class Deal(models.Model):
         APPROVAL = "APPROVAL", "Schvalování"
         SIGN_PLANNING = "SIGN_PLANNING", "Plánování podpisu"
         SIGNED = "SIGNED", "Podepsaná smlouva"
-        SIGNED_NO_PROPERTY = "SIGNED_NO_PROPERTY", "Podepsaná smlouva bez nemovitosti"
+        SIGNED_NO_PROPERTY = "SIGNED_NO_PROPERTY", "Podeps. bez nem."
         DRAWN = "DRAWN", "Načerpáno"
 
     class CommissionStatus(models.TextChoices):
