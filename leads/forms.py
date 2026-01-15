@@ -389,3 +389,24 @@ class MeetingResultForm(forms.Form):
         required=False,
         help_text="Jak schůzka proběhla?"
     )
+
+
+class CallbackScheduleForm(forms.ModelForm):
+    """Formulář pro odložení hovoru"""
+    class Meta:
+        model = Lead
+        fields = ["callback_scheduled_date", "callback_note"]
+        labels = {
+            "callback_scheduled_date": "Datum plánovaného hovoru",
+            "callback_note": "Poznámka k hovoru",
+        }
+        widgets = {
+            "callback_scheduled_date": forms.DateInput(attrs={"type": "date"}),
+            "callback_note": forms.Textarea(attrs={"rows": 3}),
+        }
+
+    def clean_callback_scheduled_date(self):
+        value = self.cleaned_data["callback_scheduled_date"]
+        if value is None:
+            raise forms.ValidationError("Vyber datum plánovaného hovoru.")
+        return value

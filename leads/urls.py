@@ -9,6 +9,7 @@ urlpatterns = [
     path("<int:pk>/meeting/", views.lead_schedule_meeting, name="lead_schedule_meeting"),
     path("<int:pk>/meeting/completed/", views.lead_meeting_completed, name="lead_meeting_completed"),
     path("<int:pk>/meeting/cancelled/", views.lead_meeting_cancelled, name="lead_meeting_cancelled"),
+    path("<int:pk>/callback/", views.schedule_callback, name="schedule_callback"),
     path("deals/", views.deals_list, name="deals_list"),
     path("deals/<int:pk>/", views.deal_detail, name="deal_detail"),
     path("deals/<int:pk>/edit/", views.deal_edit, name="deal_edit"),

@@ -82,6 +82,10 @@
             {% endif %}
         {% endif %}
 
+        {% if can_schedule_callback %}
+            <a href="{% url 'schedule_callback' lead.pk %}" class="btn btn-secondary" title="Odložit hovor">📞 Odložit hovor</a>
+        {% endif %}
+
         {% if can_create_deal %}
             {% if lead.deal %}
                 <a href="{% url 'deal_detail' lead.deal.pk %}" class="btn btn-primary" title="Přejít na obchod">💼 Přejít na obchod</a>

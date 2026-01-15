@@ -91,6 +91,10 @@ class Lead(models.Model):
     meeting_done = models.BooleanField("Schůzka proběhla", default=False)
     meeting_done_at = models.DateTimeField("Schůzka proběhla (čas)", null=True, blank=True)
 
+    # Odkládání hovoru
+    callback_scheduled_date = models.DateField("Datum plánovaného hovoru", null=True, blank=True)
+    callback_note = models.TextField("Poznámka k hovoru", blank=True)
+
 
     @property
     def referrer_manager(self):

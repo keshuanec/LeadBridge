@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Odložit hovor{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2>Odložit hovor – {{ lead.client_name }}</h2>
+
+    {% if form.non_field_errors %}
+        <div class="alert alert-error">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="{{ form.callback_scheduled_date.id_for_label }}">Datum plánovaného hovoru</label>
+            {{ form.callback_scheduled_date }}
+            {% if form.callback_scheduled_date.errors %}<div class="alert alert-error">{{ form.callback_scheduled_date.errors }}</div>{% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.callback_note.id_for_label }}">Poznámka k hovoru</label>
+            {{ form.callback_note }}
+            {% if form.callback_note.errors %}<div class="alert alert-error">{{ form.callback_note.errors }}</div>{% endif %}
+        </div>
+
+        <p style="margin-top: 20px; padding: 10px; background: #f0f0f0; border-radius: 4px;">
+            Po potvrzení se lead nastaví do stavu "Čekání na klienta". V den zvoleného data se automaticky vrátí do stavu "Nový" a obdržíš notifikaci.
+        </p>
+
+        <button type="submit" class="btn btn-primary">Odložit hovor</button>
+        <a href="{% url 'lead_detail' lead.pk %}" class="btn btn-secondary" style="margin-left:10px;">Zrušit</a>
+    </form>
+</div>
+{% endblock %}

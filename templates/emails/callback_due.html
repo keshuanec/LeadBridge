@@ -1,0 +1,50 @@
+{% extends "emails/base.html" %}
+
+{% block title %}Plánovaný hovor: {{ lead.client_name }}{% endblock %}
+
+{% block content %}
+<h2 style="margin: 0 0 20px 0; color: #212529; font-size: 24px; font-weight: 600;">
+    📞 Dnes máte naplánovaný hovor
+</h2>
+
+<p style="margin: 0 0 20px 0; color: #212529; font-size: 16px; line-height: 1.6;">
+    Lead byl automaticky vrácen do stavu <strong>"Nový"</strong>. Nyní můžete kontaktovat klienta.
+</p>
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #FFF4E6; border-radius: 6px; padding: 20px; margin-bottom: 24px; border: 2px solid #F39C12;">
+    <tr>
+        <td>
+            <table width="100%">
+                <tr>
+                    <td style="padding: 8px 0; color: #C87A0E; font-size: 14px; font-weight: 600;">Klient:</td>
+                    <td style="padding: 8px 0; color: #212529; font-size: 14px;">{{ lead.client_name }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; color: #C87A0E; font-size: 14px; font-weight: 600;">Telefon:</td>
+                    <td style="padding: 8px 0; color: #212529; font-size: 14px;">{{ lead.client_phone|default:"—" }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px 0; color: #C87A0E; font-size: 14px; font-weight: 600;">Email:</td>
+                    <td style="padding: 8px 0; color: #212529; font-size: 14px;">{{ lead.client_email|default:"—" }}</td>
+                </tr>
+                {% if callback_note %}
+                <tr>
+                    <td style="padding: 8px 0; color: #C87A0E; font-size: 14px; font-weight: 600;">Poznámka:</td>
+                    <td style="padding: 8px 0; color: #212529; font-size: 14px;">{{ callback_note }}</td>
+                </tr>
+                {% endif %}
+            </table>
+        </td>
+    </tr>
+</table>
+
+<table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td align="center">
+            <a href="{{ lead_url }}" style="display: inline-block; background: linear-gradient(135deg, #1F6F7A 0%, #17575F 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 16px; font-weight: 600;">
+                Zobrazit detail leadu
+            </a>
+        </td>
+    </tr>
+</table>
+{% endblock %}

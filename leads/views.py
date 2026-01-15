@@ -5,7 +5,7 @@ from django.http import HttpResponseForbidden
 from accounts.models import ReferrerProfile, Office
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Lead, LeadNote, LeadHistory, Deal
-from .forms import LeadForm, LeadNoteForm, LeadMeetingForm, DealCreateForm, DealEditForm, MeetingResultForm
+from .forms import LeadForm, LeadNoteForm, LeadMeetingForm, DealCreateForm, DealEditForm, MeetingResultForm, CallbackScheduleForm
 from django.db.models import Q, Count, Case, When, IntegerField
 from django.utils.http import urlencode
 from django.utils import timezone
@@ -392,6 +392,24 @@ def lead_detail(request, pk: int):
     can_schedule_meeting = user.role == User.Role.ADVISOR or user.is_superuser
     can_create_deal = user.role == User.Role.ADVISOR or user.is_superuser
 
+    # Oprávnění pro odkládání hovoru: autor, manažer, kancelář, poradce
+    can_schedule_callback = False
+    if user.is_superuser or user.role == User.Role.ADMIN:
+        can_schedule_callback = True
+    elif user.role == User.Role.ADVISOR and lead.advisor == user:
+        can_schedule_callback = True
+    elif user.role == User.Role.REFERRER and lead.referrer == user:
+        can_schedule_callback = True
+    elif user.role == User.Role.REFERRER_MANAGER:
+        if lead.referrer_manager == user:
+            can_schedule_callback = True
+    elif user.role == User.Role.OFFICE:
+        rp = getattr(lead.referrer, "referrer_profile", None)
+        manager = getattr(rp, "manager", None) if rp else None
+        office = getattr(getattr(manager, "manager_profile", None), "office", None) if manager else None
+        if office and office.owner == user:
+            can_schedule_callback = True
+
     if request.method == "POST":
         # Přidání poznámky
         note_form = LeadNoteForm(request.POST)
@@ -422,6 +440,7 @@ def lead_detail(request, pk: int):
         "note_form": note_form,
         "can_schedule_meeting": can_schedule_meeting,
         "can_create_deal": can_create_deal,
+        "can_schedule_callback": can_schedule_callback,
     }
     return render(request, "leads/lead_detail.html", context)
 
@@ -1297,6 +1316,76 @@ def lead_meeting_cancelled(request, pk: int):
 
     # GET request - zobrazíme potvrzovací stránku
     return render(request, "leads/lead_meeting_cancel_form.html", {"lead": lead})
+
+
+@login_required
+def schedule_callback(request, pk: int):
+    """View pro odložení hovoru - lead se nastaví do stavu WAITING_FOR_CLIENT"""
+    user: User = request.user
+    lead = get_lead_for_user_or_404(user, pk)
+
+    # Oprávnění: autor leadu (referrer), manažer, kancelář, poradce
+    can_schedule = False
+
+    if user.is_superuser or user.role == User.Role.ADMIN:
+        can_schedule = True
+    elif user.role == User.Role.ADVISOR and lead.advisor == user:
+        can_schedule = True
+    elif user.role == User.Role.REFERRER and lead.referrer == user:
+        can_schedule = True
+    elif user.role == User.Role.REFERRER_MANAGER:
+        # Manažer pokud je manažerem referrera
+        if lead.referrer_manager == user:
+            can_schedule = True
+    elif user.role == User.Role.OFFICE:
+        # Kancelář pokud je kanceláří referrera
+        rp = getattr(lead.referrer, "referrer_profile", None)
+        manager = getattr(rp, "manager", None) if rp else None
+        office = getattr(getattr(manager, "manager_profile", None), "office", None) if manager else None
+        if office and office.owner == user:
+            can_schedule = True
+
+    if not can_schedule:
+        return HttpResponseForbidden("Nemáš oprávnění odložit hovor u tohoto leadu.")
+
+    if request.method == "POST":
+        form = CallbackScheduleForm(request.POST, instance=lead)
+        if form.is_valid():
+            lead = form.save(commit=False)
+            lead.communication_status = Lead.CommunicationStatus.WAITING_FOR_CLIENT
+            lead.save()
+
+            # Přidáme poznámku do historie
+            callback_note = form.cleaned_data.get("callback_note", "").strip()
+            callback_date = form.cleaned_data["callback_scheduled_date"]
+
+            note_text = f"Hovor odložen na {callback_date.strftime('%d.%m.%Y')}"
+            if callback_note:
+                note_text += f"\nPoznámka: {callback_note}"
+
+            LeadNote.objects.create(
+                lead=lead,
+                author=user,
+                text=note_text,
+            )
+            LeadHistory.objects.create(
+                lead=lead,
+                event_type=LeadHistory.EventType.NOTE_ADDED,
+                user=user,
+                description="Přidána poznámka k odložení hovoru.",
+            )
+            LeadHistory.objects.create(
+                lead=lead,
+                event_type=LeadHistory.EventType.STATUS_CHANGED,
+                user=user,
+                description=f"Hovor odložen na {callback_date.strftime('%d.%m.%Y')}. Stav změněn na 'Čekání na klienta'.",
+            )
+
+            return redirect("lead_detail", pk=lead.pk)
+    else:
+        form = CallbackScheduleForm(instance=lead)
+
+    return render(request, "leads/callback_schedule_form.html", {"lead": lead, "form": form})
 
 
 @login_required

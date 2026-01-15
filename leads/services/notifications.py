@@ -388,3 +388,38 @@ Pro zobrazení detailu otevřete aplikaci LeadBridge: {settings.SITE_URL}
     })
 
     send_notification_email(recipients, subject, message, html_message)
+
+def notify_callback_due(lead, callback_note):
+    """Notifikace když nadešel čas pro odložený hovor"""
+    # Pošleme pouze poradci
+    recipients = []
+    if lead.advisor and lead.advisor.email:
+        recipients = [lead.advisor]
+
+    if not recipients:
+        return
+
+    subject = f"Plánovaný hovor: {lead.client_name}"
+
+    message = f"""
+Dnes máte naplánovaný hovor s klientem.
+
+Klient: {lead.client_name}
+Telefon: {lead.client_phone or '—'}
+Email: {lead.client_email or '—'}
+{f'Poznámka: {callback_note}' if callback_note else ''}
+
+Lead byl automaticky vrácen do stavu 'Nový'.
+
+Pro zobrazení detailu otevřete aplikaci LeadBridge: {settings.SITE_URL}
+"""
+
+    lead_url = f"{settings.SITE_URL}{reverse('lead_detail', kwargs={'pk': lead.pk})}"
+    html_message = render_to_string('emails/callback_due.html', {
+        'lead': lead,
+        'callback_note': callback_note,
+        'lead_url': lead_url,
+        'site_url': settings.SITE_URL,
+    })
+
+    send_notification_email(recipients, subject, message, html_message)
