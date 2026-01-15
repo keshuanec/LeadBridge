@@ -630,7 +630,9 @@ def deals_list(request):
                 Deal.DealStatus.SIGNED_NO_PROPERTY,
                 Deal.DealStatus.DRAWN,
             ], then=2),
-            default=3,
+            # Kategorie 3: Neúspěšné obchody (priorita 3 - zobrazí se na konci)
+            When(status=Deal.DealStatus.FAILED, then=3),
+            default=4,
             output_field=IntegerField(),
         )
     )

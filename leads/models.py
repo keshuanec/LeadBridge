@@ -204,6 +204,7 @@ class Deal(models.Model):
         SIGNED = "SIGNED", "Podepsaná smlouva"
         SIGNED_NO_PROPERTY = "SIGNED_NO_PROPERTY", "Podeps. bez nem."
         DRAWN = "DRAWN", "Načerpáno"
+        FAILED = "FAILED", "Neúspěšný"
 
     class CommissionStatus(models.TextChoices):
         PENDING = "PENDING", "Čekání na provizi"
