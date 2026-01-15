@@ -59,6 +59,19 @@
         font-size: 12px !important;
         padding: 6px 4px !important;
         white-space: nowrap !important;
+        vertical-align: top !important;
+        min-height: 44px !important;
+    }
+
+    .table-wrapper > table.deals-table .commission-col .amount {
+        display: block;
+        line-height: 1.3;
+    }
+
+    .table-wrapper > table.deals-table .commission-col .badge {
+        display: block;
+        margin-top: 3px;
+        width: fit-content;
     }
 
     /* Barevné podbarvení řádků podle statusu */
@@ -267,17 +280,17 @@
 
                     {# Zobrazení provizí - role-based #}
                     <td class="commission-col">
-                        {{ d.calculated_commission_referrer|floatformat:0 }} Kč
+                        <span class="amount">{{ d.calculated_commission_referrer|floatformat:0 }} Kč</span>
                         {% if d.paid_referrer %}
-                            <span class="badge badge-ready" style="margin-left: 6px;">paid</span>
+                            <span class="badge badge-ready">paid</span>
                         {% endif %}
                     </td>
                     {% if user.role != "REFERRER" %}
                         <td class="commission-col">
                             {% if d.calculated_commission_manager > 0 %}
-                                {{ d.calculated_commission_manager|floatformat:0 }} Kč
+                                <span class="amount">{{ d.calculated_commission_manager|floatformat:0 }} Kč</span>
                                 {% if d.paid_manager %}
-                                    <span class="badge badge-ready" style="margin-left: 6px;">paid</span>
+                                    <span class="badge badge-ready">paid</span>
                                 {% endif %}
                             {% else %}—{% endif %}
                         </td>
@@ -285,9 +298,9 @@
                     {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
                         <td class="commission-col">
                             {% if d.calculated_commission_office > 0 %}
-                                {{ d.calculated_commission_office|floatformat:0 }} Kč
+                                <span class="amount">{{ d.calculated_commission_office|floatformat:0 }} Kč</span>
                                 {% if d.paid_office %}
-                                    <span class="badge badge-ready" style="margin-left: 6px;">paid</span>
+                                    <span class="badge badge-ready">paid</span>
                                 {% endif %}
                             {% else %}—{% endif %}
                         </td>
