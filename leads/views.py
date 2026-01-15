@@ -6,7 +6,7 @@ from accounts.models import ReferrerProfile, Office
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Lead, LeadNote, LeadHistory, Deal
 from .forms import LeadForm, LeadNoteForm, LeadMeetingForm, DealCreateForm, DealEditForm, MeetingResultForm
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Case, When, IntegerField
 from django.utils.http import urlencode
 from django.utils import timezone
 from datetime import timedelta
@@ -613,6 +613,28 @@ def deals_list(request):
             )
 
     # ===== ŘAZENÍ =====
+    # Přidání custom priority pole pro řazení podle kategorií statusů
+    qs = qs.annotate(
+        status_priority=Case(
+            # Kategorie 1: Nedokončené obchody (priorita 1 - zobrazí se nahoře)
+            When(status__in=[
+                Deal.DealStatus.REQUEST_IN_BANK,
+                Deal.DealStatus.WAITING_FOR_APPRAISAL,
+                Deal.DealStatus.PREP_APPROVAL,
+                Deal.DealStatus.APPROVAL,
+                Deal.DealStatus.SIGN_PLANNING,
+            ], then=1),
+            # Kategorie 2: Dokončené obchody (priorita 2)
+            When(status__in=[
+                Deal.DealStatus.SIGNED,
+                Deal.DealStatus.SIGNED_NO_PROPERTY,
+                Deal.DealStatus.DRAWN,
+            ], then=2),
+            default=3,
+            output_field=IntegerField(),
+        )
+    )
+
     sort = request.GET.get("sort") or "created_at"
     direction = request.GET.get("dir") or "desc"
 
@@ -639,7 +661,8 @@ def deals_list(request):
         direction = "desc"
 
     order_fields = sort_mapping[sort]
-    qs = qs.order_by(*([("-" + f) for f in order_fields] if direction == "desc" else order_fields))
+    # Primární řazení podle priority kategorie, sekundárně podle zvoleného pole
+    qs = qs.order_by("status_priority", *([("-" + f) for f in order_fields] if direction == "desc" else order_fields))
 
     # ===== Options do filtrů (vždy jen z base_deals_qs) =====
     status_choices = Deal.DealStatus.choices
