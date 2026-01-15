@@ -60,6 +60,21 @@
         padding: 6px 4px !important;
         white-space: nowrap !important;
     }
+
+    /* Barevné podbarvení řádků podle statusu */
+    .deal-row-completed {
+        background-color: #e8f5e9 !important; /* Lehce zelená */
+    }
+
+    .deal-row-failed {
+        background-color: #ffebee !important; /* Lehce červená */
+    }
+
+    .deal-row-completed:hover,
+    .deal-row-failed:hover,
+    .deal-row-pending:hover {
+        opacity: 0.9;
+    }
 </style>
 
 <div class="card">
@@ -245,7 +260,7 @@
             </thead>
             <tbody>
             {% for d in deals %}
-                <tr>
+                <tr class="{% if d.status == 'FAILED' %}deal-row-failed{% elif d.status == 'SIGNED' or d.status == 'SIGNED_NO_PROPERTY' or d.status == 'DRAWN' %}deal-row-completed{% else %}deal-row-pending{% endif %}">
                     <td><a href="{% url 'deal_detail' d.pk %}"><span class="badge">{{ d.get_status_display }}</span></a></td>
                     <td><a href="{% url 'deal_detail' d.pk %}">{{ d.client_name }}</a></td>
                     <td>{{ d.loan_amount|floatformat:0 }} Kč</td>
