@@ -35,6 +35,7 @@ static/logo.svg
 staticfiles/
 !staticfiles/favicon*
 !staticfiles/apple-touch-icon.png
+!staticfiles/logo.svg
 media/
 uploads/
 
