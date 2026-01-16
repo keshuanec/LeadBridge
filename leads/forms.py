@@ -289,8 +289,11 @@ class LeadForm(forms.ModelForm):
 class LeadNoteForm(forms.ModelForm):
     class Meta:
         model = LeadNote
-        fields = ["text"]
-        labels = {"text": "Poznámka"}
+        fields = ["text", "is_private"]
+        labels = {
+            "text": "Poznámka",
+            "is_private": "Soukromá poznámka (uvidíte jen vy)"
+        }
         widgets = {
             "text": forms.Textarea(attrs={"rows": 3}),
         }

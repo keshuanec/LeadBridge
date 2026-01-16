@@ -134,6 +134,7 @@ class LeadNote(models.Model):
         verbose_name="Autor",
     )
     text = models.TextField("Text poznámky")
+    is_private = models.BooleanField("Soukromá poznámka", default=False)
     created_at = models.DateTimeField("Vytvořeno", auto_now_add=True)
 
     class Meta:
@@ -171,6 +172,15 @@ class LeadHistory(models.Model):
         blank=True,
         related_name="lead_history_events",
         verbose_name="Uživatel",
+    )
+    note = models.ForeignKey(
+        LeadNote,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="history_entries",
+        verbose_name="Poznámka",
+        help_text="Odkaz na poznámku (pro filtrování soukromých záznamů)",
     )
     created_at = models.DateTimeField("Čas události", auto_now_add=True)
 
