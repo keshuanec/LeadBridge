@@ -39,73 +39,80 @@
     {% endif %}
     <p><strong>Stav obchodu:</strong> <span class="badge">{{ deal.get_status_display }}</span></p>
 
-    <hr>
+    {% if not lead.is_personal_contact %}
+        <hr>
 
-    {# Zobrazení provizí - role-based #}
-    <p><strong>Provize makléře:</strong> {{ deal.calculated_commission_referrer }} Kč</p>
+        {# Zobrazení provizí - role-based #}
+        <p><strong>Provize makléře:</strong> {{ deal.calculated_commission_referrer }} Kč</p>
 
-    {% if user.role != "REFERRER" and deal.calculated_commission_manager > 0 %}
-        <p><strong>Provize manažera:</strong> {{ deal.calculated_commission_manager }} Kč</p>
-    {% endif %}
-
-    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
-        {% if deal.calculated_commission_office > 0 %}
-            <p><strong>Provize kanceláře:</strong> {{ deal.calculated_commission_office }} Kč</p>
+        {% if user.role != "REFERRER" and deal.calculated_commission_manager > 0 %}
+            <p><strong>Provize manažera:</strong> {{ deal.calculated_commission_manager }} Kč</p>
         {% endif %}
-    {% endif %}
 
-    {# Provize celkem - jen pro OFFICE, ADVISOR, superuser #}
-    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
-        <p><strong>Provize celkem:</strong> {{ deal.calculated_commission_total }} Kč</p>
-    {% endif %}
-
-    <hr>
-
-    <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-        <a href="{% url 'deal_edit' deal.pk %}" class="btn btn-secondary" title="Upravit obchod">✏️ Upravit obchod</a>
-
-        {% if can_manage_commission %}
-            {% if deal.commission_status != "READY" and deal.commission_status != "PAID" and deal.status in "SIGNED,SIGNED_NO_PROPERTY,DRAWN" %}
-                <form method="post" action="{% url 'deal_commission_ready' deal.pk %}" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary">✅ Připraveno k vyplacení</button>
-                </form>
+        {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+            {% if deal.calculated_commission_office > 0 %}
+                <p><strong>Provize kanceláře:</strong> {{ deal.calculated_commission_office }} Kč</p>
             {% endif %}
+        {% endif %}
 
-            {% if deal.commission_status == "READY" or deal.commission_status == "PAID" %}
-                {% if deal.paid_referrer %}
-                    <span class="badge badge-ready" title="Makléř byl vyplacen">✅ Vyplaceno makléři</span>
-                {% else %}
-                    <form method="post" action="{% url 'deal_commission_paid' deal.pk 'referrer' %}" style="display:inline;">
+        {# Provize celkem - jen pro OFFICE, ADVISOR, superuser #}
+        {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+            <p><strong>Provize celkem:</strong> {{ deal.calculated_commission_total }} Kč</p>
+        {% endif %}
+
+        <hr>
+
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+            <a href="{% url 'deal_edit' deal.pk %}" class="btn btn-secondary" title="Upravit obchod">✏️ Upravit obchod</a>
+
+            {% if can_manage_commission %}
+                {% if deal.commission_status != "READY" and deal.commission_status != "PAID" and deal.status in "SIGNED,SIGNED_NO_PROPERTY,DRAWN" %}
+                    <form method="post" action="{% url 'deal_commission_ready' deal.pk %}" style="display:inline;">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-primary">💸 Vyplaceno makléři</button>
+                        <button type="submit" class="btn btn-primary">✅ Připraveno k vyplacení</button>
                     </form>
                 {% endif %}
 
-                {% if has_manager %}
-                    {% if deal.paid_manager %}
-                        <span class="badge badge-ready" title="Manažer byl vyplacen">✅ Vyplaceno manažerovi</span>
+                {% if deal.commission_status == "READY" or deal.commission_status == "PAID" %}
+                    {% if deal.paid_referrer %}
+                        <span class="badge badge-ready" title="Makléř byl vyplacen">✅ Vyplaceno makléři</span>
                     {% else %}
-                        <form method="post" action="{% url 'deal_commission_paid' deal.pk 'manager' %}" style="display:inline;">
+                        <form method="post" action="{% url 'deal_commission_paid' deal.pk 'referrer' %}" style="display:inline;">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-primary">💸 Vyplaceno manažerovi</button>
+                            <button type="submit" class="btn btn-primary">💸 Vyplaceno makléři</button>
                         </form>
                     {% endif %}
-                {% endif %}
 
-                {% if has_office %}
-                    {% if deal.paid_office %}
-                        <span class="badge badge-ready" title="Kancelář byla vyplacena">✅ Vyplaceno kanceláři</span>
-                    {% else %}
-                        <form method="post" action="{% url 'deal_commission_paid' deal.pk 'office' %}" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-primary">💸 Vyplaceno kanceláři</button>
-                        </form>
+                    {% if has_manager %}
+                        {% if deal.paid_manager %}
+                            <span class="badge badge-ready" title="Manažer byl vyplacen">✅ Vyplaceno manažerovi</span>
+                        {% else %}
+                            <form method="post" action="{% url 'deal_commission_paid' deal.pk 'manager' %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">💸 Vyplaceno manažerovi</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if has_office %}
+                        {% if deal.paid_office %}
+                            <span class="badge badge-ready" title="Kancelář byla vyplacena">✅ Vyplaceno kanceláři</span>
+                        {% else %}
+                            <form method="post" action="{% url 'deal_commission_paid' deal.pk 'office' %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary">💸 Vyplaceno kanceláři</button>
+                            </form>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             {% endif %}
-        {% endif %}
-    </div>
+        </div>
+    {% else %}
+        <hr>
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+            <a href="{% url 'deal_edit' deal.pk %}" class="btn btn-secondary" title="Upravit obchod">✏️ Upravit obchod</a>
+        </div>
+    {% endif %}
 
     <hr style="margin:16px 0;">
 
