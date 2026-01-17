@@ -340,6 +340,36 @@ class Deal(models.Model):
         parts = self.calculate_commission_parts()
         return parts['total']
 
+    @property
+    def calculated_commission_advisor(self):
+        """
+        Vypočítá provizi poradce.
+
+        Pro běžné obchody: provize poradce - provize struktury
+        Pro vlastní kontakty: celá provize poradce
+        """
+        advisor = self.lead.advisor
+
+        if not advisor or not self.loan_amount:
+            return 0
+
+        # Pokud nemá nastavenou provizi, vrátíme 0
+        if not advisor.advisor_commission_per_million:
+            return 0
+
+        # Celková provize poradce za tento obchod
+        advisor_total = int(
+            advisor.advisor_commission_per_million * self.loan_amount / 1_000_000
+        )
+
+        # Pro vlastní kontakty vrátíme celou provizi
+        if self.lead.is_personal_contact:
+            return advisor_total
+
+        # Pro běžné obchody odečteme provizi struktury
+        structure_commission = self.calculated_commission_total
+        return advisor_total - structure_commission
+
     def get_own_commission(self, user):
         """
         Vrací 'vlastní provizi' podle role uživatele a referrera.

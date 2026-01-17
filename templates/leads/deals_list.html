@@ -219,6 +219,9 @@
                     {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
                         <th class="commission-col">Prov. kanc.</th>
                     {% endif %}
+                    {% if user.role == "ADVISOR" or user.is_superuser %}
+                        <th class="commission-col">Prov. porad.</th>
+                    {% endif %}
 
                     {% if show_referrer_col %}
                         <th>
@@ -302,6 +305,13 @@
                                 {% if d.paid_office %}
                                     <span class="badge badge-ready">paid</span>
                                 {% endif %}
+                            {% else %}—{% endif %}
+                        </td>
+                    {% endif %}
+                    {% if user.role == "ADVISOR" or user.is_superuser %}
+                        <td class="commission-col">
+                            {% if d.calculated_commission_advisor > 0 %}
+                                <span class="amount">{{ d.calculated_commission_advisor|floatformat:0 }} Kč</span>
                             {% else %}—{% endif %}
                         </td>
                     {% endif %}

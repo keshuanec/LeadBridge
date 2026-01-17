@@ -68,6 +68,14 @@ class User(AbstractUser):
         help_text="Procento z celkové provize pro kancelář (např. 40.00 pro 40%).",
     )
 
+    advisor_commission_per_million = models.DecimalField(
+        "Provize poradce za 1 mil. Kč",
+        max_digits=10,
+        decimal_places=0,
+        default=0,
+        help_text="Provize poradce za každý 1 000 000 Kč realizované hypotéky (např. 15500). Tato provize je nad rámec provizí struktury.",
+    )
+
     def clean(self):
         """Validace, že součet procent provizí nepřekročí 100%"""
         from django.core.exceptions import ValidationError

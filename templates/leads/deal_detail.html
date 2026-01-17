@@ -60,6 +60,13 @@
             <p><strong>Provize celkem:</strong> {{ deal.calculated_commission_total }} Kč</p>
         {% endif %}
 
+        {# Provize poradce - jen pro ADVISOR a superuser #}
+        {% if user.role == "ADVISOR" or user.is_superuser %}
+            {% if deal.calculated_commission_advisor > 0 %}
+                <p><strong>Provize poradce:</strong> {{ deal.calculated_commission_advisor }} Kč</p>
+            {% endif %}
+        {% endif %}
+
         <hr>
 
         <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
@@ -109,6 +116,15 @@
         </div>
     {% else %}
         <hr>
+
+        {# Provize poradce pro vlastní kontakty - jen pro ADVISOR a superuser #}
+        {% if user.role == "ADVISOR" or user.is_superuser %}
+            {% if deal.calculated_commission_advisor > 0 %}
+                <p><strong>Provize poradce:</strong> {{ deal.calculated_commission_advisor }} Kč</p>
+                <hr>
+            {% endif %}
+        {% endif %}
+
         <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
             <a href="{% url 'deal_edit' deal.pk %}" class="btn btn-secondary" title="Upravit obchod">✏️ Upravit obchod</a>
         </div>

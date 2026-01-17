@@ -14,6 +14,7 @@ class UserAdmin(BaseUserAdmin):
                 "commission_referrer_pct",
                 "commission_manager_pct",
                 "commission_office_pct",
+                "advisor_commission_per_million",
             )
         }),
     )
@@ -35,6 +36,7 @@ class UserAdmin(BaseUserAdmin):
                 "commission_referrer_pct",
                 "commission_manager_pct",
                 "commission_office_pct",
+                "advisor_commission_per_million",
             ),
         }),
     )
