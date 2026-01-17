@@ -386,8 +386,27 @@ def lead_detail(request, pk: int):
     user: User = request.user
     lead = get_lead_for_user_or_404(user, pk)
 
-    notes = lead.notes.select_related("author")
-    history = lead.history.select_related("user")
+    # Filtrování poznámek podle oprávnění
+    if user.is_superuser or user.role == User.Role.ADMIN:
+        # Admini vidí všechny poznámky
+        notes = lead.notes.select_related("author")
+    else:
+        # Ostatní vidí jen veřejné + vlastní soukromé
+        notes = lead.notes.filter(
+            Q(is_private=False) | Q(author=user)
+        ).select_related("author")
+
+    # Filtrování historie podle oprávnění
+    if user.is_superuser or user.role == User.Role.ADMIN:
+        # Admini vidí všechny záznamy historie
+        history = lead.history.select_related("user")
+    else:
+        # Ostatní vidí jen záznamy bez poznámky nebo s poznámkou, kterou mají právo vidět
+        history = lead.history.filter(
+            Q(note__isnull=True) |  # záznamy bez poznámky
+            Q(note__is_private=False) |  # záznamy s veřejnou poznámkou
+            Q(note__is_private=True, note__author=user)  # záznamy s vlastní soukromou poznámkou
+        ).select_related("user")
 
     can_schedule_meeting = user.role == User.Role.ADVISOR or user.is_superuser
     can_create_deal = user.role == User.Role.ADVISOR or user.is_superuser
@@ -423,11 +442,13 @@ def lead_detail(request, pk: int):
                 lead=lead,
                 event_type=LeadHistory.EventType.NOTE_ADDED,
                 user=user,
-                description="Přidána poznámka.",
+                description="Přidána soukromá poznámka." if note.is_private else "Přidána poznámka.",
+                note=note,
             )
 
-            # Notifikace
-            notifications.notify_note_added(lead, note, added_by=user)
+            # Notifikace - pouze pro veřejné poznámky
+            if not note.is_private:
+                notifications.notify_note_added(lead, note, added_by=user)
 
             return redirect("lead_detail", pk=lead.pk)
     else:
@@ -502,7 +523,7 @@ def lead_edit(request, pk: int):
                 # Pokud poradce přidal extra poznámku, uložíme ji jako LeadNote
                 extra_note = form.cleaned_data.get("extra_note")
                 if extra_note:
-                    LeadNote.objects.create(
+                    note = LeadNote.objects.create(
                         lead=updated_lead,
                         author=user,
                         text=extra_note,
@@ -513,6 +534,7 @@ def lead_edit(request, pk: int):
                         event_type=LeadHistory.EventType.NOTE_ADDED,
                         user=user,
                         description=f"Přidána poznámka ke změně stavu.",
+                        note=note,
                     )
                 LeadHistory.objects.create(
                     lead=updated_lead,
@@ -1169,7 +1191,7 @@ def lead_schedule_meeting(request, pk: int):
 
             # pokud chceš mít poznámku i v seznamu poznámek (doporučuji)
             if lead.meeting_note:
-                LeadNote.objects.create(
+                note = LeadNote.objects.create(
                     lead=lead,
                     author=user,
                     text=f"Schůzka: {lead.meeting_note}",
@@ -1179,6 +1201,7 @@ def lead_schedule_meeting(request, pk: int):
                     event_type=LeadHistory.EventType.NOTE_ADDED,
                     user=user,
                     description="Přidána poznámka ke schůzce.",
+                    note=note,
                 )
 
             # Notifikace
@@ -1227,7 +1250,7 @@ def lead_meeting_completed(request, pk: int):
 
             # přidáme poznámku pokud je vyplněna
             if result_note:
-                LeadNote.objects.create(
+                note = LeadNote.objects.create(
                     lead=lead,
                     author=user,
                     text=f"Výsledek schůzky: {result_note}",
@@ -1237,6 +1260,7 @@ def lead_meeting_completed(request, pk: int):
                     event_type=LeadHistory.EventType.NOTE_ADDED,
                     user=user,
                     description="Přidána poznámka k výsledku schůzky.",
+                    note=note,
                 )
 
             # historie
@@ -1292,7 +1316,7 @@ def lead_meeting_cancelled(request, pk: int):
 
         # přidáme poznámku pokud je vyplněna
         if cancel_note:
-            LeadNote.objects.create(
+            note = LeadNote.objects.create(
                 lead=lead,
                 author=user,
                 text=f"Schůzka zrušena: {cancel_note}",
@@ -1302,6 +1326,7 @@ def lead_meeting_cancelled(request, pk: int):
                 event_type=LeadHistory.EventType.NOTE_ADDED,
                 user=user,
                 description="Přidána poznámka ke zrušení schůzky.",
+                note=note,
             )
 
         # historie
@@ -1363,7 +1388,7 @@ def schedule_callback(request, pk: int):
             if callback_note:
                 note_text += f"\nPoznámka: {callback_note}"
 
-            LeadNote.objects.create(
+            note = LeadNote.objects.create(
                 lead=lead,
                 author=user,
                 text=note_text,
@@ -1373,6 +1398,7 @@ def schedule_callback(request, pk: int):
                 event_type=LeadHistory.EventType.NOTE_ADDED,
                 user=user,
                 description="Přidána poznámka k odložení hovoru.",
+                note=note,
             )
             LeadHistory.objects.create(
                 lead=lead,
@@ -1562,8 +1588,27 @@ def deal_detail(request, pk: int):
     lead = deal.lead
 
     # poznámky a historie jsou z leadu
-    notes = lead.notes.select_related("author")
-    history = lead.history.select_related("user")
+    # Filtrování poznámek podle oprávnění
+    if user.is_superuser or user.role == User.Role.ADMIN:
+        # Admini vidí všechny poznámky
+        notes = lead.notes.select_related("author")
+    else:
+        # Ostatní vidí jen veřejné + vlastní soukromé
+        notes = lead.notes.filter(
+            Q(is_private=False) | Q(author=user)
+        ).select_related("author")
+
+    # Filtrování historie podle oprávnění
+    if user.is_superuser or user.role == User.Role.ADMIN:
+        # Admini vidí všechny záznamy historie
+        history = lead.history.select_related("user")
+    else:
+        # Ostatní vidí jen záznamy bez poznámky nebo s poznámkou, kterou mají právo vidět
+        history = lead.history.filter(
+            Q(note__isnull=True) |  # záznamy bez poznámky
+            Q(note__is_private=False) |  # záznamy s veřejnou poznámkou
+            Q(note__is_private=True, note__author=user)  # záznamy s vlastní soukromou poznámkou
+        ).select_related("user")
 
     # role-based viditelnost údajů
     show_referrer = user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR, User.Role.REFERRER_MANAGER, User.Role.OFFICE]
@@ -1605,11 +1650,13 @@ def deal_detail(request, pk: int):
                 lead=lead,
                 event_type=LeadHistory.EventType.NOTE_ADDED,
                 user=user,
-                description="Přidána poznámka (z detailu obchodu).",
+                description="Přidána soukromá poznámka (z detailu obchodu)." if note.is_private else "Přidána poznámka (z detailu obchodu).",
+                note=note,
             )
 
-            # Notifikace
-            notifications.notify_note_added(lead, note, added_by=user)
+            # Notifikace - pouze pro veřejné poznámky
+            if not note.is_private:
+                notifications.notify_note_added(lead, note, added_by=user)
 
             return redirect("deal_detail", pk=deal.pk)
     else:

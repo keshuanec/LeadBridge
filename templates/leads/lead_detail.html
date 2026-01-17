@@ -106,6 +106,12 @@
                 <div class="alert alert-error">{{ note_form.text.errors }}</div>
             {% endif %}
         </div>
+        <div class="form-group" style="margin-top:10px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                {{ note_form.is_private }}
+                <span>{{ note_form.is_private.label }}</span>
+            </label>
+        </div>
         <button type="submit" class="btn btn-primary">Přidat poznámku</button>
     </form>
 </div>
@@ -115,10 +121,13 @@
     {% if notes %}
         <ul style="list-style:none;padding-left:0;">
             {% for note in notes %}
-                <li style="margin-bottom:10px;border-bottom:1px solid #eee;padding-bottom:6px;">
+                <li style="margin-bottom:10px;border-bottom:1px solid #eee;padding-bottom:6px;{% if note.is_private %}background-color:#FFF9E6;border-left:3px solid #F39C12;padding-left:8px;{% endif %}">
                     <div style="font-size:13px;color:#666;">
                         {{ note.created_at|date:"d.m.Y H:i" }}
                         – {{ note.author.get_full_name|default:"(neznámý uživatel)" }}
+                        {% if note.is_private %}
+                            <span style="color:#F39C12;font-weight:600;margin-left:8px;">🔒 Soukromá</span>
+                        {% endif %}
                     </div>
                     <div>{{ note.text|linebreaksbr }}</div>
                 </li>
