@@ -335,7 +335,7 @@ class DealCreateForm(forms.ModelForm):
         lead = kwargs.pop("lead", None)
         super().__init__(*args, **kwargs)
 
-        # klientské údaje jen jako „předvyplněné“ – můžeš je dát readonly
+        # klientské údaje jen jako „předvyplněné" – můžeš je dát readonly
         if lead is not None and not self.instance.pk:
             self.fields["client_name"].initial = lead.client_name
             self.fields["client_phone"].initial = lead.client_phone
@@ -345,6 +345,13 @@ class DealCreateForm(forms.ModelForm):
         self.fields["client_name"].disabled = True
         self.fields["client_phone"].disabled = True
         self.fields["client_email"].disabled = True
+
+        # Pro vlastní kontakty skryjeme pole "Nemovitost"
+        if lead is not None and lead.is_personal_contact:
+            self.fields["property_type"].widget = forms.HiddenInput()
+            self.fields["property_type"].required = False
+            # Nastavíme defaultní hodnotu, aby byla validace v pořádku
+            self.fields["property_type"].initial = Deal.PropertyType.OWN
 
 class DealEditForm(forms.ModelForm):
     class Meta:

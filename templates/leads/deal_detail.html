@@ -34,7 +34,9 @@
 
     <p><strong>Výše úvěru:</strong> {{ deal.loan_amount }} Kč</p>
     <p><strong>Banka:</strong> {{ deal.get_bank_display }}</p>
-    <p><strong>Nemovitost:</strong> {{ deal.get_property_type_display }}</p>
+    {% if not lead.is_personal_contact %}
+        <p><strong>Nemovitost:</strong> {{ deal.get_property_type_display }}</p>
+    {% endif %}
     <p><strong>Stav obchodu:</strong> <span class="badge">{{ deal.get_status_display }}</span></p>
 
     <hr>
