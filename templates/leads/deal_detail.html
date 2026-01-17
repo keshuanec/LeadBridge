@@ -17,13 +17,17 @@
             {% endif %}
         </p>
     {% endif %}
-    {% if lead.referrer_manager %}
-        <p><strong>Manažer:</strong> <a href="{% url 'user_detail' lead.referrer_manager.pk %}">{{ lead.referrer_manager }}</a></p>
-    {% endif %}
-    {% if lead.referrer_office and lead.referrer_office.owner %}
-        <p><strong>Kancelář:</strong> {{ lead.referrer_office.name }}
-            (<a href="{% url 'user_detail' lead.referrer_office.owner.pk %}">{{ lead.referrer_office.owner }}</a>)
-        </p>
+    {% if lead.is_personal_contact %}
+        <p><strong>Typ kontaktu:</strong> <span style="color: #666; font-style: italic;">Vlastní kontakt</span></p>
+    {% else %}
+        {% if lead.referrer_manager %}
+            <p><strong>Manažer:</strong> <a href="{% url 'user_detail' lead.referrer_manager.pk %}">{{ lead.referrer_manager }}</a></p>
+        {% endif %}
+        {% if lead.referrer_office and lead.referrer_office.owner %}
+            <p><strong>Kancelář:</strong> {{ lead.referrer_office.name }}
+                (<a href="{% url 'user_detail' lead.referrer_office.owner.pk %}">{{ lead.referrer_office.owner }}</a>)
+            </p>
+        {% endif %}
     {% endif %}
 
     <hr>

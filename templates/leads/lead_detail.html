@@ -17,15 +17,20 @@
             <a href="{% url 'user_detail' lead.referrer.pk %}">{{ lead.referrer.get_full_name }}</a>
         {% endif %}<br>
 
-        {% if lead.referrer_manager %}
-            <strong>Manažer:</strong>
-            <a href="{% url 'user_detail' lead.referrer_manager.pk %}">{{ lead.referrer_manager.get_full_name }}</a><br>
-        {% endif %}
+        {% if lead.is_personal_contact %}
+            <strong>Typ kontaktu:</strong>
+            <span style="color: #666; font-style: italic;">Vlastní kontakt</span><br>
+        {% else %}
+            {% if lead.referrer_manager %}
+                <strong>Manažer:</strong>
+                <a href="{% url 'user_detail' lead.referrer_manager.pk %}">{{ lead.referrer_manager.get_full_name }}</a><br>
+            {% endif %}
 
-        {% if lead.referrer_office and lead.referrer_office.owner %}
-            <strong>Kancelář:</strong>
-            {{ lead.referrer_office.name }}
-            (<a href="{% url 'user_detail' lead.referrer_office.owner.pk %}">{{ lead.referrer_office.owner.get_full_name }}</a>)<br>
+            {% if lead.referrer_office and lead.referrer_office.owner %}
+                <strong>Kancelář:</strong>
+                {{ lead.referrer_office.name }}
+                (<a href="{% url 'user_detail' lead.referrer_office.owner.pk %}">{{ lead.referrer_office.owner.get_full_name }}</a>)<br>
+            {% endif %}
         {% endif %}
 
         <strong>Poradce:</strong>
