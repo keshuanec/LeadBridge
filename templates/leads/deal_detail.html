@@ -63,7 +63,12 @@
         {# Provize poradce - jen pro ADVISOR a superuser #}
         {% if user.role == "ADVISOR" or user.is_superuser %}
             {% if deal.calculated_commission_advisor > 0 %}
-                <p><strong>Provize poradce:</strong> {{ deal.calculated_commission_advisor }} Kč</p>
+                <p><strong>Provize poradce ({{ deal.lead.advisor }}):</strong> {{ deal.calculated_commission_advisor }} Kč</p>
+            {% endif %}
+
+            {# Meziprovize nadřízeného poradce (Typ 3) #}
+            {% if deal.calculated_commission_advisor_manager > 0 %}
+                <p><strong>Meziprovize manažera ({{ deal.lead.advisor.advisor_manager }}):</strong> {{ deal.calculated_commission_advisor_manager }} Kč</p>
             {% endif %}
         {% endif %}
 
@@ -120,7 +125,15 @@
         {# Provize poradce pro vlastní kontakty - jen pro ADVISOR a superuser #}
         {% if user.role == "ADVISOR" or user.is_superuser %}
             {% if deal.calculated_commission_advisor > 0 %}
-                <p><strong>Provize poradce:</strong> {{ deal.calculated_commission_advisor }} Kč</p>
+                <p><strong>Provize poradce ({{ deal.lead.advisor }}):</strong> {{ deal.calculated_commission_advisor }} Kč</p>
+            {% endif %}
+
+            {# Meziprovize nadřízeného poradce (Typ 3) - i pro vlastní kontakty #}
+            {% if deal.calculated_commission_advisor_manager > 0 %}
+                <p><strong>Meziprovize manažera ({{ deal.lead.advisor.advisor_manager }}):</strong> {{ deal.calculated_commission_advisor_manager }} Kč</p>
+            {% endif %}
+
+            {% if deal.calculated_commission_advisor > 0 or deal.calculated_commission_advisor_manager > 0 %}
                 <hr>
             {% endif %}
         {% endif %}

@@ -8,13 +8,27 @@ from .models import User, ReferrerProfile, Office, ManagerProfile, BrandingSetti
 class UserAdmin(BaseUserAdmin):
     fieldsets = BaseUserAdmin.fieldsets + (
         ("LeadBridge", {"fields": ("role", "phone", "has_admin_access")}),
-        ("Provize", {
+        ("Provize struktury", {
             "fields": (
                 "commission_total_per_million",
                 "commission_referrer_pct",
                 "commission_manager_pct",
                 "commission_office_pct",
+            )
+        }),
+        ("Provize poradce", {
+            "fields": (
+                "advisor_commission_type",
                 "advisor_commission_per_million",
+                "advisor_commission_own_deals",
+                "advisor_commission_structure_deals",
+            )
+        }),
+        ("Meziprovize (pro nadřízené poradce)", {
+            "fields": (
+                "advisor_manager",
+                "advisor_manager_commission_structure_deals",
+                "advisor_manager_commission_own_deals",
             )
         }),
     )
@@ -29,14 +43,30 @@ class UserAdmin(BaseUserAdmin):
             "classes": ("wide",),
             "fields": ("role", "phone", "has_admin_access"),
         }),
-        ("Provize", {
+        ("Provize struktury", {
             "classes": ("wide",),
             "fields": (
                 "commission_total_per_million",
                 "commission_referrer_pct",
                 "commission_manager_pct",
                 "commission_office_pct",
+            ),
+        }),
+        ("Provize poradce", {
+            "classes": ("wide",),
+            "fields": (
+                "advisor_commission_type",
                 "advisor_commission_per_million",
+                "advisor_commission_own_deals",
+                "advisor_commission_structure_deals",
+            ),
+        }),
+        ("Meziprovize (pro nadřízené poradce)", {
+            "classes": ("wide",),
+            "fields": (
+                "advisor_manager",
+                "advisor_manager_commission_structure_deals",
+                "advisor_manager_commission_own_deals",
             ),
         }),
     )

@@ -12,6 +12,10 @@ class User(AbstractUser):
         REFERRER_MANAGER = "REFERRER_MANAGER", "Manažer doporučitelů"
         OFFICE = "OFFICE", "Kancelář"
 
+    class AdvisorCommissionType(models.TextChoices):
+        FULL_MINUS_STRUCTURE = "FULL_MINUS", "Typ 1: Plná provize - platí strukturu sám"
+        NET_WITH_STRUCTURE = "NET_STRUCT", "Typ 2: Čistá provize (struktura zvlášť)"
+
     # Přepsat first_name a last_name jako povinné
     first_name = models.CharField("Jméno", max_length=150)
     last_name = models.CharField("Příjmení", max_length=150)
@@ -68,12 +72,69 @@ class User(AbstractUser):
         help_text="Procento z celkové provize pro kancelář (např. 40.00 pro 40%).",
     )
 
+    # === PROVIZE PORADCE ===
+
+    advisor_commission_type = models.CharField(
+        "Typ provizního modelu",
+        max_length=20,
+        choices=AdvisorCommissionType.choices,
+        default=AdvisorCommissionType.FULL_MINUS_STRUCTURE,
+        help_text="Jak se počítá provize poradce za jeho obchody",
+    )
+
+    # Typ 1: Plná provize - platí strukturu sám
     advisor_commission_per_million = models.DecimalField(
-        "Provize poradce za 1 mil. Kč",
+        "Provize poradce za 1 mil. Kč (Typ 1)",
         max_digits=10,
         decimal_places=0,
         default=0,
-        help_text="Provize poradce za každý 1 000 000 Kč realizované hypotéky (např. 15500). Tato provize je nad rámec provizí struktury.",
+        help_text="Plná provize od banky (např. 15500). Struktura se odečítá.",
+    )
+
+    # Typ 2: Čistá provize - struktura zvlášť
+    advisor_commission_own_deals = models.DecimalField(
+        "Provize za vlastní obchody (Typ 2)",
+        max_digits=10,
+        decimal_places=0,
+        default=0,
+        help_text="Provize za vlastní kontakty bez struktury (např. 12000)",
+    )
+
+    advisor_commission_structure_deals = models.DecimalField(
+        "Provize za obchody se strukturou (Typ 2)",
+        max_digits=10,
+        decimal_places=0,
+        default=0,
+        help_text="Provize za obchody přes makléře (např. 6480)",
+    )
+
+    # === MEZIPROVIZE NADŘÍZENÉHO PORADCE (TYP 3) ===
+
+    advisor_manager = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='subordinate_advisors',
+        limit_choices_to={'role': Role.ADVISOR, 'has_admin_access': True},
+        verbose_name='Nadřízený poradce (manažer)',
+        help_text='Poradce s admin přístupem, který dostává meziprovizi za obchody tohoto poradce',
+    )
+
+    advisor_manager_commission_structure_deals = models.DecimalField(
+        "Meziprovize za obchody se strukturou (Typ 3)",
+        max_digits=10,
+        decimal_places=0,
+        default=0,
+        help_text="Meziprovize za obchody podřízených přes makléře (např. 2000)",
+    )
+
+    advisor_manager_commission_own_deals = models.DecimalField(
+        "Meziprovize za vlastní obchody podřízených (Typ 3)",
+        max_digits=10,
+        decimal_places=0,
+        default=0,
+        help_text="Meziprovize za vlastní kontakty podřízených poradců (např. 3500)",
     )
 
     def clean(self):

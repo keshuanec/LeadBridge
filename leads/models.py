@@ -343,32 +343,74 @@ class Deal(models.Model):
     @property
     def calculated_commission_advisor(self):
         """
-        Vypočítá provizi poradce.
+        Vypočítá provizi poradce podle jeho typu provizního modelu.
 
-        Pro běžné obchody: provize poradce - provize struktury
-        Pro vlastní kontakty: celá provize poradce
+        Typ 1 (FULL_MINUS): Plná provize - platí strukturu sám
+        Typ 2 (NET_STRUCT): Čistá provize (struktura zvlášť)
         """
-        advisor = self.lead.advisor
+        from accounts.models import User
 
+        advisor = self.lead.advisor
         if not advisor or not self.loan_amount:
             return 0
 
-        # Pokud nemá nastavenou provizi, vrátíme 0
-        if not advisor.advisor_commission_per_million:
+        is_own_deal = self.lead.is_personal_contact
+        commission_type = advisor.advisor_commission_type
+
+        if commission_type == User.AdvisorCommissionType.FULL_MINUS_STRUCTURE:
+            # Typ 1: Plná provize - struktura
+            if not advisor.advisor_commission_per_million:
+                return 0
+            advisor_total = int(
+                advisor.advisor_commission_per_million * self.loan_amount / 1_000_000
+            )
+            if is_own_deal:
+                return advisor_total
+            else:
+                structure_commission = self.calculated_commission_total
+                return advisor_total - structure_commission
+
+        elif commission_type == User.AdvisorCommissionType.NET_WITH_STRUCTURE:
+            # Typ 2: Čistá provize podle typu obchodu
+            if is_own_deal:
+                rate = advisor.advisor_commission_own_deals
+            else:
+                rate = advisor.advisor_commission_structure_deals
+
+            if not rate:
+                return 0
+            return int(rate * self.loan_amount / 1_000_000)
+
+        return 0
+
+    @property
+    def calculated_commission_advisor_manager(self):
+        """
+        Vypočítá meziprovizi nadřízeného poradce (Typ 3).
+
+        Meziprovize se liší podle toho, zda jde o vlastní obchod podřízeného
+        nebo obchod se strukturou.
+        """
+        advisor = self.lead.advisor
+        if not advisor or not self.loan_amount:
             return 0
 
-        # Celková provize poradce za tento obchod
-        advisor_total = int(
-            advisor.advisor_commission_per_million * self.loan_amount / 1_000_000
-        )
+        # Má tohoto poradce nadřízeného manažera?
+        manager = advisor.advisor_manager
+        if not manager:
+            return 0
 
-        # Pro vlastní kontakty vrátíme celou provizi
+        # Vlastní obchod podřízeného → vyšší meziprovize
         if self.lead.is_personal_contact:
-            return advisor_total
+            rate = manager.advisor_manager_commission_own_deals
+        else:
+            # Obchod se strukturou → nižší meziprovize
+            rate = manager.advisor_manager_commission_structure_deals
 
-        # Pro běžné obchody odečteme provizi struktury
-        structure_commission = self.calculated_commission_total
-        return advisor_total - structure_commission
+        if not rate:
+            return 0
+
+        return int(rate * self.loan_amount / 1_000_000)
 
     def get_own_commission(self, user):
         """

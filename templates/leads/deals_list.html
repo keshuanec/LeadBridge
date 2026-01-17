@@ -221,6 +221,7 @@
                     {% endif %}
                     {% if user.role == "ADVISOR" or user.is_superuser %}
                         <th class="commission-col">Prov. porad.</th>
+                        <th class="commission-col">Mezipr. man.</th>
                     {% endif %}
 
                     {% if show_referrer_col %}
@@ -312,6 +313,11 @@
                         <td class="commission-col">
                             {% if d.calculated_commission_advisor > 0 %}
                                 <span class="amount">{{ d.calculated_commission_advisor|floatformat:0 }} Kč</span>
+                            {% else %}—{% endif %}
+                        </td>
+                        <td class="commission-col">
+                            {% if d.calculated_commission_advisor_manager > 0 %}
+                                <span class="amount">{{ d.calculated_commission_advisor_manager|floatformat:0 }} Kč</span>
                             {% else %}—{% endif %}
                         </td>
                     {% endif %}
