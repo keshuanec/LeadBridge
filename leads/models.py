@@ -383,35 +383,6 @@ class Deal(models.Model):
 
         return 0
 
-    @property
-    def calculated_commission_advisor_manager(self):
-        """
-        Vypočítá meziprovizi nadřízeného poradce (Typ 3).
-
-        Meziprovize se liší podle toho, zda jde o vlastní obchod podřízeného
-        nebo obchod se strukturou.
-        """
-        advisor = self.lead.advisor
-        if not advisor or not self.loan_amount:
-            return 0
-
-        # Má tohoto poradce nadřízeného manažera?
-        manager = advisor.advisor_manager
-        if not manager:
-            return 0
-
-        # Vlastní obchod podřízeného → vyšší meziprovize
-        if self.lead.is_personal_contact:
-            rate = manager.advisor_manager_commission_own_deals
-        else:
-            # Obchod se strukturou → nižší meziprovize
-            rate = manager.advisor_manager_commission_structure_deals
-
-        if not rate:
-            return 0
-
-        return int(rate * self.loan_amount / 1_000_000)
-
     def get_own_commission(self, user):
         """
         Vrací 'vlastní provizi' podle role uživatele a referrera.

@@ -24,13 +24,6 @@ class UserAdmin(BaseUserAdmin):
                 "advisor_commission_structure_deals",
             )
         }),
-        ("Meziprovize (pro nadřízené poradce)", {
-            "fields": (
-                "advisor_manager",
-                "advisor_manager_commission_structure_deals",
-                "advisor_manager_commission_own_deals",
-            )
-        }),
     )
 
     # Tohle je formulář pro VYTVOŘENÍ uživatele
@@ -59,14 +52,6 @@ class UserAdmin(BaseUserAdmin):
                 "advisor_commission_per_million",
                 "advisor_commission_own_deals",
                 "advisor_commission_structure_deals",
-            ),
-        }),
-        ("Meziprovize (pro nadřízené poradce)", {
-            "classes": ("wide",),
-            "fields": (
-                "advisor_manager",
-                "advisor_manager_commission_structure_deals",
-                "advisor_manager_commission_own_deals",
             ),
         }),
     )

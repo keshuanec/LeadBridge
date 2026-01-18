@@ -9,27 +9,28 @@
         width: 100% !important;
     }
 
-    /* Stav obchodu */
-    .table-wrapper > table.deals-table th:nth-child(1),
-    .table-wrapper > table.deals-table td:nth-child(1) {
-        width: 80px !important;
-        max-width: 80px !important;
-        padding: 6px 4px !important;
+    /* Stav obchodu - pevná malá šířka */
+    .table-wrapper > table.deals-table .status-deal-col {
+        width: 85px !important;
         white-space: normal !important;
+        padding: 6px 4px !important;
+        line-height: 1.3 !important;
+        overflow: hidden !important;
     }
 
     /* Klient */
-    .table-wrapper > table.deals-table th:nth-child(2),
-    .table-wrapper > table.deals-table td:nth-child(2) {
-        width: 120px !important;
+    .table-wrapper > table.deals-table .client-col {
+        width: 90px !important;
         white-space: normal !important;
+        padding: 6px 8px !important;
+        line-height: 1.3 !important;
     }
 
     /* Výše úvěru */
-    .table-wrapper > table.deals-table th:nth-child(3),
-    .table-wrapper > table.deals-table td:nth-child(3) {
-        width: 95px !important;
+    .table-wrapper > table.deals-table .loan-col {
+        width: 90px !important;
         white-space: nowrap !important;
+        padding: 6px 8px !important;
     }
 
     .table-wrapper > table.deals-table td {
@@ -54,13 +55,12 @@
 
     /* Úzké sloupce provizí */
     .table-wrapper > table.deals-table .commission-col {
-        width: 80px !important;
-        max-width: 80px !important;
+        width: 70px !important;
         font-size: 12px !important;
         padding: 6px 4px !important;
         white-space: nowrap !important;
         vertical-align: top !important;
-        min-height: 44px !important;
+        overflow: hidden !important;
     }
 
     .table-wrapper > table.deals-table .commission-col .amount {
@@ -72,6 +72,28 @@
         display: block;
         margin-top: 3px;
         width: fit-content;
+    }
+
+    /* Sloupce s jmény osob */
+    .table-wrapper > table.deals-table .person-col {
+        width: 70px !important;
+        white-space: normal !important;
+        font-size: 13px !important;
+        padding: 6px 8px !important;
+        line-height: 1.3 !important;
+    }
+
+    /* Sloupec Vytvořeno */
+    .table-wrapper > table.deals-table .date-col {
+        width: 85px !important;
+        white-space: nowrap !important;
+    }
+
+    /* Sloupec Stav provize */
+    .table-wrapper > table.deals-table .status-col {
+        width: 110px !important;
+        white-space: normal !important;
+        line-height: 1.3 !important;
     }
 
     /* Barevné podbarvení řádků podle statusu */
@@ -186,7 +208,7 @@
         <table class="deals-table">
             <thead>
                 <tr>
-                    <th>
+                    <th class="status-deal-col">
                         <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=status&dir={% if current_sort == 'status' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                             Stav obchodu
                             {% if current_sort == 'status' %}
@@ -194,7 +216,7 @@
                             {% endif %}
                         </a>
                     </th>
-                    <th>
+                    <th class="client-col">
                         <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=client&dir={% if current_sort == 'client' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                             Klient
                             {% if current_sort == 'client' %}
@@ -202,7 +224,7 @@
                             {% endif %}
                         </a>
                     </th>
-                    <th>
+                    <th class="loan-col">
                         <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=loan_amount&dir={% if current_sort == 'loan_amount' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                             Výše úvěru
                             {% if current_sort == 'loan_amount' %}
@@ -221,11 +243,15 @@
                     {% endif %}
                     {% if user.role == "ADVISOR" or user.is_superuser %}
                         <th class="commission-col">Prov. porad.</th>
-                        <th class="commission-col">Mezipr. man.</th>
+                    {% endif %}
+
+                    {# Sloupec Poradce pro admin advisors #}
+                    {% if user.role == "ADVISOR" and user.has_admin_access %}
+                        <th class="person-col">Poradce</th>
                     {% endif %}
 
                     {% if show_referrer_col %}
-                        <th>
+                        <th class="person-col">
                             <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=referrer&dir={% if current_sort == 'referrer' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                                 Doporučitel
                                 {% if current_sort == 'referrer' %}
@@ -236,7 +262,7 @@
                     {% endif %}
 
                     {% if show_manager_col %}
-                        <th>
+                        <th class="person-col">
                             <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=manager&dir={% if current_sort == 'manager' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                                 Manažer
                                 {% if current_sort == 'manager' %}
@@ -247,7 +273,7 @@
                     {% endif %}
 
                     {% if show_office_col %}
-                        <th>
+                        <th class="person-col">
                             <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=office&dir={% if current_sort == 'office' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                                 Kancelář
                                 {% if current_sort == 'office' %}
@@ -257,7 +283,7 @@
                         </th>
                     {% endif %}
 
-                    <th>
+                    <th class="date-col">
                         <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=created_at&dir={% if current_sort == 'created_at' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                             Vytvořeno
                             {% if current_sort == 'created_at' %}
@@ -265,7 +291,7 @@
                             {% endif %}
                         </a>
                     </th>
-                    <th>
+                    <th class="status-col">
                         <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=commission&dir={% if current_sort == 'commission' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                             Stav provize
                             {% if current_sort == 'commission' %}
@@ -278,9 +304,9 @@
             <tbody>
             {% for d in deals %}
                 <tr class="{% if d.status == 'FAILED' %}deal-row-failed{% elif d.status == 'SIGNED' or d.status == 'SIGNED_NO_PROPERTY' or d.status == 'DRAWN' %}deal-row-completed{% else %}deal-row-pending{% endif %}">
-                    <td><a href="{% url 'deal_detail' d.pk %}"><span class="badge">{{ d.get_status_display }}</span></a></td>
-                    <td><a href="{% url 'deal_detail' d.pk %}">{{ d.client_name }}</a></td>
-                    <td>{{ d.loan_amount|floatformat:0 }} Kč</td>
+                    <td class="status-deal-col"><a href="{% url 'deal_detail' d.pk %}"><span class="badge">{{ d.get_status_display }}</span></a></td>
+                    <td class="client-col"><a href="{% url 'deal_detail' d.pk %}">{{ d.client_name }}</a></td>
+                    <td class="loan-col">{{ d.loan_amount|floatformat:0 }} Kč</td>
 
                     {# Zobrazení provizí - role-based #}
                     <td class="commission-col">
@@ -315,19 +341,19 @@
                                 <span class="amount">{{ d.calculated_commission_advisor|floatformat:0 }} Kč</span>
                             {% else %}—{% endif %}
                         </td>
-                        <td class="commission-col">
-                            {% if d.calculated_commission_advisor_manager > 0 %}
-                                <span class="amount">{{ d.calculated_commission_advisor_manager|floatformat:0 }} Kč</span>
-                            {% else %}—{% endif %}
-                        </td>
+                    {% endif %}
+
+                    {# Sloupec Poradce pro admin advisors #}
+                    {% if user.role == "ADVISOR" and user.has_admin_access %}
+                        <td class="person-col">{{ d.lead.advisor|default:"—" }}</td>
                     {% endif %}
 
                     {% if show_referrer_col %}
-                        <td>{{ d.referrer_name }}</td>
+                        <td class="person-col">{{ d.referrer_name }}</td>
                     {% endif %}
 
                     {% if show_manager_col %}
-                        <td>
+                        <td class="person-col">
                             {% if d.lead.is_personal_contact %}
                                 <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
                             {% else %}
@@ -337,7 +363,7 @@
                     {% endif %}
 
                     {% if show_office_col %}
-                        <td>
+                        <td class="person-col">
                             {% if d.lead.is_personal_contact %}
                                 <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
                             {% else %}
@@ -346,8 +372,8 @@
                         </td>
                     {% endif %}
 
-                    <td>{{ d.created_at|date:"d.m.Y" }}</td>
-                    <td>
+                    <td class="date-col">{{ d.created_at|date:"d.m.Y" }}</td>
+                    <td class="status-col">
                     {% if d.status != "SIGNED" and d.status != "SIGNED_NO_PROPERTY" and d.status != "DRAWN" %}
                         {# Obchod ještě není podepsán #}
                         Nedokončeno

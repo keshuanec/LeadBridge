@@ -108,35 +108,6 @@ class User(AbstractUser):
         help_text="Provize za obchody přes makléře (např. 6480)",
     )
 
-    # === MEZIPROVIZE NADŘÍZENÉHO PORADCE (TYP 3) ===
-
-    advisor_manager = models.ForeignKey(
-        'self',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='subordinate_advisors',
-        limit_choices_to={'role': Role.ADVISOR, 'has_admin_access': True},
-        verbose_name='Nadřízený poradce (manažer)',
-        help_text='Poradce s admin přístupem, který dostává meziprovizi za obchody tohoto poradce',
-    )
-
-    advisor_manager_commission_structure_deals = models.DecimalField(
-        "Meziprovize za obchody se strukturou (Typ 3)",
-        max_digits=10,
-        decimal_places=0,
-        default=0,
-        help_text="Meziprovize za obchody podřízených přes makléře (např. 2000)",
-    )
-
-    advisor_manager_commission_own_deals = models.DecimalField(
-        "Meziprovize za vlastní obchody podřízených (Typ 3)",
-        max_digits=10,
-        decimal_places=0,
-        default=0,
-        help_text="Meziprovize za vlastní kontakty podřízených poradců (např. 3500)",
-    )
-
     def clean(self):
         """Validace, že součet procent provizí nepřekročí 100%"""
         from django.core.exceptions import ValidationError
