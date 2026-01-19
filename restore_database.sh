@@ -3,6 +3,11 @@
 # ============================================
 # LeadBridge Database Restore Script
 # ============================================
+#
+# Použití:
+#   ./restore_database.sh                          # Zkusí získat URL z Railway
+#   ./restore_database.sh "postgresql://..."       # Použije předanou URL
+#
 
 # Barvy pro výstup
 RED='\033[0;31m'
@@ -17,13 +22,30 @@ echo "🔄 LeadBridge Database Restore"
 echo "================================"
 echo ""
 
-# Bezpečně získáme DATABASE_URL z Railway CLI
+# Získání DATABASE_URL
 echo "🔗 Připojuji se k Railway..."
-DATABASE_URL=$(railway run sh -c 'echo $DATABASE_PUBLIC_URL')
 
+# 1. Zkusit parametr příkazové řádky
+if [ -n "$1" ]; then
+    DATABASE_URL="$1"
+    echo -e "${GREEN}   ✓ Použita URL z parametru${NC}"
+# 2. Zkusit Railway CLI
+elif command -v railway &> /dev/null; then
+    DATABASE_URL=$(railway variables --json 2>/dev/null | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('DATABASE_PUBLIC_URL', ''))" 2>/dev/null)
+    if [ -n "$DATABASE_URL" ]; then
+        echo -e "${GREEN}   ✓ Použita URL z Railway CLI${NC}"
+    fi
+fi
+
+# Kontrola, zda máme URL
 if [ -z "$DATABASE_URL" ]; then
-    echo -e "${RED}❌ CHYBA: Nepodařilo se získat DATABASE_PUBLIC_URL z Railway${NC}"
-    echo "💡 TIP: Zkontrolujte, že jste přihlášení do Railway (railway login)"
+    echo -e "${RED}❌ CHYBA: Nepodařilo se získat DATABASE_URL${NC}"
+    echo ""
+    echo "💡 Řešení:"
+    echo "   1. Předejte URL jako parametr:"
+    echo "      ./restore_database.sh \"postgresql://user:pass@host:port/db\""
+    echo ""
+    echo "   2. Nebo přidejte DATABASE_PUBLIC_URL do Railway Variables"
     exit 1
 fi
 echo ""
