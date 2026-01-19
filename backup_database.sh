@@ -19,10 +19,14 @@ echo ""
 
 # Získání DATABASE_PUBLIC_URL z Railway
 echo "🔗 Získávám připojení k databázi..."
-DATABASE_URL="postgresql://postgres:qqEdDiZRruELqKJeDtYWLMMgijoGYshM@centerbeam.proxy.rlwy.net:28808/railway"
+# Bezpečně získáme URL z Railway CLI (nikdy neukládáme heslo přímo do kódu!)
+DATABASE_URL=$(railway run sh -c 'echo $DATABASE_PUBLIC_URL')
 
-# Alternativně můžete získat URL dynamicky:
-# DATABASE_URL=$(railway variables --json | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('DATABASE_PUBLIC_URL', ''))")
+if [ -z "$DATABASE_URL" ]; then
+    echo "❌ CHYBA: Nepodařilo se získat DATABASE_PUBLIC_URL z Railway"
+    echo "💡 TIP: Zkontrolujte, že jste přihlášení do Railway (railway login)"
+    exit 1
+fi
 
 if [ -z "$DATABASE_URL" ]; then
     echo "❌ CHYBA: Nepodařilo se získat DATABASE_PUBLIC_URL z Railway"

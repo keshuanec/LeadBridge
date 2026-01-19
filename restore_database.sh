@@ -12,10 +12,20 @@ NC='\033[0m' # No Color
 
 BACKUP_DIR="$HOME/backups/leadbridge"
 PSQL="/usr/local/opt/postgresql@17/bin/psql"
-DATABASE_URL="postgresql://postgres:qqEdDiZRruELqKJeDtYWLMMgijoGYshM@centerbeam.proxy.rlwy.net:28808/railway"
 
 echo "🔄 LeadBridge Database Restore"
 echo "================================"
+echo ""
+
+# Bezpečně získáme DATABASE_URL z Railway CLI
+echo "🔗 Připojuji se k Railway..."
+DATABASE_URL=$(railway run sh -c 'echo $DATABASE_PUBLIC_URL')
+
+if [ -z "$DATABASE_URL" ]; then
+    echo -e "${RED}❌ CHYBA: Nepodařilo se získat DATABASE_PUBLIC_URL z Railway${NC}"
+    echo "💡 TIP: Zkontrolujte, že jste přihlášení do Railway (railway login)"
+    exit 1
+fi
 echo ""
 
 # Kontrola, zda existuje složka se zálohami
