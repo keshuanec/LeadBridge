@@ -75,3 +75,11 @@ var/
 node_modules/
 npm-debug.log
 yarn-error.log
+
+# Backups & sensitive data
+backups/
+*.sql
+*.sql.gz
+*.dump
+*credentials*
+*secrets*
