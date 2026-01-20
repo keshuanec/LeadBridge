@@ -41,7 +41,7 @@ def sync_lead_to_deal(sender, instance, created, **kwargs):
         ActivityLog.objects.create(
             user=getattr(instance, '_created_by', instance.referrer),
             activity_type=ActivityLog.ActivityType.LEAD_CREATED,
-            description=f"Vytvořen lead pro klienta {instance.client_name}",
+            description=f"Vytvořen lead {instance.client_name}",
             lead=instance,
             metadata={
                 'client_name': instance.client_name,
@@ -73,7 +73,7 @@ def sync_lead_to_deal(sender, instance, created, **kwargs):
             ActivityLog.objects.create(
                 user=getattr(instance, '_updated_by', None),
                 activity_type=ActivityLog.ActivityType.LEAD_CALLBACK_SCHEDULED,
-                description=f"Naplánován odložený hovor pro {instance.client_name} na {instance.callback_scheduled_date}",
+                description=f"Odložený hovor {instance.client_name} na {instance.callback_scheduled_date}",
                 lead=instance,
                 metadata={'callback_date': str(instance.callback_scheduled_date)}
             )
@@ -136,7 +136,7 @@ def sync_deal_to_lead(sender, instance, created, **kwargs):
         ActivityLog.objects.create(
             user=getattr(instance, '_created_by', None),
             activity_type=ActivityLog.ActivityType.DEAL_CREATED,
-            description=f"Vytvořen obchod pro klienta {instance.client_name}, banka: {instance.get_bank_display()}, částka: {instance.loan_amount:,} Kč",
+            description=f"Vytvořen obchod {instance.client_name}, banka: {instance.get_bank_display()}, částka: {instance.loan_amount:,} Kč",
             lead=instance.lead,
             deal=instance,
             metadata={
@@ -197,7 +197,7 @@ def log_lead_note_created(sender, instance, created, **kwargs):
         ActivityLog.objects.create(
             user=instance.author,
             activity_type=ActivityLog.ActivityType.LEAD_NOTE_ADDED,
-            description=f"Přidána {'soukromá ' if instance.is_private else ''}poznámka k leadu {instance.lead.client_name}: {instance.text[:50]}{'...' if len(instance.text) > 50 else ''}",
+            description=f"{'Soukromá poznámka' if instance.is_private else 'Poznámka'} {instance.lead.client_name}: {instance.text[:50]}{'...' if len(instance.text) > 50 else ''}",
             lead=instance.lead,
             metadata={
                 'is_private': instance.is_private,

@@ -472,13 +472,13 @@ class ActivityLog(models.Model):
         # Lead aktivity
         LEAD_CREATED = "LEAD_CREATED", "Lead vytvořen"
         LEAD_UPDATED = "LEAD_UPDATED", "Lead upraven"
-        LEAD_NOTE_ADDED = "LEAD_NOTE_ADDED", "Poznámka k leadu přidána"
-        LEAD_CALLBACK_SCHEDULED = "LEAD_CALLBACK_SCHEDULED", "Odložený hovor naplánován"
+        LEAD_NOTE_ADDED = "LEAD_NOTE_ADDED", "Poznámka leadu"
+        LEAD_CALLBACK_SCHEDULED = "LEAD_CALLBACK_SCHEDULED", "Odložený hovor"
 
         # Deal aktivity
         DEAL_CREATED = "DEAL_CREATED", "Obchod vytvořen"
         DEAL_UPDATED = "DEAL_UPDATED", "Obchod upraven"
-        DEAL_COMMISSION_READY = "DEAL_COMMISSION_READY", "Provize připravena k vyplacení"
+        DEAL_COMMISSION_READY = "DEAL_COMMISSION_READY", "Provize připravena"
         DEAL_COMMISSION_PAID = "DEAL_COMMISSION_PAID", "Provize vyplacena"
 
         # Ostatní
