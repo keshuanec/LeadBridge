@@ -1008,10 +1008,11 @@ def advisors_list(request):
                 filter=Q(leads_assigned__is_personal_contact=False) & lead_date_q,
                 distinct=True
             ),
+            # Domluvené schůzky: všechny kde byla NĚKDY domluvena schůzka (meeting_scheduled=True)
             meetings_planned=Count(
                 "leads_assigned",
                 filter=Q(
-                    leads_assigned__communication_status=Lead.CommunicationStatus.MEETING,
+                    leads_assigned__meeting_scheduled=True,
                     leads_assigned__is_personal_contact=False
                 ) & lead_date_q,
                 distinct=True,
