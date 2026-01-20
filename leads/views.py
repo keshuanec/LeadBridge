@@ -1117,10 +1117,9 @@ def advisor_detail(request, pk: int):
 
     advisor_stats = {
         "leads_received": leads_qs.count(),
-        # Domluvené schůzky: leady kde je schůzka naplánovaná NEBO už byla realizovaná
-        "meetings_planned": leads_qs.filter(
-            Q(communication_status=Lead.CommunicationStatus.MEETING) | Q(meeting_done=True)
-        ).count(),
+        # Domluvené schůzky: všechny kde byla NĚKDY domluvena schůzka
+        "meetings_planned": leads_qs.filter(meeting_scheduled=True).count(),
+        # Realizované schůzky: všechny kde schůzka proběhla
         "meetings_done": leads_qs.filter(meeting_done=True).count(),
     }
 
@@ -1200,7 +1199,8 @@ def lead_schedule_meeting(request, pk: int):
 
             # změna stavu
             lead.communication_status = Lead.CommunicationStatus.MEETING
-            lead.save(update_fields=["meeting_at", "meeting_note", "communication_status", "updated_at"])
+            lead.meeting_scheduled = True  # Označit že schůzka byla domluvena
+            lead.save(update_fields=["meeting_at", "meeting_note", "meeting_scheduled", "communication_status", "updated_at"])
 
             # historie
             when = timezone.localtime(lead.meeting_at).strftime("%d.%m.%Y %H:%M") if lead.meeting_at else "—"
@@ -1576,8 +1576,13 @@ def deal_create_from_lead(request, pk: int):
             deal.save()
 
             # Lead -> stav Založen obchod
+            # Pokud se vytváří obchod, musela předcházet schůzka (i když nebyla explicitně zaznamenána)
             lead.communication_status = Lead.CommunicationStatus.DEAL_CREATED
-            lead.save(update_fields=["communication_status", "updated_at"])
+            lead.meeting_scheduled = True
+            lead.meeting_done = True
+            if not lead.meeting_done_at:
+                lead.meeting_done_at = timezone.now()
+            lead.save(update_fields=["communication_status", "meeting_scheduled", "meeting_done", "meeting_done_at", "updated_at"])
 
             # historie
             LeadHistory.objects.create(
@@ -1936,10 +1941,9 @@ def user_detail(request, pk: int):
 
         advisor_stats = {
             "leads_received": leads_qs.count(),
-            # Domluvené schůzky: leady kde je schůzka naplánovaná NEBO už byla realizovaná
-            "meetings_planned": leads_qs.filter(
-                Q(communication_status=Lead.CommunicationStatus.MEETING) | Q(meeting_done=True)
-            ).count(),
+            # Domluvené schůzky: všechny kde byla NĚKDY domluvena schůzka
+            "meetings_planned": leads_qs.filter(meeting_scheduled=True).count(),
+            # Realizované schůzky: všechny kde schůzka proběhla
             "meetings_done": leads_qs.filter(meeting_done=True).count(),
             "deals_created": deals_qs.count(),
             "deals_completed": deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),

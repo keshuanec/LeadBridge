@@ -88,6 +88,7 @@ class Lead(models.Model):
 
     meeting_at = models.DateTimeField("Datum a čas schůzky", null=True, blank=True)
     meeting_note = models.TextField("Poznámka ke schůzce", blank=True)
+    meeting_scheduled = models.BooleanField("Schůzka byla domluvena", default=False, help_text="True pokud byla NĚKDY domluvena schůzka (i když nebyla explicitně zaznamenána)")
     meeting_done = models.BooleanField("Schůzka proběhla", default=False)
     meeting_done_at = models.DateTimeField("Schůzka proběhla (čas)", null=True, blank=True)
 
