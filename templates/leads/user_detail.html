@@ -6,67 +6,71 @@
 <div class="card">
     <h2>Detail uživatele</h2>
 
-    <p><strong>Jméno:</strong> {{ viewed_user.get_full_name }}</p>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;">
+        <div>
+            <p><strong>Jméno:</strong> {{ viewed_user.get_full_name }}</p>
 
-    <p><strong>E-mail:</strong> {{ viewed_user.email|default:"—" }}</p>
+            <p><strong>E-mail:</strong> {{ viewed_user.email|default:"—" }}</p>
 
-    <p><strong>Telefon:</strong> {{ viewed_user.phone|default:"—" }}</p>
+            <p><strong>Telefon:</strong> {{ viewed_user.phone|default:"—" }}</p>
 
-    <p><strong>Role:</strong> {{ viewed_user.get_role_display }}</p>
+            <p><strong>Role:</strong> {{ viewed_user.get_role_display }}</p>
 
-    {% if user == viewed_user %}
-    <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #ddd; display: flex; gap: 12px;">
-        <a href="{% url 'edit_profile' %}" class="btn btn-primary">Upravit údaje</a>
-        <a href="{% url 'change_password' %}" class="btn btn-secondary">Změnit heslo</a>
+            {% if user == viewed_user %}
+            <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #ddd; display: flex; gap: 12px;">
+                <a href="{% url 'edit_profile' %}" class="btn btn-primary">Upravit údaje</a>
+                <a href="{% url 'change_password' %}" class="btn btn-secondary">Změnit heslo</a>
+            </div>
+            {% endif %}
+        </div>
+
+        {# Odkazy na leady/obchody s filtry #}
+        {% if viewed_user.role == "ADVISOR" or viewed_user.role == "REFERRER" or viewed_user.role == "REFERRER_MANAGER" or viewed_user.role == "OFFICE" or referrer_profile %}
+        <div style="padding: 16px; background: #f8f9fa; border-radius: 8px;">
+            <h3 style="margin-top: 0; font-size: 16px;">Rychlé odkazy</h3>
+
+            {# Pro doporučitele (všichni kromě čistých advisorů bez referrer_profile) #}
+            {% if referrer_profile or viewed_user.role == "REFERRER" or viewed_user.role == "REFERRER_MANAGER" or viewed_user.role == "OFFICE" %}
+            <div style="margin-bottom: 12px;">
+                <strong>Jako doporučitel:</strong>
+                <a href="{% url 'my_leads' %}?referrer={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 8px;">Leady</a>
+                <a href="{% url 'deals_list' %}?referrer={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 4px;">Obchody</a>
+            </div>
+            {% endif %}
+
+            {# Pro advisora - leady/obchody kde je advisor #}
+            {% if viewed_user.role == "ADVISOR" %}
+            <div style="margin-bottom: 12px;">
+                <strong>Jako poradce:</strong>
+                <a href="{% url 'my_leads' %}?advisor={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 8px;">Leady</a>
+                <a href="{% url 'deals_list' %}?advisor={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 4px;">Obchody</a>
+            </div>
+            {% endif %}
+
+            {# Pro manažera - leady/obchody jeho týmu #}
+            {% if viewed_user.role == "REFERRER_MANAGER" %}
+            <div style="margin-bottom: 12px;">
+                <strong>Tým manažera:</strong>
+                <a href="{% url 'my_leads' %}?manager={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 8px;">Leady týmu</a>
+                <a href="{% url 'deals_list' %}?manager={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 4px;">Obchody týmu</a>
+            </div>
+            {% endif %}
+
+            {# Pro kancelář - leady/obchody její kanceláře #}
+            {% if viewed_user.role == "OFFICE" %}
+            <div style="margin-bottom: 12px;">
+                <strong>Kancelář:</strong>
+                <a href="{% url 'my_leads' %}?office={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 8px;">Leady kanceláře</a>
+                <a href="{% url 'deals_list' %}?office={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 4px;">Obchody kanceláře</a>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
 
     <hr>
 
 {% include "leads/includes/date_filter.html" %}
-
-    {# Odkazy na leady/obchody s filtry #}
-    {% if viewed_user.role == "ADVISOR" or viewed_user.role == "REFERRER" or viewed_user.role == "REFERRER_MANAGER" or viewed_user.role == "OFFICE" or referrer_profile %}
-    <div style="margin-top: 20px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
-        <h3 style="margin-top: 0; font-size: 16px;">Rychlé odkazy</h3>
-
-        {# Pro doporučitele (všichni kromě čistých advisorů bez referrer_profile) #}
-        {% if referrer_profile or viewed_user.role == "REFERRER" or viewed_user.role == "REFERRER_MANAGER" or viewed_user.role == "OFFICE" %}
-        <div style="margin-bottom: 12px;">
-            <strong>Jako doporučitel:</strong>
-            <a href="{% url 'my_leads' %}?referrer={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 8px;">Leady</a>
-            <a href="{% url 'deals_list' %}?referrer={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 4px;">Obchody</a>
-        </div>
-        {% endif %}
-
-        {# Pro advisora - leady/obchody kde je advisor #}
-        {% if viewed_user.role == "ADVISOR" %}
-        <div style="margin-bottom: 12px;">
-            <strong>Jako poradce:</strong>
-            <a href="{% url 'my_leads' %}?advisor={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 8px;">Leady</a>
-            <a href="{% url 'deals_list' %}?advisor={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 4px;">Obchody</a>
-        </div>
-        {% endif %}
-
-        {# Pro manažera - leady/obchody jeho týmu #}
-        {% if viewed_user.role == "REFERRER_MANAGER" %}
-        <div style="margin-bottom: 12px;">
-            <strong>Tým manažera:</strong>
-            <a href="{% url 'my_leads' %}?manager={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 8px;">Leady týmu</a>
-            <a href="{% url 'deals_list' %}?manager={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 4px;">Obchody týmu</a>
-        </div>
-        {% endif %}
-
-        {# Pro kancelář - leady/obchody její kanceláře #}
-        {% if viewed_user.role == "OFFICE" %}
-        <div style="margin-bottom: 12px;">
-            <strong>Kancelář:</strong>
-            <a href="{% url 'my_leads' %}?office={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 8px;">Leady kanceláře</a>
-            <a href="{% url 'deals_list' %}?office={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 4px;">Obchody kanceláře</a>
-        </div>
-        {% endif %}
-    </div>
-    {% endif %}
 
     {% if manager %}
     <p><strong>Manažer:</strong>
