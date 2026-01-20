@@ -19,7 +19,7 @@ def _lead_stats(qs) -> Stats:
     contacts = qs.count()
 
     meetings_planned = qs.filter(
-        communication_status=Lead.CommunicationStatus.MEETING
+        meeting_scheduled=True
     ).count()
 
     meetings_done = qs.filter(meeting_done=True).count()

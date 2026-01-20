@@ -865,7 +865,7 @@ def referrers_list(request):
             meetings_planned=Count(
                 "user__leads_created",
                 filter=Q(
-                    user__leads_created__communication_status=Lead.CommunicationStatus.MEETING,
+                    user__leads_created__meeting_scheduled=True,
                     user__leads_created__is_personal_contact=False
                 ) & lead_date_q,
                 distinct=True,
@@ -1167,7 +1167,7 @@ def advisor_detail(request, pk: int):
 
         referrer_stats = {
             "leads_sent": referrer_leads_qs.count(),
-            "meetings_planned": referrer_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+            "meetings_planned": referrer_leads_qs.filter(meeting_scheduled=True).count(),
             "meetings_done": referrer_leads_qs.filter(meeting_done=True).count(),
         }
 
@@ -1971,7 +1971,7 @@ def user_detail(request, pk: int):
 
             referrer_stats = {
                 "leads_sent": referrer_leads_qs.count(),
-                "meetings_planned": referrer_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+                "meetings_planned": referrer_leads_qs.filter(meeting_scheduled=True).count(),
                 "meetings_done": referrer_leads_qs.filter(meeting_done=True).count(),
                 "deals_done": referrer_deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
             }
@@ -1985,7 +1985,7 @@ def user_detail(request, pk: int):
 
         team_stats = {
             "leads_sent": team_leads_qs.count(),
-            "meetings_planned": team_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+            "meetings_planned": team_leads_qs.filter(meeting_scheduled=True).count(),
             "meetings_done": team_leads_qs.filter(meeting_done=True).count(),
             "deals_done": team_deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
         }
@@ -1997,7 +1997,7 @@ def user_detail(request, pk: int):
 
             referrer_stats = {
                 "leads_sent": referrer_leads_qs.count(),
-                "meetings_planned": referrer_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+                "meetings_planned": referrer_leads_qs.filter(meeting_scheduled=True).count(),
                 "meetings_done": referrer_leads_qs.filter(meeting_done=True).count(),
                 "deals_done": referrer_deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
             }
@@ -2013,7 +2013,7 @@ def user_detail(request, pk: int):
 
         office_stats = {
             "leads_sent": office_leads_qs.count(),
-            "meetings_planned": office_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+            "meetings_planned": office_leads_qs.filter(meeting_scheduled=True).count(),
             "meetings_done": office_leads_qs.filter(meeting_done=True).count(),
             "deals_done": office_deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
         }
@@ -2027,7 +2027,7 @@ def user_detail(request, pk: int):
 
             team_stats = {
                 "leads_sent": team_leads_qs.count(),
-                "meetings_planned": team_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+                "meetings_planned": team_leads_qs.filter(meeting_scheduled=True).count(),
                 "meetings_done": team_leads_qs.filter(meeting_done=True).count(),
                 "deals_done": team_deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
             }
@@ -2039,7 +2039,7 @@ def user_detail(request, pk: int):
 
             referrer_stats = {
                 "leads_sent": referrer_leads_qs.count(),
-                "meetings_planned": referrer_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+                "meetings_planned": referrer_leads_qs.filter(meeting_scheduled=True).count(),
                 "meetings_done": referrer_leads_qs.filter(meeting_done=True).count(),
                 "deals_done": referrer_deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
             }
@@ -2052,7 +2052,7 @@ def user_detail(request, pk: int):
 
             referrer_stats = {
                 "leads_sent": referrer_leads_qs.count(),
-                "meetings_planned": referrer_leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+                "meetings_planned": referrer_leads_qs.filter(meeting_scheduled=True).count(),
                 "meetings_done": referrer_leads_qs.filter(meeting_done=True).count(),
                 "deals_done": referrer_deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
             }
