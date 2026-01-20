@@ -1106,7 +1106,10 @@ def advisor_detail(request, pk: int):
     date_to = date_filter['date_to']
 
     # Statistiky pro konkrétního poradce
-    leads_qs = Lead.objects.filter(advisor=advisor)
+    # DŮLEŽITÉ: Vyloučit vlastní kontakty (kde referrer=advisor a is_personal_contact=True)
+    leads_qs = Lead.objects.filter(advisor=advisor).exclude(
+        is_personal_contact=True, referrer=advisor
+    )
     if date_from:
         leads_qs = leads_qs.filter(created_at__gte=date_from)
     if date_to:
@@ -1114,12 +1117,18 @@ def advisor_detail(request, pk: int):
 
     advisor_stats = {
         "leads_received": leads_qs.count(),
-        "meetings_planned": leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+        # Domluvené schůzky: leady kde je schůzka naplánovaná NEBO už byla realizovaná
+        "meetings_planned": leads_qs.filter(
+            Q(communication_status=Lead.CommunicationStatus.MEETING) | Q(meeting_done=True)
+        ).count(),
         "meetings_done": leads_qs.filter(meeting_done=True).count(),
     }
 
     # Pro deals použít časový filtr na Deal.created_at
-    deals_qs = Deal.objects.filter(lead__advisor=advisor)
+    # Vyloučit vlastní kontakty
+    deals_qs = Deal.objects.filter(lead__advisor=advisor).exclude(
+        lead__is_personal_contact=True, lead__referrer=advisor
+    )
     if date_from:
         deals_qs = deals_qs.filter(created_at__gte=date_from)
     if date_to:
@@ -1127,6 +1136,19 @@ def advisor_detail(request, pk: int):
 
     advisor_stats["deals_created"] = deals_qs.count()
     advisor_stats["deals_completed"] = deals_qs.filter(status=Deal.DealStatus.DRAWN).count()
+
+    # Přidat statistiku vlastních dokončených obchodů
+    personal_deals_qs = Deal.objects.filter(
+        lead__advisor=advisor,
+        lead__is_personal_contact=True,
+        lead__referrer=advisor
+    )
+    if date_from:
+        personal_deals_qs = personal_deals_qs.filter(created_at__gte=date_from)
+    if date_to:
+        personal_deals_qs = personal_deals_qs.filter(created_at__lt=date_to + timedelta(days=1))
+
+    advisor_stats["deals_completed_personal"] = personal_deals_qs.filter(status=Deal.DealStatus.DRAWN).count()
 
     # Pokud má poradce také ReferrerProfile, počítáme i statistiky jako doporučitel
     referrer_stats = None
@@ -1904,16 +1926,32 @@ def user_detail(request, pk: int):
 
     if viewed_user.role == User.Role.ADVISOR:
         # Statistiky poradce
-        leads_qs = filter_leads_by_date(Lead.objects.filter(advisor=viewed_user))
-        deals_qs = filter_deals_by_date(Deal.objects.filter(lead__advisor=viewed_user))
+        # DŮLEŽITÉ: Vyloučit vlastní kontakty (kde referrer=advisor a is_personal_contact=True)
+        leads_qs = filter_leads_by_date(Lead.objects.filter(advisor=viewed_user).exclude(
+            is_personal_contact=True, referrer=viewed_user
+        ))
+        deals_qs = filter_deals_by_date(Deal.objects.filter(lead__advisor=viewed_user).exclude(
+            lead__is_personal_contact=True, lead__referrer=viewed_user
+        ))
 
         advisor_stats = {
             "leads_received": leads_qs.count(),
-            "meetings_planned": leads_qs.filter(communication_status=Lead.CommunicationStatus.MEETING).count(),
+            # Domluvené schůzky: leady kde je schůzka naplánovaná NEBO už byla realizovaná
+            "meetings_planned": leads_qs.filter(
+                Q(communication_status=Lead.CommunicationStatus.MEETING) | Q(meeting_done=True)
+            ).count(),
             "meetings_done": leads_qs.filter(meeting_done=True).count(),
             "deals_created": deals_qs.count(),
             "deals_completed": deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
         }
+
+        # Přidat statistiku vlastních dokončených obchodů
+        personal_deals_qs = filter_deals_by_date(Deal.objects.filter(
+            lead__advisor=viewed_user,
+            lead__is_personal_contact=True,
+            lead__referrer=viewed_user
+        ))
+        advisor_stats["deals_completed_personal"] = personal_deals_qs.filter(status=Deal.DealStatus.DRAWN).count()
 
         # Statistiky jako doporučitel (pokud má ReferrerProfile)
         if referrer_profile:
