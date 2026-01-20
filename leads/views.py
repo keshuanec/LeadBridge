@@ -1136,7 +1136,7 @@ def advisor_detail(request, pk: int):
     advisor_stats["deals_created"] = deals_qs.count()
     advisor_stats["deals_completed"] = deals_qs.filter(status=Deal.DealStatus.DRAWN).count()
 
-    # Přidat statistiku vlastních dokončených obchodů
+    # Přidat statistiku vlastních obchodů
     personal_deals_qs = Deal.objects.filter(
         lead__advisor=advisor,
         lead__is_personal_contact=True,
@@ -1147,6 +1147,7 @@ def advisor_detail(request, pk: int):
     if date_to:
         personal_deals_qs = personal_deals_qs.filter(created_at__lt=date_to + timedelta(days=1))
 
+    advisor_stats["deals_created_personal"] = personal_deals_qs.count()
     advisor_stats["deals_completed_personal"] = personal_deals_qs.filter(status=Deal.DealStatus.DRAWN).count()
 
     # Pokud má poradce také ReferrerProfile, počítáme i statistiky jako doporučitel
@@ -1949,12 +1950,13 @@ def user_detail(request, pk: int):
             "deals_completed": deals_qs.filter(status=Deal.DealStatus.DRAWN).count(),
         }
 
-        # Přidat statistiku vlastních dokončených obchodů
+        # Přidat statistiku vlastních obchodů
         personal_deals_qs = filter_deals_by_date(Deal.objects.filter(
             lead__advisor=viewed_user,
             lead__is_personal_contact=True,
             lead__referrer=viewed_user
         ))
+        advisor_stats["deals_created_personal"] = personal_deals_qs.count()
         advisor_stats["deals_completed_personal"] = personal_deals_qs.filter(status=Deal.DealStatus.DRAWN).count()
 
         # Statistiky jako doporučitel (pokud má ReferrerProfile)
