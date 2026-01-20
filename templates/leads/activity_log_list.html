@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block title %}Aktivity uživatelů{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>📊 Log aktivit</h2>
+    <p style="color: #666; font-size: 14px;">Přehled všech aktivit uživatelů v systému</p>
+
+    {# Filtry #}
+    <button type="button" class="btn btn-secondary filters-toggle">Zobrazit filtry</button>
+
+    <form method="get" class="filter-form">
+        <div class="filters-content">
+            <div>
+                <label style="font-size:12px; display:block;">Uživatel</label>
+                <select name="user">
+                    <option value="">– všichni –</option>
+                    {% for u in users %}
+                        <option value="{{ u.id }}" {% if current_user_filter == u.id|stringformat:"s" %}selected{% endif %}>
+                            {{ u.get_full_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label style="font-size:12px; display:block;">Typ aktivity</label>
+                <select name="activity_type">
+                    <option value="">– všechny –</option>
+                    {% for code, label in activity_types %}
+                        <option value="{{ code }}" {% if current_activity_type_filter == code %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label style="font-size:12px; display:block;">Datum od</label>
+                <input type="date" name="date_from" value="{{ current_date_from }}">
+            </div>
+
+            <div>
+                <label style="font-size:12px; display:block;">Datum do</label>
+                <input type="date" name="date_to" value="{{ current_date_to }}">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Filtrovat</button>
+            <a href="{% url 'activity_log_list' %}" class="btn btn-secondary">Zrušit filtry</a>
+        </div>
+    </form>
+
+    {% if activities %}
+        <p style="margin-top: 20px; color: #666; font-size: 14px;">
+            Zobrazeno <strong>{{ total_count }}</strong> aktivit (max 500)
+        </p>
+
+        <div class="table-wrapper" style="margin-top: 20px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 140px;">Čas</th>
+                        <th style="width: 150px;">Uživatel</th>
+                        <th style="width: 150px;">Typ aktivity</th>
+                        <th>Popis</th>
+                        <th style="width: 120px;">Lead/Obchod</th>
+                        <th style="width: 100px;">IP adresa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for activity in activities %}
+                        <tr>
+                            <td style="white-space: nowrap; font-size: 13px;">
+                                {{ activity.timestamp|date:"d.m.Y H:i" }}
+                            </td>
+                            <td>
+                                {% if activity.user %}
+                                    <a href="{% url 'user_detail' activity.user.pk %}">
+                                        {{ activity.user.get_full_name }}
+                                    </a>
+                                {% else %}
+                                    <span style="color: #999;">Systém</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge" style="font-size: 11px;">
+                                    {{ activity.get_activity_type_display }}
+                                </span>
+                            </td>
+                            <td style="font-size: 13px;">
+                                {{ activity.description }}
+                            </td>
+                            <td style="font-size: 13px;">
+                                {% if activity.lead %}
+                                    <a href="{% url 'lead_detail' activity.lead.pk %}">
+                                        Lead #{{ activity.lead.pk }}
+                                    </a>
+                                {% endif %}
+                                {% if activity.deal %}
+                                    <a href="{% url 'deal_detail' activity.deal.pk %}">
+                                        Deal #{{ activity.deal.pk }}
+                                    </a>
+                                {% endif %}
+                                {% if not activity.lead and not activity.deal %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td style="font-size: 12px; color: #666;">
+                                {{ activity.ip_address|default:"—" }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p style="margin-top: 20px;">Žádné aktivity nebyly nalezeny.</p>
+    {% endif %}
+</div>
+
+<style>
+    .filters-content {
+        display: none;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+        padding: 20px;
+        background: #f5f5f5;
+        border-radius: 8px;
+    }
+
+    .filters-content.active {
+        display: grid;
+    }
+
+    .filters-toggle {
+        margin-bottom: 16px;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.querySelector('.filters-toggle');
+    const filtersContent = document.querySelector('.filters-content');
+
+    if (toggleBtn && filtersContent) {
+        toggleBtn.addEventListener('click', function() {
+            filtersContent.classList.toggle('active');
+            if (filtersContent.classList.contains('active')) {
+                toggleBtn.textContent = 'Skrýt filtry';
+            } else {
+                toggleBtn.textContent = 'Zobrazit filtry';
+            }
+        });
+
+        // Auto-show filters if any filter is applied
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('user') || urlParams.get('activity_type') || urlParams.get('date_from') || urlParams.get('date_to')) {
+            filtersContent.classList.add('active');
+            toggleBtn.textContent = 'Skrýt filtry';
+        }
+    }
+});
+</script>
+{% endblock %}

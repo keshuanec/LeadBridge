@@ -2022,3 +2022,78 @@ def user_detail(request, pk: int):
     }
 
     return render(request, "leads/user_detail.html", context)
+
+
+@login_required
+def activity_log_list(request):
+    """
+    Zobrazení logu aktivit - pouze pro superusery.
+    Defaultně zobrazuje poslední týden, s možností filtrovat.
+    """
+    # Pouze superuser může vidět logy aktivit
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("Nemáte oprávnění k zobrazení logů aktivit.")
+
+    from .models import ActivityLog
+    from datetime import datetime, timedelta
+
+    # Získání filtrů z GET parametrů
+    user_filter = request.GET.get('user', '')
+    activity_type_filter = request.GET.get('activity_type', '')
+    date_from = request.GET.get('date_from', '')
+    date_to = request.GET.get('date_to', '')
+
+    # Základní queryset
+    activities = ActivityLog.objects.select_related('user', 'lead', 'deal').all()
+
+    # Defaultně zobrazit poslední týden pokud nejsou nastaveny filtry
+    if not date_from and not date_to:
+        one_week_ago = timezone.now() - timedelta(days=7)
+        activities = activities.filter(timestamp__gte=one_week_ago)
+        date_from = one_week_ago.date().isoformat()
+        date_to = timezone.now().date().isoformat()
+
+    # Aplikace filtrů
+    if user_filter:
+        activities = activities.filter(user_id=user_filter)
+
+    if activity_type_filter:
+        activities = activities.filter(activity_type=activity_type_filter)
+
+    if date_from:
+        try:
+            date_from_obj = datetime.fromisoformat(date_from)
+            activities = activities.filter(timestamp__gte=date_from_obj)
+        except ValueError:
+            pass
+
+    if date_to:
+        try:
+            date_to_obj = datetime.fromisoformat(date_to)
+            # Přidat 1 den aby se zahrnul celý den
+            date_to_obj = date_to_obj + timedelta(days=1)
+            activities = activities.filter(timestamp__lt=date_to_obj)
+        except ValueError:
+            pass
+
+    # Omezení na 500 záznamů pro výkon
+    activities = activities[:500]
+
+    # Získání všech uživatelů pro filtr
+    users = User.objects.filter(activity_logs__isnull=False).distinct().order_by('last_name', 'first_name')
+
+    # Typy aktivit pro filtr
+    activity_types = ActivityLog.ActivityType.choices
+
+    context = {
+        'activities': activities,
+        'users': users,
+        'activity_types': activity_types,
+        'current_user_filter': user_filter,
+        'current_activity_type_filter': activity_type_filter,
+        'current_date_from': date_from,
+        'current_date_to': date_to,
+        'total_count': activities.count(),
+    }
+
+    return render(request, 'leads/activity_log_list.html', context)

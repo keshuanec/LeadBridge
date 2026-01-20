@@ -20,5 +20,6 @@ urlpatterns = [
     path("advisors/<int:pk>/", views.advisor_detail, name="advisor_detail"),
     path("users/<int:pk>/", views.user_detail, name="user_detail"),
     path("<int:pk>/deal/new/", views.deal_create_from_lead, name="deal_create_from_lead"),
+    path("activities/", views.activity_log_list, name="activity_log_list"),
 
 ]

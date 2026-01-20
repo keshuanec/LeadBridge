@@ -677,6 +677,10 @@
                 {% if user.is_superuser or user.role == user.Role.ADMIN or user.role == user.Role.REFERRER or user.role == user.Role.REFERRER_MANAGER or user.role == user.Role.OFFICE %}
                     <a href="{% url 'advisors_list' %}">Poradci</a>
                 {% endif %}
+
+                {% if user.is_superuser %}
+                    <a href="{% url 'activity_log_list' %}">Aktivity</a>
+                {% endif %}
             {% endif %}
         </nav>
 

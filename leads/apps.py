@@ -6,5 +6,6 @@ class LeadsConfig(AppConfig):
     name = 'leads'
 
     def ready(self):
-        """Import signals when the app is ready"""
+        """Import signals and middleware when the app is ready"""
         import leads.signals  # noqa
+        import leads.middleware  # noqa

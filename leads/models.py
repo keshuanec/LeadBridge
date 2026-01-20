@@ -457,3 +457,104 @@ class Deal(models.Model):
             return False
 
         return True
+
+
+class ActivityLog(models.Model):
+    """
+    Model pro logování všech aktivit uživatelů v systému.
+    Zobrazitelný pouze pro superusery pro audit trail.
+    """
+    class ActivityType(models.TextChoices):
+        # Autentizace
+        LOGIN = "LOGIN", "Přihlášení"
+        LOGOUT = "LOGOUT", "Odhlášení"
+
+        # Lead aktivity
+        LEAD_CREATED = "LEAD_CREATED", "Lead vytvořen"
+        LEAD_UPDATED = "LEAD_UPDATED", "Lead upraven"
+        LEAD_NOTE_ADDED = "LEAD_NOTE_ADDED", "Poznámka k leadu přidána"
+        LEAD_CALLBACK_SCHEDULED = "LEAD_CALLBACK_SCHEDULED", "Odložený hovor naplánován"
+
+        # Deal aktivity
+        DEAL_CREATED = "DEAL_CREATED", "Obchod vytvořen"
+        DEAL_UPDATED = "DEAL_UPDATED", "Obchod upraven"
+        DEAL_COMMISSION_READY = "DEAL_COMMISSION_READY", "Provize připravena k vyplacení"
+        DEAL_COMMISSION_PAID = "DEAL_COMMISSION_PAID", "Provize vyplacena"
+
+        # Ostatní
+        OTHER = "OTHER", "Jiná aktivita"
+
+    timestamp = models.DateTimeField(
+        "Čas aktivity",
+        auto_now_add=True,
+        db_index=True,
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="activity_logs",
+        verbose_name="Uživatel",
+        help_text="Uživatel, který provedl akci",
+    )
+
+    activity_type = models.CharField(
+        "Typ aktivity",
+        max_length=32,
+        choices=ActivityType.choices,
+    )
+
+    description = models.TextField(
+        "Popis aktivity",
+        help_text="Detailní popis co bylo provedeno",
+    )
+
+    # Reference na související objekty (volitelné)
+    lead = models.ForeignKey(
+        Lead,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="activity_logs",
+        verbose_name="Lead",
+    )
+
+    deal = models.ForeignKey(
+        Deal,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="activity_logs",
+        verbose_name="Obchod",
+    )
+
+    # IP adresa pro bezpečnostní audit
+    ip_address = models.GenericIPAddressField(
+        "IP adresa",
+        null=True,
+        blank=True,
+    )
+
+    # Dodatečná metadata (JSON)
+    metadata = models.JSONField(
+        "Metadata",
+        default=dict,
+        blank=True,
+        help_text="Dodatečná data o aktivitě (změněná pole, hodnoty, atd.)",
+    )
+
+    class Meta:
+        ordering = ["-timestamp"]
+        verbose_name = "Log aktivity"
+        verbose_name_plural = "Logy aktivit"
+        indexes = [
+            models.Index(fields=["-timestamp"]),
+            models.Index(fields=["user", "-timestamp"]),
+            models.Index(fields=["activity_type", "-timestamp"]),
+        ]
+
+    def __str__(self):
+        user_name = self.user.get_full_name() if self.user else "Systém"
+        return f"{self.timestamp.strftime('%Y-%m-%d %H:%M')} - {user_name}: {self.get_activity_type_display()}"
