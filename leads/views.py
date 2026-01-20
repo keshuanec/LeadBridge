@@ -766,9 +766,13 @@ def deals_list(request):
         office = getattr(getattr(manager, "manager_profile", None), "office", None) if manager else None
 
         d.referrer_name = str(d.lead.referrer)
+        d.referrer_id = d.lead.referrer.pk if d.lead.referrer else None
         d.manager_name = str(manager) if manager else None
+        d.manager_id = manager.pk if manager else None
         d.office_name = office.name if office else None
+        d.office_owner_id = office.owner.pk if office and office.owner else None
         d.advisor_name = str(d.lead.advisor) if d.lead.advisor else None
+        d.advisor_id = d.lead.advisor.pk if d.lead.advisor else None
 
         # Helper pro kontrolu vyplacení provizí relevantních pro aktuálního uživatele
         if user.role == User.Role.REFERRER:

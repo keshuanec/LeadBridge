@@ -345,19 +345,33 @@
 
                     {# Sloupec Poradce pro admin advisors #}
                     {% if user.role == "ADVISOR" and user.has_admin_access %}
-                        <td class="person-col">{{ d.lead.advisor|default:"—" }}</td>
+                        <td class="person-col">
+                            {% if d.advisor_id %}
+                                <a href="{% url 'advisor_detail' d.advisor_id %}">{{ d.advisor_name }}</a>
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
                     {% endif %}
 
                     {% if show_referrer_col %}
-                        <td class="person-col">{{ d.referrer_name }}</td>
+                        <td class="person-col">
+                            {% if d.referrer_id %}
+                                <a href="{% url 'user_detail' d.referrer_id %}">{{ d.referrer_name }}</a>
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
                     {% endif %}
 
                     {% if show_manager_col %}
                         <td class="person-col">
                             {% if d.lead.is_personal_contact %}
                                 <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
+                            {% elif d.manager_id %}
+                                <a href="{% url 'user_detail' d.manager_id %}">{{ d.manager_name }}</a>
                             {% else %}
-                                {{ d.manager_name|default:"—" }}
+                                —
                             {% endif %}
                         </td>
                     {% endif %}
@@ -366,8 +380,12 @@
                         <td class="person-col">
                             {% if d.lead.is_personal_contact %}
                                 <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
+                            {% elif d.office_owner_id %}
+                                <a href="{% url 'user_detail' d.office_owner_id %}">{{ d.office_name }}</a>
+                            {% elif d.office_name %}
+                                {{ d.office_name }}
                             {% else %}
-                                {{ d.office_name|default:"—" }}
+                                —
                             {% endif %}
                         </td>
                     {% endif %}

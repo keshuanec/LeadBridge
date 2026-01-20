@@ -182,19 +182,33 @@
             </td>
 
             {% if show_referrer_col %}
-            <td>{{ lead.referrer }}</td>
+            <td>
+                {% if lead.referrer %}
+                    <a href="{% url 'user_detail' lead.referrer.pk %}">{{ lead.referrer }}</a>
+                {% else %}
+                    —
+                {% endif %}
+            </td>
             {% endif %}
 
             {% if show_advisor_col %}
-            <td>{{ lead.advisor|default:"—" }}</td>
+            <td>
+                {% if lead.advisor %}
+                    <a href="{% url 'advisor_detail' lead.advisor.pk %}">{{ lead.advisor }}</a>
+                {% else %}
+                    —
+                {% endif %}
+            </td>
             {% endif %}
 
             {% if show_manager_col %}
             <td>
                 {% if lead.is_personal_contact %}
                     <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
+                {% elif lead.referrer_manager %}
+                    <a href="{% url 'user_detail' lead.referrer_manager.pk %}">{{ lead.referrer_manager }}</a>
                 {% else %}
-                    {{ lead.referrer_manager|default:"—" }}
+                    —
                 {% endif %}
             </td>
             {% endif %}
@@ -203,8 +217,16 @@
             <td>
                 {% if lead.is_personal_contact %}
                     <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
+                {% elif lead.referrer.referrer_profile.manager.manager_profile.office %}
+                    {% with office=lead.referrer.referrer_profile.manager.manager_profile.office %}
+                        {% if office.owner %}
+                            <a href="{% url 'user_detail' office.owner.pk %}">{{ office.name }}</a>
+                        {% else %}
+                            {{ office.name }}
+                        {% endif %}
+                    {% endwith %}
                 {% else %}
-                    {{ lead.referrer.referrer_profile.manager.manager_profile.office.name|default:"—" }}
+                    —
                 {% endif %}
             </td>
             {% endif %}
