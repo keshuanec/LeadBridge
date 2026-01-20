@@ -23,6 +23,7 @@ def get_notification_recipients(lead, event_type, deal=None, exclude_user=None):
 
     Logika příjemců:
     - lead_change: makléř + poradce (manažer a kancelář NE)
+    - deal_created: makléř + poradce + manažer + kancelář
     - commission_change: makléř + poradce + manažer + kancelář
     """
     recipients = []
@@ -44,8 +45,8 @@ def get_notification_recipients(lead, event_type, deal=None, exclude_user=None):
     if advisor and advisor != exclude_user:
         recipients.append(advisor)
 
-    # Manažer a kancelář dostanou JEN notifikace o provizích
-    if event_type == 'commission_change':
+    # Manažer a kancelář dostanou notifikace o provizích a vytvoření obchodů
+    if event_type in ['commission_change', 'deal_created']:
         if manager and manager != exclude_user:
             recipients.append(manager)
         if office_owner and office_owner != exclude_user:
@@ -254,7 +255,7 @@ def notify_deal_created(deal, lead, created_by):
     """Notifikace při vytvoření obchodu"""
     recipients = get_notification_recipients(
         lead,
-        event_type='lead_change',
+        event_type='deal_created',
         deal=deal,
         exclude_user=created_by
     )
