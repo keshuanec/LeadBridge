@@ -56,24 +56,24 @@
         </p>
 
         <div class="table-wrapper" style="margin-top: 20px;">
-            <table>
+            <table class="activity-log-table">
                 <thead>
                     <tr>
-                        <th style="width: 140px;">Čas</th>
-                        <th style="width: 150px;">Uživatel</th>
-                        <th style="width: 150px;">Typ aktivity</th>
-                        <th>Popis</th>
-                        <th style="width: 120px;">Lead/Obchod</th>
-                        <th style="width: 100px;">IP adresa</th>
+                        <th style="width: 130px;">Čas</th>
+                        <th style="width: 120px;">Uživatel</th>
+                        <th style="width: 140px;">Typ aktivity</th>
+                        <th style="width: 400px;">Popis</th>
+                        <th style="width: 100px;">Lead/Obchod</th>
+                        <th style="width: 110px;">IP adresa</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for activity in activities %}
                         <tr>
-                            <td style="white-space: nowrap; font-size: 13px;">
+                            <td title="{{ activity.timestamp }}">
                                 {{ activity.timestamp|date:"d.m.Y H:i" }}
                             </td>
-                            <td>
+                            <td title="{% if activity.user %}{{ activity.user.get_full_name }}{% else %}Systém{% endif %}">
                                 {% if activity.user %}
                                     <a href="{% url 'user_detail' activity.user.pk %}">
                                         {{ activity.user.get_full_name }}
@@ -82,22 +82,22 @@
                                     <span style="color: #999;">Systém</span>
                                 {% endif %}
                             </td>
-                            <td>
+                            <td title="{{ activity.get_activity_type_display }}">
                                 <span class="badge" style="font-size: 11px;">
                                     {{ activity.get_activity_type_display }}
                                 </span>
                             </td>
-                            <td style="font-size: 13px;">
+                            <td title="{{ activity.description }}">
                                 {{ activity.description }}
                             </td>
-                            <td style="font-size: 13px;">
+                            <td>
                                 {% if activity.lead %}
-                                    <a href="{% url 'lead_detail' activity.lead.pk %}">
+                                    <a href="{% url 'lead_detail' activity.lead.pk %}" title="Lead #{{ activity.lead.pk }}">
                                         Lead #{{ activity.lead.pk }}
                                     </a>
                                 {% endif %}
                                 {% if activity.deal %}
-                                    <a href="{% url 'deal_detail' activity.deal.pk %}">
+                                    <a href="{% url 'deal_detail' activity.deal.pk %}" title="Deal #{{ activity.deal.pk }}">
                                         Deal #{{ activity.deal.pk }}
                                     </a>
                                 {% endif %}
@@ -105,7 +105,7 @@
                                     —
                                 {% endif %}
                             </td>
-                            <td style="font-size: 12px; color: #666;">
+                            <td title="{{ activity.ip_address|default:'—' }}">
                                 {{ activity.ip_address|default:"—" }}
                             </td>
                         </tr>
@@ -135,6 +135,32 @@
 
     .filters-toggle {
         margin-bottom: 16px;
+    }
+
+    /* Fixní šířky sloupců s ellipsis */
+    .activity-log-table {
+        table-layout: fixed !important;
+        width: 100% !important;
+    }
+
+    .activity-log-table td {
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        max-width: 0 !important; /* Nutné pro fungování ellipsis v table */
+    }
+
+    .activity-log-table th {
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    /* Zachovat normální styling pro specifické sloupce */
+    .activity-log-table td:first-child,
+    .activity-log-table td:last-child {
+        font-size: 12px;
+        color: #666;
     }
 </style>
 
