@@ -25,6 +25,47 @@
 
 {% include "leads/includes/date_filter.html" %}
 
+    {# Odkazy na leady/obchody s filtry #}
+    <div style="margin-top: 20px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+        <h3 style="margin-top: 0; font-size: 16px;">Rychlé odkazy</h3>
+
+        {# Pro doporučitele (všichni kromě čistých advisorů bez referrer_profile) #}
+        {% if referrer_profile or viewed_user.role == "REFERRER" or viewed_user.role == "REFERRER_MANAGER" or viewed_user.role == "OFFICE" %}
+        <div style="margin-bottom: 12px;">
+            <strong>Jako doporučitel:</strong>
+            <a href="{% url 'my_leads' %}?referrer={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 8px;">Leady</a>
+            <a href="{% url 'deals_list' %}?referrer={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 4px;">Obchody</a>
+        </div>
+        {% endif %}
+
+        {# Pro advisora - leady/obchody kde je advisor #}
+        {% if viewed_user.role == "ADVISOR" %}
+        <div style="margin-bottom: 12px;">
+            <strong>Jako poradce:</strong>
+            <a href="{% url 'my_leads' %}?advisor={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 8px;">Leady</a>
+            <a href="{% url 'deals_list' %}?advisor={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 4px;">Obchody</a>
+        </div>
+        {% endif %}
+
+        {# Pro manažera - leady/obchody jeho týmu #}
+        {% if viewed_user.role == "REFERRER_MANAGER" %}
+        <div style="margin-bottom: 12px;">
+            <strong>Tým manažera:</strong>
+            <a href="{% url 'my_leads' %}?manager={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 8px;">Leady týmu</a>
+            <a href="{% url 'deals_list' %}?manager={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 4px;">Obchody týmu</a>
+        </div>
+        {% endif %}
+
+        {# Pro kancelář - leady/obchody její kanceláře #}
+        {% if viewed_user.role == "OFFICE" %}
+        <div style="margin-bottom: 12px;">
+            <strong>Kancelář:</strong>
+            <a href="{% url 'my_leads' %}?office={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 8px;">Leady kanceláře</a>
+            <a href="{% url 'deals_list' %}?office={{ viewed_user.pk }}" class="btn btn-sm" style="margin-left: 4px;">Obchody kanceláře</a>
+        </div>
+        {% endif %}
+    </div>
+
     {% if manager %}
     <p><strong>Manažer:</strong>
         <a href="{% url 'user_detail' manager.pk %}">{{ manager.get_full_name }}</a>
