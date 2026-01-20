@@ -26,6 +26,7 @@
 {% include "leads/includes/date_filter.html" %}
 
     {# Odkazy na leady/obchody s filtry #}
+    {% if viewed_user.role == "ADVISOR" or viewed_user.role == "REFERRER" or viewed_user.role == "REFERRER_MANAGER" or viewed_user.role == "OFFICE" or referrer_profile %}
     <div style="margin-top: 20px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
         <h3 style="margin-top: 0; font-size: 16px;">Rychlé odkazy</h3>
 
@@ -65,6 +66,7 @@
         </div>
         {% endif %}
     </div>
+    {% endif %}
 
     {% if manager %}
     <p><strong>Manažer:</strong>
