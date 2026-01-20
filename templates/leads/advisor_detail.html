@@ -23,6 +23,27 @@
 
 {% include "leads/includes/date_filter.html" %}
 
+    {# Odkazy na leady/obchody s filtry #}
+    <div style="margin-top: 20px; padding: 16px; background: #f8f9fa; border-radius: 8px;">
+        <h3 style="margin-top: 0; font-size: 16px;">Rychlé odkazy</h3>
+
+        {# Pro advisora - leady/obchody kde je advisor #}
+        <div style="margin-bottom: 12px;">
+            <strong>Jako poradce:</strong>
+            <a href="{% url 'my_leads' %}?advisor={{ advisor.pk }}" class="btn btn-sm" style="margin-left: 8px;">Leady</a>
+            <a href="{% url 'deals_list' %}?advisor={{ advisor.pk }}" class="btn btn-sm" style="margin-left: 4px;">Obchody</a>
+        </div>
+
+        {# Pro doporučitele - pokud má referrer_profile #}
+        {% if referrer_stats %}
+        <div style="margin-bottom: 12px;">
+            <strong>Jako doporučitel:</strong>
+            <a href="{% url 'my_leads' %}?referrer={{ advisor.pk }}" class="btn btn-sm" style="margin-left: 8px;">Leady</a>
+            <a href="{% url 'deals_list' %}?referrer={{ advisor.pk }}" class="btn btn-sm" style="margin-left: 4px;">Obchody</a>
+        </div>
+        {% endif %}
+    </div>
+
     <h3>Statistiky jako poradce</h3>
     <table>
         <tbody>
