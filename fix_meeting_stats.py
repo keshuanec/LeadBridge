@@ -25,27 +25,35 @@ from django.utils import timezone
 
 
 def fix_meeting_stats():
-    """Opraví meeting_done pro všechny leady které mají obchod"""
+    """Opraví meeting_scheduled a meeting_done pro všechny leady které mají obchod"""
 
     print("=" * 60)
     print("OPRAVA MEETING STATISTIK")
     print("=" * 60)
     print()
 
-    # Najít leady které mají obchod ale meeting_done=False
-    leads_to_fix = Lead.objects.filter(
-        communication_status='DEAL_CREATED',
-        meeting_done=False
-    )
+    # Najít všechny leady které mají obchod (Deal objekt)
+    # ale nemají správně nastavené meeting_scheduled nebo meeting_done
+    all_leads = Lead.objects.all()
+    leads_to_fix = []
 
-    count = leads_to_fix.count()
+    for lead in all_leads:
+        if hasattr(lead, 'deal'):
+            if not lead.meeting_scheduled or not lead.meeting_done:
+                leads_to_fix.append(lead)
+
+    count = len(leads_to_fix)
 
     if count == 0:
-        print("✓ Všechny leady s obchodem mají správně nastavené meeting_done=True")
+        print("✓ Všechny leady s obchodem mají správně nastavené meeting_scheduled=True a meeting_done=True")
         print("  Není třeba nic opravovat.")
         return
 
-    print(f"Nalezeno {count} leadů s obchodem ale meeting_done=False")
+    print(f"Nalezeno {count} leadů s obchodem ale špatnými meeting fieldy:")
+    print()
+    for lead in leads_to_fix:
+        print(f"  Lead #{lead.pk} - {lead.client_name}")
+        print(f"    meeting_scheduled={lead.meeting_scheduled}, meeting_done={lead.meeting_done}")
     print()
 
     # Požádat o potvrzení
@@ -60,11 +68,12 @@ def fix_meeting_stats():
 
     fixed_count = 0
     for lead in leads_to_fix:
+        lead.meeting_scheduled = True
         lead.meeting_done = True
         if not lead.meeting_done_at:
             # Použít updated_at nebo current time jako fallback
             lead.meeting_done_at = lead.updated_at or timezone.now()
-        lead.save(update_fields=['meeting_done', 'meeting_done_at'])
+        lead.save(update_fields=['meeting_scheduled', 'meeting_done', 'meeting_done_at'])
         print(f"  ✓ Opraven Lead #{lead.pk} - {lead.client_name}")
         fixed_count += 1
 
@@ -74,9 +83,15 @@ def fix_meeting_stats():
     print("=" * 60)
 
     # Zkontrolovat výsledek
-    fixed = Lead.objects.filter(communication_status='DEAL_CREATED', meeting_done=True).count()
-    total_with_deal = Lead.objects.filter(communication_status='DEAL_CREATED').count()
-    print(f"Výsledek: {fixed}/{total_with_deal} leadů s obchodem má meeting_done=True")
+    total_with_deals = 0
+    correctly_set = 0
+    for lead in Lead.objects.all():
+        if hasattr(lead, 'deal'):
+            total_with_deals += 1
+            if lead.meeting_scheduled and lead.meeting_done:
+                correctly_set += 1
+
+    print(f"Výsledek: {correctly_set}/{total_with_deals} leadů s obchodem má správně nastavené meeting fieldy")
     print()
 
 
