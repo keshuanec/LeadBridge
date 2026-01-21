@@ -128,4 +128,6 @@ Klíčové proměnné v `.env`:
 - HTTPS enforcement v produkci
 - CSRF protection enabled
 - XSS protection headers
+- **Session timeout**: 8 hodin s rolling window (auto-odhlášení při nečinnosti)
+- **Session expiration**: Při zavření browseru
 - Dokumentace: `SECURITY_BEST_PRACTICES.md`

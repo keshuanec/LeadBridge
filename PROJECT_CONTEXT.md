@@ -194,6 +194,26 @@ Detaily hypotéky a provize:
 - Implementováno pomocí `.exclude(is_personal_contact=True)` ve všech quersetech pro referrer statistiky
 - Platí pro všechny views: `advisor_detail()`, `user_detail()` a statistické funkce v `user_stats.py`
 
+### Session Management
+
+**Automatické odhlášení pro ochranu citlivých dat:**
+
+- **Rolling window timeout**: 8 hodin od poslední aktivity
+- **Browser close**: Session končí při zavření prohlížeče
+- **Session refresh**: Každá aktivita prodlužuje timeout
+- **Konfigurace**: `settings.py` řádky 148-157
+
+**Nastavení:**
+- `SESSION_COOKIE_AGE = 28800` (8 hodin)
+- `SESSION_EXPIRE_AT_BROWSER_CLOSE = True`
+- `SESSION_SAVE_EVERY_REQUEST = True` (rolling window)
+
+**Důvody implementace:**
+- Ochrana citlivých finančních dat klientů
+- GDPR compliance pro osobní údaje
+- Bezpečnostní audit pro CRM systém
+- Prevence neoprávněného přístupu na opuštěných zařízeních
+
 ### Django Signals
 
 **Pre-save signály:**
