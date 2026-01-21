@@ -474,28 +474,28 @@ class UserStatsService:
 
         return User.objects.filter(role=User.Role.ADVISOR).annotate(
             leads_received=Count(
-                'lead_advisor',
+                'leads_assigned',
                 filter=lead_filter,
                 distinct=True
             ),
             meetings_planned=Count(
-                'lead_advisor',
-                filter=lead_filter & Q(lead_advisor__meeting_scheduled=True),
+                'leads_assigned',
+                filter=lead_filter & Q(leads_assigned__meeting_scheduled=True),
                 distinct=True
             ),
             meetings_done=Count(
-                'lead_advisor',
-                filter=lead_filter & Q(lead_advisor__meeting_done=True),
+                'leads_assigned',
+                filter=lead_filter & Q(leads_assigned__meeting_done=True),
                 distinct=True
             ),
             deals_created=Count(
-                'lead_advisor__deal',
+                'leads_assigned__deal',
                 filter=deal_filter,
                 distinct=True
             ),
             deals_completed=Count(
-                'lead_advisor__deal',
-                filter=deal_filter & Q(lead_advisor__deal__status=Deal.DealStatus.DRAWN),
+                'leads_assigned__deal',
+                filter=deal_filter & Q(leads_assigned__deal__status=Deal.DealStatus.DRAWN),
                 distinct=True
             ),
         ).order_by('last_name', 'first_name')
@@ -540,23 +540,23 @@ class UserStatsService:
 
         return User.objects.filter(role=User.Role.REFERRER).annotate(
             leads_sent=Count(
-                'lead_referrer',
+                'leads_created',
                 filter=lead_filter,
                 distinct=True
             ),
             meetings_planned=Count(
-                'lead_referrer',
-                filter=lead_filter & Q(lead_referrer__meeting_scheduled=True),
+                'leads_created',
+                filter=lead_filter & Q(leads_created__meeting_scheduled=True),
                 distinct=True
             ),
             meetings_done=Count(
-                'lead_referrer',
-                filter=lead_filter & Q(lead_referrer__meeting_done=True),
+                'leads_created',
+                filter=lead_filter & Q(leads_created__meeting_done=True),
                 distinct=True
             ),
             deals_done=Count(
-                'lead_referrer__deal',
-                filter=deal_filter & Q(lead_referrer__deal__status=Deal.DealStatus.DRAWN),
+                'leads_created__deal',
+                filter=deal_filter & Q(leads_created__deal__status=Deal.DealStatus.DRAWN),
                 distinct=True
             ),
         ).order_by('last_name', 'first_name')
