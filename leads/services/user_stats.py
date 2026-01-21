@@ -451,52 +451,53 @@ class UserStatsService:
             >>> for advisor in advisors:
             ...     print(f"{advisor.get_full_name()}: {advisor.leads_received} leads")
         """
-        # Build base lead filter (exclude personal contacts where referrer=advisor)
-        lead_filter = Q(advisor=OuterRef('pk')) & ~Q(
-            is_personal_contact=True, referrer=OuterRef('pk')
+        from django.db.models import F, Subquery, OuterRef as OuterRefDjango
+
+        # For advisors, we need to exclude personal contacts where referrer=advisor
+        # We'll use Subquery to properly handle this complex filter
+
+        # Build lead subquery that excludes personal contacts where referrer=advisor
+        lead_subquery = Lead.objects.filter(
+            advisor=OuterRefDjango('pk')
+        ).exclude(
+            is_personal_contact=True,
+            referrer=F('advisor')  # exclude when referrer equals advisor
         )
 
         # Apply date filters if provided
         if date_from:
-            lead_filter &= Q(created_at__gte=date_from)
+            lead_subquery = lead_subquery.filter(created_at__gte=date_from)
         if date_to:
-            lead_filter &= Q(created_at__lt=date_to + timedelta(days=1))
+            lead_subquery = lead_subquery.filter(created_at__lt=date_to + timedelta(days=1))
 
-        # Build deal filter (exclude personal contacts)
-        deal_filter = Q(lead__advisor=OuterRef('pk')) & ~Q(
-            lead__is_personal_contact=True, lead__referrer=OuterRef('pk')
+        # Build deal subquery that excludes personal contacts
+        deal_subquery = Deal.objects.filter(
+            lead__advisor=OuterRefDjango('pk')
+        ).exclude(
+            lead__is_personal_contact=True,
+            lead__referrer=F('lead__advisor')
         )
 
         if date_from:
-            deal_filter &= Q(created_at__gte=date_from)
+            deal_subquery = deal_subquery.filter(created_at__gte=date_from)
         if date_to:
-            deal_filter &= Q(created_at__lt=date_to + timedelta(days=1))
+            deal_subquery = deal_subquery.filter(created_at__lt=date_to + timedelta(days=1))
 
         return User.objects.filter(role=User.Role.ADVISOR).annotate(
-            leads_received=Count(
-                'leads_assigned',
-                filter=lead_filter,
-                distinct=True
+            leads_received=Subquery(
+                lead_subquery.values('advisor').annotate(count=Count('id')).values('count')[:1]
             ),
-            meetings_planned=Count(
-                'leads_assigned',
-                filter=lead_filter & Q(leads_assigned__meeting_scheduled=True),
-                distinct=True
+            meetings_planned=Subquery(
+                lead_subquery.filter(meeting_scheduled=True).values('advisor').annotate(count=Count('id')).values('count')[:1]
             ),
-            meetings_done=Count(
-                'leads_assigned',
-                filter=lead_filter & Q(leads_assigned__meeting_done=True),
-                distinct=True
+            meetings_done=Subquery(
+                lead_subquery.filter(meeting_done=True).values('advisor').annotate(count=Count('id')).values('count')[:1]
             ),
-            deals_created=Count(
-                'leads_assigned__deal',
-                filter=deal_filter,
-                distinct=True
+            deals_created=Subquery(
+                deal_subquery.values('lead__advisor').annotate(count=Count('id')).values('count')[:1]
             ),
-            deals_completed=Count(
-                'leads_assigned__deal',
-                filter=deal_filter & Q(leads_assigned__deal__status=Deal.DealStatus.DRAWN),
-                distinct=True
+            deals_completed=Subquery(
+                deal_subquery.filter(status=Deal.DealStatus.DRAWN).values('lead__advisor').annotate(count=Count('id')).values('count')[:1]
             ),
         ).order_by('last_name', 'first_name')
 
@@ -521,46 +522,42 @@ class UserStatsService:
         Returns:
             QuerySet of User objects with annotations
         """
-        # Build base lead filter (exclude personal contacts)
-        lead_filter = Q(referrer=OuterRef('pk')) & Q(is_personal_contact=False)
+        from django.db.models import Subquery, OuterRef as OuterRefDjango
+
+        # For referrers, simply exclude personal contacts
+        lead_subquery = Lead.objects.filter(
+            referrer=OuterRefDjango('pk'),
+            is_personal_contact=False
+        )
 
         # Apply date filters if provided
         if date_from:
-            lead_filter &= Q(created_at__gte=date_from)
+            lead_subquery = lead_subquery.filter(created_at__gte=date_from)
         if date_to:
-            lead_filter &= Q(created_at__lt=date_to + timedelta(days=1))
+            lead_subquery = lead_subquery.filter(created_at__lt=date_to + timedelta(days=1))
 
-        # Build deal filter (exclude personal contacts)
-        deal_filter = Q(lead__referrer=OuterRef('pk')) & Q(lead__is_personal_contact=False)
+        # Build deal subquery (exclude personal contacts)
+        deal_subquery = Deal.objects.filter(
+            lead__referrer=OuterRefDjango('pk'),
+            lead__is_personal_contact=False
+        )
 
         if date_from:
-            deal_filter &= Q(created_at__gte=date_from)
+            deal_subquery = deal_subquery.filter(created_at__gte=date_from)
         if date_to:
-            deal_filter &= Q(created_at__lt=date_to + timedelta(days=1))
+            deal_subquery = deal_subquery.filter(created_at__lt=date_to + timedelta(days=1))
 
         return User.objects.filter(role=User.Role.REFERRER).annotate(
-            leads_sent=Count(
-                'leads_created',
-                filter=lead_filter,
-                distinct=True
+            leads_sent=Subquery(
+                lead_subquery.values('referrer').annotate(count=Count('id')).values('count')[:1]
             ),
-            meetings_planned=Count(
-                'leads_created',
-                filter=lead_filter & Q(leads_created__meeting_scheduled=True),
-                distinct=True
+            meetings_planned=Subquery(
+                lead_subquery.filter(meeting_scheduled=True).values('referrer').annotate(count=Count('id')).values('count')[:1]
             ),
-            meetings_done=Count(
-                'leads_created',
-                filter=lead_filter & Q(leads_created__meeting_done=True),
-                distinct=True
+            meetings_done=Subquery(
+                lead_subquery.filter(meeting_done=True).values('referrer').annotate(count=Count('id')).values('count')[:1]
             ),
-            deals_done=Count(
-                'leads_created__deal',
-                filter=deal_filter & Q(leads_created__deal__status=Deal.DealStatus.DRAWN),
-                distinct=True
+            deals_done=Subquery(
+                deal_subquery.filter(status=Deal.DealStatus.DRAWN).values('lead__referrer').annotate(count=Count('id')).values('count')[:1]
             ),
         ).order_by('last_name', 'first_name')
-
-
-# Import for annotations
-from django.db.models import OuterRef
