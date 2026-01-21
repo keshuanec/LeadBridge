@@ -44,7 +44,7 @@
 </form>
 
 {# Výsledky #}
-    {% if referrer_profiles %}
+    {% if referrers %}
         <div class="table-wrapper">
         <table>
     <thead>
@@ -108,32 +108,32 @@
     </tr>
     </thead>
     <tbody>
-    {% for profile in referrer_profiles %}
-        <tr style="cursor:pointer;" onclick="window.location='{% url 'user_detail' profile.user.id %}'">
+    {% for referrer in referrers %}
+        <tr style="cursor:pointer;" onclick="window.location='{% url 'user_detail' referrer.id %}'">
             <td>
-                <a href="{% url 'user_detail' profile.user.id %}">
-                    {{ profile.user.get_full_name }}
+                <a href="{% url 'user_detail' referrer.id %}">
+                    {{ referrer.get_full_name }}
                 </a>
             </td>
             <td>
-                {% if profile.manager %}
-                    {{ profile.manager.get_full_name }}
+                {% if referrer.referrer_profile.manager %}
+                    {{ referrer.referrer_profile.manager.get_full_name }}
                 {% else %}
                     —
                 {% endif %}
             </td>
             <td>
-                {% if profile.manager and profile.manager.manager_profile.office %}
-                    {{ profile.manager.manager_profile.office.name }}
+                {% if referrer.referrer_profile.manager and referrer.referrer_profile.manager.manager_profile.office %}
+                    {{ referrer.referrer_profile.manager.manager_profile.office.name }}
                 {% else %}
                     —
                 {% endif %}
             </td>
 
-            <td>{{ profile.leads_sent|default:0 }}</td>
-            <td>{{ profile.meetings_planned|default:0 }}</td>
-            <td>{{ profile.meetings_done|default:0 }}</td>
-            <td>{{ profile.deals_done|default:0 }}</td>
+            <td>{{ referrer.leads_sent|default:0 }}</td>
+            <td>{{ referrer.meetings_planned|default:0 }}</td>
+            <td>{{ referrer.meetings_done|default:0 }}</td>
+            <td>{{ referrer.deals_done|default:0 }}</td>
         </tr>
     {% endfor %}
     </tbody>
