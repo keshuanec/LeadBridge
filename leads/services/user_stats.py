@@ -98,6 +98,128 @@ class UserStatsService:
         return queryset
 
     @staticmethod
+    def advisor_stats_to_dict(stats: AdvisorStatsDetailed) -> Dict:
+        """
+        Convert AdvisorStatsDetailed dataclass to dictionary for template use.
+
+        Args:
+            stats: AdvisorStatsDetailed dataclass instance
+
+        Returns:
+            Dictionary with all stat fields
+        """
+        return {
+            "leads_received": stats.leads_received,
+            "meetings_planned": stats.meetings_planned,
+            "meetings_done": stats.meetings_done,
+            "deals_created": stats.deals_created,
+            "deals_completed": stats.deals_completed,
+            "deals_created_personal": stats.deals_created_personal,
+            "deals_completed_personal": stats.deals_completed_personal,
+        }
+
+    @staticmethod
+    def referrer_stats_to_dict(stats: ReferrerStatsDetailed) -> Dict:
+        """
+        Convert ReferrerStatsDetailed dataclass to dictionary for template use.
+
+        Args:
+            stats: ReferrerStatsDetailed dataclass instance
+
+        Returns:
+            Dictionary with all stat fields
+        """
+        return {
+            "leads_sent": stats.leads_sent,
+            "meetings_planned": stats.meetings_planned,
+            "meetings_done": stats.meetings_done,
+            "deals_done": stats.deals_done,
+        }
+
+    @staticmethod
+    def stats_to_dict(stats: Stats) -> Dict:
+        """
+        Convert Stats dataclass to dictionary for template use.
+
+        Args:
+            stats: Stats dataclass instance
+
+        Returns:
+            Dictionary with all stat fields mapped to referrer naming convention
+        """
+        return {
+            "leads_sent": stats.contacts,
+            "meetings_planned": stats.meetings_planned,
+            "meetings_done": stats.meetings_done,
+            "deals_done": stats.deals_success,
+        }
+
+    @staticmethod
+    def get_team_stats(manager: User, date_from: Optional[date] = None,
+                      date_to: Optional[date] = None) -> Optional[Dict]:
+        """
+        Calculate team statistics for a manager.
+
+        Args:
+            manager: User with REFERRER_MANAGER or OFFICE role
+            date_from: Start date for filtering
+            date_to: End date for filtering
+
+        Returns:
+            Dictionary with team stats or None if no team members
+        """
+        from accounts.models import ReferrerProfile
+
+        managed_profiles = ReferrerProfile.objects.filter(manager=manager)
+        team_referrer_ids = managed_profiles.values_list("user_id", flat=True)
+
+        if not team_referrer_ids:
+            return None
+
+        # Build queryset for team leads with date filtering
+        team_leads_qs = Lead.objects.filter(
+            referrer_id__in=team_referrer_ids
+        ).exclude(is_personal_contact=True)
+        team_leads_qs = UserStatsService.apply_date_filter(team_leads_qs, date_from, date_to)
+
+        # Calculate team statistics
+        team_stats_obj = UserStatsService._lead_stats(team_leads_qs)
+        return UserStatsService.stats_to_dict(team_stats_obj)
+
+    @staticmethod
+    def get_office_stats(office_owner: User, date_from: Optional[date] = None,
+                        date_to: Optional[date] = None) -> Optional[Dict]:
+        """
+        Calculate office-wide statistics for an office owner.
+
+        Args:
+            office_owner: User with OFFICE role
+            date_from: Start date for filtering
+            date_to: End date for filtering
+
+        Returns:
+            Dictionary with office stats or None if no office members
+        """
+        from accounts.models import ReferrerProfile
+
+        # Statistiky celé kanceláře
+        office_referrer_profiles = ReferrerProfile.objects.filter(
+            manager__manager_profile__office__owner=office_owner
+        )
+        office_referrer_ids = office_referrer_profiles.values_list("user_id", flat=True)
+
+        if not office_referrer_ids:
+            return None
+
+        office_leads_qs = Lead.objects.filter(
+            referrer_id__in=office_referrer_ids
+        ).exclude(is_personal_contact=True)
+        office_leads_qs = UserStatsService.apply_date_filter(office_leads_qs, date_from, date_to)
+
+        office_stats_obj = UserStatsService._lead_stats(office_leads_qs)
+        return UserStatsService.stats_to_dict(office_stats_obj)
+
+    @staticmethod
     def exclude_personal_contacts_for_referrer(queryset: QuerySet,
                                                referrer: Optional[User] = None) -> QuerySet:
         """

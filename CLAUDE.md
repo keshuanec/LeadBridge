@@ -22,9 +22,14 @@ python manage.py process_scheduled_callbacks  # Zpracování callbacků (cron)
 ## Klíčové Soubory
 
 - **Models**: `leads/models.py` (561 řádků), `accounts/models.py` (273 řádků)
-- **Business Logic**: `leads/views.py` (2,148 řádků)
-- **Notifikace**: `leads/services/notifications.py` (427 řádků)
-- **Statistiky**: `leads/services/user_stats.py`
+- **Views**: `leads/views.py` (1,361 řádků, z původních 2,170)
+- **Service Layer**: `leads/services/` (6 služeb)
+  - `access_control.py` - Role-based access control
+  - `user_stats.py` - Statistiky uživatelů
+  - `filters.py` - Filtrování a řazení list views
+  - `model_helpers.py` - Helper pro procházení modelových vztahů
+  - `events.py` - Zaznamenávání událostí (historie + notifikace)
+  - `notifications.py` - Email notifikace (427 řádků)
 - **Email šablony**: `templates/emails/` (11 šablon)
 
 ## Business Flow
@@ -66,6 +71,83 @@ python manage.py process_scheduled_callbacks  # Zpracování callbacků (cron)
 - 2 modely provizí pro advisora: FULL_MINUS_STRUCTURE, NET_WITH_STRUCTURE
 
 ## Patterns & Konvence
+
+### Service Layer Pattern
+
+Business logika je organizována do service vrstvy v `leads/services/`:
+
+**1. LeadAccessService** - Centralizované řízení přístupu
+```python
+from leads.services import LeadAccessService
+
+# Získání filtrovaného querysetu podle role
+leads_qs = LeadAccessService.get_leads_queryset(user)
+deals_qs = LeadAccessService.get_deals_queryset(user)
+
+# Kontrola oprávnění
+can_edit = LeadAccessService.can_edit_lead(user, lead)
+```
+
+**2. UserStatsService** - Statistiky pro všechny role
+```python
+from leads.services import UserStatsService
+
+# Detailní statistiky poradce
+advisor_stats = UserStatsService.get_advisor_stats_detailed(advisor, date_from, date_to)
+
+# Převod dataclass na dictionary pro template
+stats_dict = UserStatsService.advisor_stats_to_dict(advisor_stats)
+
+# Team a office statistiky
+team_stats = UserStatsService.get_team_stats(manager, date_from, date_to)
+office_stats = UserStatsService.get_office_stats(office_owner, date_from, date_to)
+```
+
+**3. ListFilterService** - Filtrování a řazení
+```python
+from leads.services import ListFilterService
+
+# Inicializace
+filter_service = ListFilterService(user, request, context='leads')
+
+# Použití
+filter_params = filter_service.get_filter_params()
+allowed = filter_service.get_allowed_filters()
+queryset = filter_service.apply_filters(queryset, allowed, filter_params)
+queryset, sort, direction = filter_service.apply_sorting(queryset)
+```
+
+**4. LeadHierarchyHelper** - Procházení hierarchie referrer → manager → office
+```python
+from leads.services import LeadHierarchyHelper
+
+# Inicializace s Lead nebo User objektem
+helper = LeadHierarchyHelper(lead)
+
+# Bezpečné získání manažera a kanceláře
+manager = helper.get_manager()
+office = helper.get_office()
+hierarchy = helper.get_hierarchy_dict()
+```
+
+**5. LeadEventService** - Události s historií a notifikacemi
+```python
+from leads.services import LeadEventService
+
+# Vytvoření leadu
+LeadEventService.record_lead_created(lead, user)
+
+# Aktualizace leadu
+LeadEventService.record_lead_updated(lead, user, changes_description, status_changed=True)
+
+# Schůzky
+LeadEventService.record_meeting_scheduled(lead, user, meeting_datetime, meeting_note)
+LeadEventService.record_meeting_completed(lead, user, next_action_label, result_note)
+
+# Obchody a provize
+LeadEventService.record_deal_created(deal, lead, user)
+LeadEventService.record_commission_paid(deal, user, recipient_type, changes, all_paid)
+```
 
 ### Access Control
 - Vždy použij `get_lead_for_user_or_404(lead_id, request.user)` pro permission check

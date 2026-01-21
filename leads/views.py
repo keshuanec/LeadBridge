@@ -1226,118 +1226,39 @@ def user_detail(request, pk: int):
         advisor_stats_obj = UserStatsService.get_advisor_stats_detailed(
             viewed_user, date_from, date_to
         )
-
-        # Convert to dictionary for template compatibility
-        advisor_stats = {
-            "leads_received": advisor_stats_obj.leads_received,
-            "meetings_planned": advisor_stats_obj.meetings_planned,
-            "meetings_done": advisor_stats_obj.meetings_done,
-            "deals_created": advisor_stats_obj.deals_created,
-            "deals_completed": advisor_stats_obj.deals_completed,
-            "deals_created_personal": advisor_stats_obj.deals_created_personal,
-            "deals_completed_personal": advisor_stats_obj.deals_completed_personal,
-        }
+        advisor_stats = UserStatsService.advisor_stats_to_dict(advisor_stats_obj)
 
         # Statistiky jako doporučitel (pokud má ReferrerProfile)
         if referrer_profile:
             referrer_stats_obj = UserStatsService.get_referrer_stats_detailed(
                 viewed_user, date_from, date_to
             )
-            referrer_stats = {
-                "leads_sent": referrer_stats_obj.leads_sent,
-                "meetings_planned": referrer_stats_obj.meetings_planned,
-                "meetings_done": referrer_stats_obj.meetings_done,
-                "deals_done": referrer_stats_obj.deals_done,
-            }
+            referrer_stats = UserStatsService.referrer_stats_to_dict(referrer_stats_obj)
 
     elif viewed_user.role == User.Role.REFERRER_MANAGER:
-        # Get manager statistics using UserStatsService (without date filtering for now)
-        # Note: stats_manager() doesn't support date filtering yet, but we can apply it manually
-        from accounts.models import ReferrerProfile
-
         # Team statistics
-        managed_profiles = ReferrerProfile.objects.filter(manager=viewed_user)
-        team_referrer_ids = managed_profiles.values_list("user_id", flat=True)
-
-        if team_referrer_ids:
-            # Build queryset for team leads with date filtering
-            team_leads_qs = Lead.objects.filter(
-                referrer_id__in=team_referrer_ids
-            ).exclude(is_personal_contact=True)
-            team_leads_qs = UserStatsService.apply_date_filter(team_leads_qs, date_from, date_to)
-
-            # Calculate team statistics
-            team_stats_obj = UserStatsService._lead_stats(team_leads_qs)
-            team_stats = {
-                "leads_sent": team_stats_obj.contacts,
-                "meetings_planned": team_stats_obj.meetings_planned,
-                "meetings_done": team_stats_obj.meetings_done,
-                "deals_done": team_stats_obj.deals_success,
-            }
+        team_stats = UserStatsService.get_team_stats(viewed_user, date_from, date_to)
 
         # Personal referrer statistics (pokud má ReferrerProfile)
         if referrer_profile:
             referrer_stats_obj = UserStatsService.get_referrer_stats_detailed(
                 viewed_user, date_from, date_to
             )
-            referrer_stats = {
-                "leads_sent": referrer_stats_obj.leads_sent,
-                "meetings_planned": referrer_stats_obj.meetings_planned,
-                "meetings_done": referrer_stats_obj.meetings_done,
-                "deals_done": referrer_stats_obj.deals_done,
-            }
+            referrer_stats = UserStatsService.referrer_stats_to_dict(referrer_stats_obj)
 
     elif viewed_user.role == User.Role.OFFICE:
-        from accounts.models import ReferrerProfile
-
         # Statistiky celé kanceláře
-        office_referrer_profiles = ReferrerProfile.objects.filter(
-            manager__manager_profile__office__owner=viewed_user
-        )
-        office_referrer_ids = office_referrer_profiles.values_list("user_id", flat=True)
-
-        if office_referrer_ids:
-            office_leads_qs = Lead.objects.filter(
-                referrer_id__in=office_referrer_ids
-            ).exclude(is_personal_contact=True)
-            office_leads_qs = UserStatsService.apply_date_filter(office_leads_qs, date_from, date_to)
-
-            office_stats_obj = UserStatsService._lead_stats(office_leads_qs)
-            office_stats = {
-                "leads_sent": office_stats_obj.contacts,
-                "meetings_planned": office_stats_obj.meetings_planned,
-                "meetings_done": office_stats_obj.meetings_done,
-                "deals_done": office_stats_obj.deals_success,
-            }
+        office_stats = UserStatsService.get_office_stats(viewed_user, date_from, date_to)
 
         # Team statistics (pokud kancelář funguje i jako manažer)
-        managed_profiles = ReferrerProfile.objects.filter(manager=viewed_user)
-        if managed_profiles.exists():
-            team_referrer_ids = managed_profiles.values_list("user_id", flat=True)
-            team_leads_qs = Lead.objects.filter(
-                referrer_id__in=team_referrer_ids
-            ).exclude(is_personal_contact=True)
-            team_leads_qs = UserStatsService.apply_date_filter(team_leads_qs, date_from, date_to)
-
-            team_stats_obj = UserStatsService._lead_stats(team_leads_qs)
-            team_stats = {
-                "leads_sent": team_stats_obj.contacts,
-                "meetings_planned": team_stats_obj.meetings_planned,
-                "meetings_done": team_stats_obj.meetings_done,
-                "deals_done": team_stats_obj.deals_success,
-            }
+        team_stats = UserStatsService.get_team_stats(viewed_user, date_from, date_to)
 
         # Personal referrer statistics (pokud má ReferrerProfile)
         if referrer_profile:
             referrer_stats_obj = UserStatsService.get_referrer_stats_detailed(
                 viewed_user, date_from, date_to
             )
-            referrer_stats = {
-                "leads_sent": referrer_stats_obj.leads_sent,
-                "meetings_planned": referrer_stats_obj.meetings_planned,
-                "meetings_done": referrer_stats_obj.meetings_done,
-                "deals_done": referrer_stats_obj.deals_done,
-            }
+            referrer_stats = UserStatsService.referrer_stats_to_dict(referrer_stats_obj)
 
     elif viewed_user.role == User.Role.REFERRER:
         # Běžný doporučitel - zobrazit všechny jeho statistiky (včetně personal contacts)
@@ -1347,12 +1268,7 @@ def user_detail(request, pk: int):
             referrer_leads_qs = UserStatsService.apply_date_filter(referrer_leads_qs, date_from, date_to)
 
             referrer_stats_obj = UserStatsService._lead_stats(referrer_leads_qs)
-            referrer_stats = {
-                "leads_sent": referrer_stats_obj.contacts,
-                "meetings_planned": referrer_stats_obj.meetings_planned,
-                "meetings_done": referrer_stats_obj.meetings_done,
-                "deals_done": referrer_stats_obj.deals_success,
-            }
+            referrer_stats = UserStatsService.stats_to_dict(referrer_stats_obj)
 
     context = {
         "viewed_user": viewed_user,
