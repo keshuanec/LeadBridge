@@ -14,6 +14,8 @@ from .services import notifications
 from .services.access_control import LeadAccessService
 from .services.user_stats import UserStatsService
 from .services.filters import ListFilterService
+from .services.model_helpers import LeadHierarchyHelper
+from .services.events import LeadEventService
 from .stats_filters import parse_date_filters
 
 User = get_user_model()
@@ -182,13 +184,9 @@ def lead_create(request):
                     lead.referrer = user
 
             lead.save()
-            # Zalogujeme vytvoření leadu
-            LeadHistory.objects.create(
-                lead=lead,
-                event_type=LeadHistory.EventType.CREATED,
-                user=user,
-                description="Lead založen.",
-            )
+
+            # Zalogujeme vytvoření leadu a odešleme notifikaci
+            LeadEventService.record_lead_created(lead, user)
 
             # 🔽 Pokud je to doporučitel a má vybraného poradce, zapamatujeme si ho
             if user.role == User.Role.REFERRER and lead.advisor_id:
@@ -212,9 +210,6 @@ def lead_create(request):
                     # Zapamatovat jen pokud vybral někoho jiného než sebe
                     profile.last_chosen_advisor = lead.advisor
                     profile.save(update_fields=["last_chosen_advisor"])
-
-            # Notifikace
-            notifications.notify_lead_created(lead, created_by=user)
 
             return redirect("my_leads")
 
@@ -270,17 +265,8 @@ def lead_detail(request, pk: int):
             note.author = user
             note.save()
 
-            LeadHistory.objects.create(
-                lead=lead,
-                event_type=LeadHistory.EventType.NOTE_ADDED,
-                user=user,
-                description="Přidána soukromá poznámka." if note.is_private else "Přidána poznámka.",
-                note=note,
-            )
-
-            # Notifikace - pouze pro veřejné poznámky
-            if not note.is_private:
-                notifications.notify_note_added(lead, note, added_by=user)
+            # Zalogujeme přidání poznámky a odešleme notifikaci (pokud veřejná)
+            LeadEventService.record_note_added(lead, note, user)
 
             return redirect("lead_detail", pk=lead.pk)
     else:
@@ -365,22 +351,17 @@ def lead_edit(request, pk: int):
                         lead=updated_lead,
                         event_type=LeadHistory.EventType.NOTE_ADDED,
                         user=user,
-                        description=f"Přidána poznámka ke změně stavu.",
+                        description="Přidána poznámka ke změně stavu.",
                         note=note,
                     )
-                LeadHistory.objects.create(
-                    lead=updated_lead,
-                    event_type=(
-                        LeadHistory.EventType.STATUS_CHANGED
-                        if status_changed
-                        else LeadHistory.EventType.UPDATED
-                    ),
-                    user=user,
-                    description="; ".join(changes),
-                )
 
-                # Notifikace
-                notifications.notify_lead_updated(updated_lead, updated_by=user, changes_description="; ".join(changes))
+                # Zalogujeme změnu leadu a odešleme notifikaci
+                LeadEventService.record_lead_updated(
+                    updated_lead,
+                    user,
+                    "; ".join(changes),
+                    status_changed=status_changed
+                )
 
             return redirect("lead_detail", pk=updated_lead.pk)
     else:
@@ -705,32 +686,13 @@ def lead_schedule_meeting(request, pk: int):
             lead.meeting_scheduled = True  # Označit že schůzka byla domluvena
             lead.save(update_fields=["meeting_at", "meeting_note", "meeting_scheduled", "communication_status", "updated_at"])
 
-            # historie
-            when = timezone.localtime(lead.meeting_at).strftime("%d.%m.%Y %H:%M") if lead.meeting_at else "—"
-            LeadHistory.objects.create(
-                lead=lead,
-                event_type=LeadHistory.EventType.MEETING_SCHEDULED,
-                user=user,
-                description=f"Domluvena schůzka na {when}.",
+            # Zalogujeme naplánování schůzky a odešleme notifikaci
+            LeadEventService.record_meeting_scheduled(
+                lead,
+                user,
+                lead.meeting_at,
+                lead.meeting_note
             )
-
-            # pokud chceš mít poznámku i v seznamu poznámek (doporučuji)
-            if lead.meeting_note:
-                note = LeadNote.objects.create(
-                    lead=lead,
-                    author=user,
-                    text=f"Schůzka: {lead.meeting_note}",
-                )
-                LeadHistory.objects.create(
-                    lead=lead,
-                    event_type=LeadHistory.EventType.NOTE_ADDED,
-                    user=user,
-                    description="Přidána poznámka ke schůzce.",
-                    note=note,
-                )
-
-            # Notifikace
-            notifications.notify_meeting_scheduled(lead, scheduled_by=user)
 
             return redirect("lead_detail", pk=lead.pk)
     else:
@@ -773,22 +735,7 @@ def lead_meeting_completed(request, pk: int):
                 lead.communication_status = next_action
                 lead.save(update_fields=["meeting_done", "meeting_done_at", "communication_status", "updated_at"])
 
-            # přidáme poznámku pokud je vyplněna
-            if result_note:
-                note = LeadNote.objects.create(
-                    lead=lead,
-                    author=user,
-                    text=f"Výsledek schůzky: {result_note}",
-                )
-                LeadHistory.objects.create(
-                    lead=lead,
-                    event_type=LeadHistory.EventType.NOTE_ADDED,
-                    user=user,
-                    description="Přidána poznámka k výsledku schůzky.",
-                    note=note,
-                )
-
-            # historie
+            # historie a notifikace
             action_labels = {
                 "SEARCHING_PROPERTY": "Hledá nemovitost",
                 "WAITING_FOR_CLIENT": "Čekání na klienta",
@@ -796,15 +743,14 @@ def lead_meeting_completed(request, pk: int):
                 "CREATE_DEAL": "Založit obchod",
             }
             action_label = action_labels.get(next_action, next_action)
-            LeadHistory.objects.create(
-                lead=lead,
-                event_type=LeadHistory.EventType.STATUS_CHANGED,
-                user=user,
-                description=f"Schůzka proběhla. Další krok: {action_label}",
-            )
 
-            # Notifikace
-            notifications.notify_meeting_completed(lead, completed_by=user, next_action=action_label)
+            # Zalogujeme dokončení schůzky a odešleme notifikaci
+            LeadEventService.record_meeting_completed(
+                lead,
+                user,
+                action_label,
+                result_note
+            )
 
             # přesměrování podle akce
             if next_action == "CREATE_DEAL":
@@ -839,28 +785,8 @@ def lead_meeting_cancelled(request, pk: int):
         lead.communication_status = Lead.CommunicationStatus.FAILED
         lead.save(update_fields=["communication_status", "updated_at"])
 
-        # přidáme poznámku pokud je vyplněna
-        if cancel_note:
-            note = LeadNote.objects.create(
-                lead=lead,
-                author=user,
-                text=f"Schůzka zrušena: {cancel_note}",
-            )
-            LeadHistory.objects.create(
-                lead=lead,
-                event_type=LeadHistory.EventType.NOTE_ADDED,
-                user=user,
-                description="Přidána poznámka ke zrušení schůzky.",
-                note=note,
-            )
-
-        # historie
-        LeadHistory.objects.create(
-            lead=lead,
-            event_type=LeadHistory.EventType.STATUS_CHANGED,
-            user=user,
-            description="Schůzka zrušena, lead označen jako neúspěšný.",
-        )
+        # Zalogujeme zrušení schůzky
+        LeadEventService.record_meeting_cancelled(lead, user, cancel_note)
 
         return redirect("lead_detail", pk=lead.pk)
 
@@ -889,9 +815,8 @@ def schedule_callback(request, pk: int):
             can_schedule = True
     elif user.role == User.Role.OFFICE:
         # Kancelář pokud je kanceláří referrera
-        rp = getattr(lead.referrer, "referrer_profile", None)
-        manager = getattr(rp, "manager", None) if rp else None
-        office = getattr(getattr(manager, "manager_profile", None), "office", None) if manager else None
+        helper = LeadHierarchyHelper(lead)
+        office = helper.get_office()
         if office and office.owner == user:
             can_schedule = True
 
@@ -905,31 +830,15 @@ def schedule_callback(request, pk: int):
             lead.communication_status = Lead.CommunicationStatus.WAITING_FOR_CLIENT
             lead.save()
 
-            # Přidáme poznámku do historie
+            # Zalogujeme odložení hovoru
             callback_note = form.cleaned_data.get("callback_note", "").strip()
             callback_date = form.cleaned_data["callback_scheduled_date"]
 
-            note_text = f"Hovor odložen na {callback_date.strftime('%d.%m.%Y')}"
-            if callback_note:
-                note_text += f"\nPoznámka: {callback_note}"
-
-            note = LeadNote.objects.create(
-                lead=lead,
-                author=user,
-                text=note_text,
-            )
-            LeadHistory.objects.create(
-                lead=lead,
-                event_type=LeadHistory.EventType.NOTE_ADDED,
-                user=user,
-                description="Přidána poznámka k odložení hovoru.",
-                note=note,
-            )
-            LeadHistory.objects.create(
-                lead=lead,
-                event_type=LeadHistory.EventType.STATUS_CHANGED,
-                user=user,
-                description=f"Hovor odložen na {callback_date.strftime('%d.%m.%Y')}. Stav změněn na 'Čekání na klienta'.",
+            LeadEventService.record_callback_scheduled(
+                lead,
+                user,
+                callback_date,
+                callback_note
             )
 
             return redirect("lead_detail", pk=lead.pk)
@@ -1023,22 +932,8 @@ def deal_create_from_lead(request, pk: int):
                 lead.meeting_done_at = timezone.now()
             lead.save(update_fields=["communication_status", "meeting_scheduled", "meeting_done", "meeting_done_at", "updated_at"])
 
-            # historie
-            LeadHistory.objects.create(
-                lead=lead,
-                event_type=LeadHistory.EventType.DEAL_CREATED,
-                user=user,
-                description="Založen obchod.",
-            )
-            LeadHistory.objects.create(
-                lead=lead,
-                event_type=LeadHistory.EventType.STATUS_CHANGED,
-                user=user,
-                description="Změněn stav leadu: → Založen obchod",
-            )
-
-            # Notifikace
-            notifications.notify_deal_created(deal, lead, created_by=user)
+            # Zalogujeme vytvoření obchodu a odešleme notifikaci
+            LeadEventService.record_deal_created(deal, lead, user)
 
             return redirect("deals_list")
     else:
@@ -1088,9 +983,9 @@ def deal_detail(request, pk: int):
     can_manage_commission = user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR]
 
     # informace o manager/office (kvůli ikonám)
-    rp = getattr(lead.referrer, "referrer_profile", None)
-    manager = getattr(rp, "manager", None) if rp else None
-    office = getattr(getattr(manager, "manager_profile", None), "office", None) if manager else None
+    helper = LeadHierarchyHelper(lead)
+    manager = helper.get_manager()
+    office = helper.get_office()
 
     has_manager = manager is not None
     has_office = office is not None
@@ -1112,17 +1007,8 @@ def deal_detail(request, pk: int):
             note.author = user
             note.save()
 
-            LeadHistory.objects.create(
-                lead=lead,
-                event_type=LeadHistory.EventType.NOTE_ADDED,
-                user=user,
-                description="Přidána soukromá poznámka (z detailu obchodu)." if note.is_private else "Přidána poznámka (z detailu obchodu).",
-                note=note,
-            )
-
-            # Notifikace - pouze pro veřejné poznámky
-            if not note.is_private:
-                notifications.notify_note_added(lead, note, added_by=user)
+            # Zalogujeme přidání poznámky a odešleme notifikaci (pokud veřejná)
+            LeadEventService.record_note_added(lead, note, user, context=" (z detailu obchodu)")
 
             return redirect("deal_detail", pk=deal.pk)
     else:
@@ -1166,15 +1052,8 @@ def deal_commission_ready(request, pk: int):
         deal.commission_status = Deal.CommissionStatus.READY
         deal.save(update_fields=["commission_status"])
 
-        LeadHistory.objects.create(
-            lead=deal.lead,
-            event_type=LeadHistory.EventType.UPDATED,
-            user=user,
-            description="Provize nastavena na: připravená k vyplacení.",
-        )
-
-        # Notifikace
-        notifications.notify_commission_ready(deal, marked_by=user)
+        # Zalogujeme změnu stavu provize a odešleme notifikaci
+        LeadEventService.record_commission_ready(deal, user)
 
     return redirect("deal_detail", pk=deal.pk)
 
@@ -1191,9 +1070,9 @@ def deal_commission_paid(request, pk: int, part: str):
     if not (user.is_superuser or user.role in [User.Role.ADMIN, User.Role.ADVISOR]):
         return HttpResponseForbidden("Nemáš oprávnění měnit provizi.")
 
-    rp = getattr(lead.referrer, "referrer_profile", None)
-    manager = getattr(rp, "manager", None) if rp else None
-    office = getattr(getattr(manager, "manager_profile", None), "office", None) if manager else None
+    helper = LeadHierarchyHelper(lead)
+    manager = helper.get_manager()
+    office = helper.get_office()
 
     has_manager = manager is not None
     has_office = office is not None
@@ -1225,27 +1104,20 @@ def deal_commission_paid(request, pk: int, part: str):
         deal.commission_status = Deal.CommissionStatus.PAID
         deal.save(update_fields=["paid_referrer", "paid_manager", "paid_office", "commission_status"])
 
-        LeadHistory.objects.create(
-            lead=lead,
-            event_type=LeadHistory.EventType.UPDATED,
-            user=user,
-            description="; ".join(changes),
-        )
-
-        # Notifikace
-        notifications.notify_commission_paid(deal, recipient_type=part, marked_by=user)
-
         # pokud chceš: když jsou vyplacené všechny relevantní části, přepni lead na "Provize vyplacena"
         all_paid = deal.paid_referrer and (deal.paid_manager or not has_manager) and (deal.paid_office or not has_office)
         if all_paid:
             lead.communication_status = Lead.CommunicationStatus.COMMISSION_PAID
             lead.save(update_fields=["communication_status", "updated_at"])
-            LeadHistory.objects.create(
-                lead=lead,
-                event_type=LeadHistory.EventType.STATUS_CHANGED,
-                user=user,
-                description="Změněn stav leadu: → Provize vyplacena",
-            )
+
+        # Zalogujeme vyplacení provize a odešleme notifikaci
+        LeadEventService.record_commission_paid(
+            deal,
+            user,
+            part,
+            "; ".join(changes),
+            all_paid
+        )
 
     return redirect("deal_detail", pk=deal.pk)
 
@@ -1297,31 +1169,14 @@ def deal_edit(request, pk: int):
             if changes:
                 # Zpracování extra poznámky
                 extra_note = form.cleaned_data.get("extra_note")
-                if extra_note:
-                    note = LeadNote.objects.create(
-                        lead=lead,
-                        author=user,
-                        text=extra_note,
-                    )
-                    # Log události NOTE_ADDED
-                    LeadHistory.objects.create(
-                        lead=lead,
-                        event_type=LeadHistory.EventType.NOTE_ADDED,
-                        user=user,
-                        description=f"Přidána poznámka ke změně obchodu.",
-                        note=note,
-                    )
 
-                # Historie změn
-                LeadHistory.objects.create(
-                    lead=lead,
-                    event_type=LeadHistory.EventType.UPDATED,
-                    user=user,
-                    description="; ".join(changes),
+                # Zalogujeme změnu obchodu a odešleme notifikaci
+                LeadEventService.record_deal_updated(
+                    deal,
+                    user,
+                    "; ".join(changes),
+                    extra_note
                 )
-
-                # Notifikace
-                notifications.notify_deal_updated(deal, updated_by=user, changes_description="; ".join(changes))
 
             return redirect("deal_detail", pk=deal.pk)
     else:
@@ -1350,20 +1205,15 @@ def user_detail(request, pk: int):
     referrer_profile = getattr(viewed_user, "referrer_profile", None)
     manager_profile = getattr(viewed_user, "manager_profile", None)
 
-    # Manažer z ReferrerProfile
-    manager = None
-    if referrer_profile:
-        manager = referrer_profile.manager
+    # Use LeadHierarchyHelper for getting manager and office
+    helper = LeadHierarchyHelper(viewed_user)
+    manager = helper.get_manager()
 
-    # Kancelář z ManagerProfile
-    office = None
+    # Kancelář z ManagerProfile (pokud je viewed_user manažer) nebo z referrer's managera
     if manager_profile:
         office = manager_profile.office
-    elif manager:
-        # Pokud má manažera, získat kancelář z něj
-        manager_mp = getattr(manager, "manager_profile", None)
-        if manager_mp:
-            office = manager_mp.office
+    else:
+        office = helper.get_office()
 
     # Vypočítat statistiky podle role pomocí UserStatsService
     team_stats = None

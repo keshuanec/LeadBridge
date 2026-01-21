@@ -9,11 +9,15 @@ Services:
 - notifications: Email notification system
 - user_stats: User statistics calculations
 - filters: List view filtering and sorting
+- model_helpers: Helper methods for model relationship traversal
+- events: Event recording with history and notifications
 """
 
 from .access_control import LeadAccessService
 from .user_stats import UserStatsService, Stats, AdvisorStatsDetailed, ReferrerStatsDetailed
 from .filters import ListFilterService
+from .model_helpers import LeadHierarchyHelper
+from .events import LeadEventService
 
 __all__ = [
     'LeadAccessService',
@@ -22,4 +26,6 @@ __all__ = [
     'AdvisorStatsDetailed',
     'ReferrerStatsDetailed',
     'ListFilterService',
+    'LeadHierarchyHelper',
+    'LeadEventService',
 ]
