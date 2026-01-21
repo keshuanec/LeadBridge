@@ -1863,6 +1863,24 @@ def deal_edit(request, pk: int):
                 changes.append("Změněn email klienta (propagováno do leadu).")
 
             if changes:
+                # Zpracování extra poznámky
+                extra_note = form.cleaned_data.get("extra_note")
+                if extra_note:
+                    note = LeadNote.objects.create(
+                        lead=lead,
+                        author=user,
+                        text=extra_note,
+                    )
+                    # Log události NOTE_ADDED
+                    LeadHistory.objects.create(
+                        lead=lead,
+                        event_type=LeadHistory.EventType.NOTE_ADDED,
+                        user=user,
+                        description=f"Přidána poznámka ke změně obchodu.",
+                        note=note,
+                    )
+
+                # Historie změn
                 LeadHistory.objects.create(
                     lead=lead,
                     event_type=LeadHistory.EventType.UPDATED,

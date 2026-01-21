@@ -375,6 +375,12 @@ class DealEditForm(forms.ModelForm):
             "status": "Stav obchodu",
         }
 
+    extra_note = forms.CharField(
+        label="Poznámka ke změně",
+        widget=forms.Textarea(attrs={"rows": 3}),
+        required=False,
+    )
+
 class MeetingResultForm(forms.Form):
     """Formulář pro záznam výsledku schůzky"""
 

@@ -40,8 +40,40 @@
             {{ form.status }}
         </div>
 
+        <div id="extra-note-wrapper" class="form-group" style="display: none;">
+            <label for="{{ form.extra_note.id_for_label }}">Poznámka ke změně</label>
+            {{ form.extra_note }}
+            {% if form.extra_note.errors %}
+                <div class="alert alert-error">{{ form.extra_note.errors }}</div>
+            {% endif %}
+            <small>Volitelné – pokud vyplníš, uloží se jako běžná poznámka k leadu.</small>
+        </div>
+
         <button type="submit" class="btn btn-primary">Uložit změny</button>
         <a href="{% url 'deal_detail' deal.pk %}" class="btn btn-secondary" style="margin-left:10px;">Zrušit</a>
     </form>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const statusField = document.getElementById("{{ form.status.id_for_label }}");
+    const wrapper = document.getElementById("extra-note-wrapper");
+
+    if (statusField && wrapper) {
+        const originalValue = "{{ form.initial.status|default_if_none:'' }}";
+
+        function checkChanges() {
+            // Zobrazíme wrapper, pokud se změnil stav
+            if (statusField.value && statusField.value !== originalValue) {
+                wrapper.style.display = "block";
+            } else {
+                wrapper.style.display = "none";
+            }
+        }
+
+        statusField.addEventListener("change", checkChanges);
+        checkChanges(); // Spustit při načtení
+    }
+});
+</script>
 {% endblock %}
