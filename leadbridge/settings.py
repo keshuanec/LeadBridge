@@ -145,6 +145,17 @@ LOGIN_REDIRECT_URL = reverse_lazy("overview")
 LOGOUT_REDIRECT_URL = reverse_lazy("login")
 LOGIN_URL = "login"
 
+# Session timeout configuration
+# Session vyprší po 8 hodinách (pracovní den)
+SESSION_COOKIE_AGE = 28800  # 8 hodin = 28800 sekund
+
+# Session končí po zavření prohlížeče
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Session se obnovuje při každém requestu (rolling window)
+# Uživatel má vždy 8 hodin od poslední aktivity
+SESSION_SAVE_EVERY_REQUEST = True
+
 # Email configuration
 # SendGrid API key (preferred method - faster and more reliable than SMTP)
 SENDGRID_API_KEY = config('SENDGRID_API_KEY', default=None)
