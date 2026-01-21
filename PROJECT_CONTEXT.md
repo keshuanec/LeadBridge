@@ -186,6 +186,14 @@ Detaily hypotéky a provize:
 **Filtrování dat:**
 - Vše, Tento rok, Tento měsíc, Vlastní rozsah
 
+**Důležité výjimky:**
+- **Vlastní kontakty** (`is_personal_contact=True`) se **nezahrnují** do běžných statistik jako doporučitel
+- Vlastní kontakty se zobrazují **pouze** v dedikovaných položkách u poradců:
+  - "Založené obchody (vlastní)" (`deals_created_personal`)
+  - "Dokončené obchody (vlastní)" (`deals_completed_personal`)
+- Implementováno pomocí `.exclude(is_personal_contact=True)` ve všech quersetech pro referrer statistiky
+- Platí pro všechny views: `advisor_detail()`, `user_detail()` a statistické funkce v `user_stats.py`
+
 ### Django Signals
 
 **Pre-save signály:**
@@ -339,6 +347,7 @@ Klíčové proměnné v `.env`:
 3. **Role-based Query Filtering** - Konzistentní permission checking
 4. **Form Customization** - Dynamická pole podle role uživatele
 5. **Environment-based Configuration** - Různé nastavení pro dev/prod
+6. **Personal Contacts Exclusion** - Vlastní kontakty poradce se vyloučují z referrer statistik pomocí `.exclude(is_personal_contact=True)`
 
 ## Často Používané Helper Funkce
 
