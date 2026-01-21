@@ -1156,10 +1156,11 @@ def advisor_detail(request, pk: int):
     advisor_stats["deals_completed_personal"] = personal_deals_qs.filter(status=Deal.DealStatus.DRAWN).count()
 
     # Pokud má poradce také ReferrerProfile, počítáme i statistiky jako doporučitel
+    # DŮLEŽITÉ: Vyloučit vlastní kontakty (is_personal_contact=True) z těchto statistik
     referrer_stats = None
     referrer_profile = getattr(advisor, "referrer_profile", None)
     if referrer_profile:
-        referrer_leads_qs = Lead.objects.filter(referrer=advisor)
+        referrer_leads_qs = Lead.objects.filter(referrer=advisor).exclude(is_personal_contact=True)
         if date_from:
             referrer_leads_qs = referrer_leads_qs.filter(created_at__gte=date_from)
         if date_to:
@@ -1171,7 +1172,7 @@ def advisor_detail(request, pk: int):
             "meetings_done": referrer_leads_qs.filter(meeting_done=True).count(),
         }
 
-        # Deals pro referrera
+        # Deals pro referrera (vyloučit vlastní kontakty)
         referrer_deals_qs = Deal.objects.filter(lead__in=referrer_leads_qs)
         if date_from:
             referrer_deals_qs = referrer_deals_qs.filter(created_at__gte=date_from)
@@ -1965,8 +1966,9 @@ def user_detail(request, pk: int):
         advisor_stats["deals_completed_personal"] = personal_deals_qs.filter(status=Deal.DealStatus.DRAWN).count()
 
         # Statistiky jako doporučitel (pokud má ReferrerProfile)
+        # DŮLEŽITÉ: Vyloučit vlastní kontakty (is_personal_contact=True) z těchto statistik
         if referrer_profile:
-            referrer_leads_qs = filter_leads_by_date(Lead.objects.filter(referrer=viewed_user))
+            referrer_leads_qs = filter_leads_by_date(Lead.objects.filter(referrer=viewed_user).exclude(is_personal_contact=True))
             referrer_deals_qs = filter_deals_by_date(Deal.objects.filter(lead__in=referrer_leads_qs))
 
             referrer_stats = {
@@ -1991,8 +1993,9 @@ def user_detail(request, pk: int):
         }
 
         # Statistiky jako doporučitel (pokud má ReferrerProfile)
+        # DŮLEŽITÉ: Vyloučit vlastní kontakty (is_personal_contact=True) z těchto statistik
         if referrer_profile:
-            referrer_leads_qs = filter_leads_by_date(Lead.objects.filter(referrer=viewed_user))
+            referrer_leads_qs = filter_leads_by_date(Lead.objects.filter(referrer=viewed_user).exclude(is_personal_contact=True))
             referrer_deals_qs = filter_deals_by_date(Deal.objects.filter(lead__in=referrer_leads_qs))
 
             referrer_stats = {
@@ -2033,8 +2036,9 @@ def user_detail(request, pk: int):
             }
 
         # Statistiky jako doporučitel (pokud má ReferrerProfile)
+        # DŮLEŽITÉ: Vyloučit vlastní kontakty (is_personal_contact=True) z těchto statistik
         if referrer_profile:
-            referrer_leads_qs = filter_leads_by_date(Lead.objects.filter(referrer=viewed_user))
+            referrer_leads_qs = filter_leads_by_date(Lead.objects.filter(referrer=viewed_user).exclude(is_personal_contact=True))
             referrer_deals_qs = filter_deals_by_date(Deal.objects.filter(lead__in=referrer_leads_qs))
 
             referrer_stats = {

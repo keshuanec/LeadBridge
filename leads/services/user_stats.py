@@ -47,8 +47,9 @@ def _lead_stats(qs) -> Stats:
 def stats_referrer_personal(user: User) -> Stats:
     """
     Osobní statistika jako doporučitel (referrer=user)
+    DŮLEŽITÉ: Vyloučit vlastní kontakty (is_personal_contact=True) z těchto statistik
     """
-    qs = Lead.objects.filter(referrer=user)
+    qs = Lead.objects.filter(referrer=user).exclude(is_personal_contact=True)
     return _lead_stats(qs)
 
 
@@ -69,12 +70,13 @@ def stats_manager(user: User) -> dict:
     Manažer má dvojí statistiku:
     - personal_referrer: jeho vlastní leady jako doporučitel
     - team: leady jeho podřízených doporučitelů (bez jeho vlastních leadů)
+    DŮLEŽITÉ: Vyloučit vlastní kontakty (is_personal_contact=True) z těchto statistik
     """
-    personal_qs = Lead.objects.filter(referrer=user)
+    personal_qs = Lead.objects.filter(referrer=user).exclude(is_personal_contact=True)
 
     team_qs = Lead.objects.filter(
         referrer__referrer_profile__manager=user
-    ).exclude(referrer=user)
+    ).exclude(referrer=user).exclude(is_personal_contact=True)
 
     return {
         "personal_referrer": _lead_stats(personal_qs),
@@ -91,14 +93,15 @@ def stats_office_user(user: User) -> dict:
     Office uživatel (owner kanceláře) má dvojí statistiku:
     - personal_referrer: jeho vlastní leady jako doporučitel
     - team: všechny leady kanceláře (bez jeho vlastních leadů)
+    DŮLEŽITÉ: Vyloučit vlastní kontakty (is_personal_contact=True) z těchto statistik
     """
-    personal_qs = Lead.objects.filter(referrer=user)
+    personal_qs = Lead.objects.filter(referrer=user).exclude(is_personal_contact=True)
 
     offices = Office.objects.filter(owner=user)
 
     team_qs = Lead.objects.filter(
         referrer__referrer_profile__manager__manager_profile__office__in=offices
-    ).exclude(referrer=user)
+    ).exclude(referrer=user).exclude(is_personal_contact=True)
 
     return {
         "personal_referrer": _lead_stats(personal_qs),
