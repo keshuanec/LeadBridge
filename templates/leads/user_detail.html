@@ -3,10 +3,30 @@
 {% block title %}Detail uživatele{% endblock %}
 
 {% block content %}
+<style>
+    .user-detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        align-items: start;
+    }
+
+    @media (max-width: 768px) {
+        .user-detail-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .user-detail-grid > div {
+            text-align: left;
+        }
+    }
+</style>
+
 <div class="card">
     <h2>Detail uživatele</h2>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;">
+    <div class="user-detail-grid">
         <div>
             <p><strong>Jméno:</strong> {{ viewed_user.get_full_name }}</p>
 

@@ -3,10 +3,30 @@
 {% block title %}Detail poradce{% endblock %}
 
 {% block content %}
+<style>
+    .advisor-detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        align-items: start;
+    }
+
+    @media (max-width: 768px) {
+        .advisor-detail-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .advisor-detail-grid > div {
+            text-align: left;
+        }
+    }
+</style>
+
 <div class="card">
     <h2>Detail poradce</h2>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start;">
+    <div class="advisor-detail-grid">
         <div>
             <p><strong>Jméno:</strong> {{ advisor.get_full_name }}</p>
 
