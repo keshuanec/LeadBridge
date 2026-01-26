@@ -399,3 +399,36 @@ class ListFilterService:
             deals.append(d)
 
         return deals
+
+    def process_leads_for_template(self, leads_qs: QuerySet) -> list:
+        """
+        Post-process leads queryset to add helper attributes for template rendering.
+
+        This adds last note text for each lead.
+
+        Args:
+            leads_qs: Queryset of Lead objects
+
+        Returns:
+            List of Lead objects with added helper attributes
+        """
+        # Prefetch notes for efficiency
+        from leads.models import LeadNote
+        from django.db.models import Prefetch
+
+        leads_qs = leads_qs.prefetch_related(
+            Prefetch('notes', queryset=LeadNote.objects.order_by('-created_at')[:1])
+        )
+
+        leads = []
+        for lead in leads_qs:
+            # Přidání poslední poznámky pro zobrazení v tabulce
+            try:
+                last_note = lead.notes.first() if hasattr(lead, 'notes') else None
+                lead.last_note_text = last_note.text if last_note else None
+            except Exception:
+                lead.last_note_text = None
+
+            leads.append(lead)
+
+        return leads

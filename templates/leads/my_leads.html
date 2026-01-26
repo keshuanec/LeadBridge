@@ -3,14 +3,71 @@
 {% block title %}Moje leady{% endblock %}
 
 {% block content %}
+<style>
+    /* Kompaktní sloupce v tabulce leadů */
+    .table-wrapper {
+        overflow-x: auto;
+        transition: all 0.3s ease;
+    }
+
+    .table-wrapper > table.leads-table {
+        table-layout: fixed !important;
+        width: 100% !important;
+        transition: width 0.3s ease;
+    }
+
+    .table-wrapper > table.leads-table.notes-visible {
+        width: calc(100% + 400px) !important;
+    }
+
+    /* Sloupec Poznámka */
+    .table-wrapper > table.leads-table .note-col {
+        transition: width 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+        vertical-align: top !important;
+        max-width: 400px !important;
+        overflow: hidden !important;
+    }
+
+    .table-wrapper > table.leads-table .note-col.note-col-hidden {
+        width: 0 !important;
+        padding: 0 !important;
+        opacity: 0;
+        border: none !important;
+    }
+
+    .table-wrapper > table.leads-table .note-col:not(.note-col-hidden) {
+        width: 400px !important;
+        padding: 6px 8px !important;
+        opacity: 1;
+    }
+
+    /* Vnitřní div pro oříznutí textu poznámky */
+    .table-wrapper > table.leads-table .note-col .note-content {
+        font-size: 12px !important;
+        line-height: 1.3 !important;
+        max-height: 2.6em !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+        width: 100% !important;
+    }
+
+    /* Řádek s tlačítky */
+    .filter-buttons-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #ddd;
+    }
+</style>
+
 <div class="card">
     <h2>Moje leady</h2>
-
-    {% if can_create_leads %}
-        <p>
-            <a href="{% url 'lead_create' %}" class="btn btn-primary">+ Nový lead</a>
-        </p>
-    {% endif %}
 
 {# Filtry #}
 <button type="button" class="btn btn-secondary filters-toggle">Zobrazit filtry</button>
@@ -83,15 +140,18 @@
     <input type="hidden" name="sort" value="{{ current_sort }}">
     <input type="hidden" name="dir" value="{{ current_dir }}">
 
-    <button type="submit" class="btn btn-primary">Filtrovat</button>
-    <a href="{% url 'my_leads' %}" class="btn btn-secondary">Zrušit filtry</a>
+    <div class="filter-buttons-row">
+        <button type="submit" class="btn btn-primary">Filtrovat</button>
+        <a href="{% url 'my_leads' %}" class="btn btn-secondary">Zrušit filtry</a>
+        <button type="button" class="btn btn-secondary" id="toggleNotesBtn">Zobrazit poznámky</button>
+    </div>
     </div>
 </form>
 
 {# Výsledky #}
 {% if leads %}
     <div class="table-wrapper">
-    <table>
+    <table class="leads-table">
         <thead>
         <tr>
             <th>
@@ -102,6 +162,8 @@
                     {% endif %}
                 </a>
             </th>
+
+            <th class="note-col note-col-hidden">Poznámka</th>
 
             {% if show_referrer_col %}
             <th>
@@ -181,6 +243,16 @@
                 {% endif %}
             </td>
 
+            <td class="note-col note-col-hidden">
+                <div class="note-content">
+                    {% if lead.last_note_text %}
+                        {{ lead.last_note_text }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </div>
+            </td>
+
             {% if show_referrer_col %}
             <td>
                 {% if lead.referrer %}
@@ -250,4 +322,35 @@
     {% endif %}
 {% endif %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('toggleNotesBtn');
+    const noteCols = document.querySelectorAll('.note-col');
+    const leadsTable = document.querySelector('.leads-table');
+    let notesVisible = false;
+
+    if (toggleBtn && leadsTable) {
+        toggleBtn.addEventListener('click', function() {
+            notesVisible = !notesVisible;
+
+            noteCols.forEach(function(col) {
+                if (notesVisible) {
+                    col.classList.remove('note-col-hidden');
+                } else {
+                    col.classList.add('note-col-hidden');
+                }
+            });
+
+            if (notesVisible) {
+                leadsTable.classList.add('notes-visible');
+            } else {
+                leadsTable.classList.remove('notes-visible');
+            }
+
+            toggleBtn.textContent = notesVisible ? 'Skrýt poznámky' : 'Zobrazit poznámky';
+        });
+    }
+});
+</script>
 {% endblock %}

@@ -131,8 +131,11 @@ def my_leads(request):
 
     can_create_leads = user.role in [User.Role.REFERRER, User.Role.ADVISOR, User.Role.OFFICE]
 
+    # Process leads for template (add helper attributes like last_note_text)
+    leads = filter_service.process_leads_for_template(leads_qs)
+
     context = {
-        "leads": leads_qs,
+        "leads": leads,
         "can_create_leads": can_create_leads,
         "current_sort": sort,
         "current_dir": direction,
