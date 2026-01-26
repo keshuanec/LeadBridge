@@ -108,18 +108,10 @@
 
     /* Sloupec Poznámka */
     .table-wrapper > table.deals-table .note-col {
-        font-size: 12px !important;
-        line-height: 1.4 !important;
-        max-height: 2.8em !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
         transition: width 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
-        display: -webkit-box !important;
-        -webkit-line-clamp: 2 !important;
-        -webkit-box-orient: vertical !important;
-        word-wrap: break-word !important;
-        word-break: break-word !important;
+        vertical-align: top !important;
         max-width: 400px !important;
+        overflow: hidden !important;
     }
 
     .table-wrapper > table.deals-table .note-col.note-col-hidden {
@@ -133,6 +125,21 @@
         width: 400px !important;
         padding: 6px 8px !important;
         opacity: 1;
+    }
+
+    /* Vnitřní div pro oříznutí textu poznámky */
+    .table-wrapper > table.deals-table .note-col .note-content {
+        font-size: 12px !important;
+        line-height: 1.3 !important;
+        max-height: 2.6em !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        word-wrap: break-word !important;
+        word-break: break-word !important;
+        width: 100% !important;
     }
 
     /* Barevné podbarvení řádků podle statusu */
@@ -352,11 +359,13 @@
                     <td class="loan-col">{{ d.loan_amount|floatformat:0 }} Kč</td>
 
                     <td class="note-col note-col-hidden">
-                        {% if d.last_note_text %}
-                            {{ d.last_note_text }}
-                        {% else %}
-                            —
-                        {% endif %}
+                        <div class="note-content">
+                            {% if d.last_note_text %}
+                                {{ d.last_note_text }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </div>
                     </td>
 
                     {% if show_referrer_col %}
