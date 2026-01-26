@@ -161,10 +161,18 @@
 <div class="card">
     <h2>Obchody</h2>
 
-{# Filtry #}
-<button type="button" class="btn btn-secondary filters-toggle">Zobrazit filtry</button>
+{# Tlačítka pro zobrazení filtrů a poznámek + akční tlačítka filtrů #}
+<div class="toggle-buttons-row">
+    <button type="button" class="btn btn-secondary filters-toggle">Zobrazit filtry</button>
+    <button type="button" class="btn btn-secondary" id="toggleNotesBtn">Zobrazit poznámky</button>
+    <button type="button" class="btn btn-primary filter-submit-btn" style="display: none;">Filtrovat</button>
+    {% if current_status or current_commission or current_referrer or current_advisor or current_manager or current_office %}
+    <a href="{% url 'deals_list' %}" class="btn btn-secondary filter-reset-btn">Zrušit filtry</a>
+    {% endif %}
+</div>
 
-<form method="get" class="filter-form">
+{# Filtry POD tlačítky #}
+<form method="get" class="filter-form" id="filterForm">
     <div class="filters-content">
     {% if "status" in allowed %}
         <div>
@@ -242,10 +250,6 @@
 
     <input type="hidden" name="sort" value="{{ current_sort }}">
     <input type="hidden" name="dir" value="{{ current_dir }}">
-
-    <button type="submit" class="btn btn-primary">Filtrovat</button>
-    <a href="{% url 'deals_list' %}" class="btn btn-secondary">Zrušit filtry</a>
-    <button type="button" class="btn btn-secondary" id="toggleNotesBtn">Zobrazit poznámky</button>
     </div>
 </form>
 

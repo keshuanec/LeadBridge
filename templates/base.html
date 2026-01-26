@@ -332,12 +332,27 @@
         margin-bottom: 12px;
     }
 
-    /* Filtry na desktopech vždy viditelné */
+    /* Filtry defaultně skryté - ale ponecháme v DOM pro animaci */
     .filters-content {
-        display: flex !important;
+        display: flex;
         gap: 10px;
         flex-wrap: wrap;
         align-items: flex-end;
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+        padding-top: 0;
+        transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease, margin-bottom 0.3s ease, padding-top 0.3s ease;
+    }
+
+    .filters-content.active {
+        max-height: 500px;
+        opacity: 1;
+        margin-top: 12px;
+        margin-bottom: 12px;
+        padding-top: 0;
     }
 
     input:focus,
@@ -389,9 +404,43 @@
         text-decoration: underline;
     }
 
-    /* Rozbalovací filtry - defaultně skryté na desktopech */
+    /* Tlačítko pro zobrazení filtrů - vždy viditelné */
     .filters-toggle {
-        display: none;
+        display: inline-block;
+    }
+
+    /* Wrapper pro tlačítka (filtry + poznámky + akční tlačítka) */
+    .toggle-buttons-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .toggle-buttons-row .btn {
+        transition: all 0.3s ease;
+    }
+
+    /* Fixní šířka pro toggle tlačítko filtrů */
+    .toggle-buttons-row .filters-toggle {
+        min-width: 140px;
+        text-align: center;
+    }
+
+    /* Animace pro tlačítko Filtrovat */
+    .toggle-buttons-row .filter-submit-btn {
+        opacity: 0;
+        max-width: 0;
+        padding: 0;
+        overflow: hidden;
+        transition: opacity 0.3s ease, max-width 0.3s ease, padding 0.3s ease;
+    }
+
+    .toggle-buttons-row .filter-submit-btn.visible {
+        opacity: 1;
+        max-width: 150px;
+        padding: 8px 16px;
     }
 
     /* === HAMBURGER MENU === */
@@ -545,19 +594,28 @@
             width: auto;
         }
 
-        /* Rozbalovací filtry na mobilu */
-        .filters-toggle {
-            display: block !important;
+        /* Rozbalovací filtry na mobilu - full width tlačítka */
+        .toggle-buttons-row {
+            flex-direction: column;
+        }
+
+        .toggle-buttons-row .btn {
             width: 100%;
-            margin-bottom: 12px;
+            min-width: unset;
         }
 
+        .toggle-buttons-row .filter-submit-btn.visible {
+            max-width: 100%;
+        }
+
+        /* Filtry na mobilu - stackované */
         .filters-content {
-            display: none !important;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
-        .filters-content.active {
-            display: flex !important;
+        .filters-content > div {
+            width: 100%;
         }
 
         /* Formuláře - filtry stackované na mobilu, zarovnané vlevo */
@@ -762,16 +820,41 @@
         });
     });
 
-    // Rozbalovací filtry na mobilech
+    // Rozbalovací filtry
     document.addEventListener('DOMContentLoaded', function() {
         const filtersToggle = document.querySelector('.filters-toggle');
         const filtersContent = document.querySelector('.filters-content');
+        const filterSubmitBtn = document.querySelector('.filter-submit-btn');
+        const filterForm = document.getElementById('filterForm');
 
         if (filtersToggle && filtersContent) {
             filtersToggle.addEventListener('click', function() {
                 filtersContent.classList.toggle('active');
                 const isActive = filtersContent.classList.contains('active');
                 this.textContent = isActive ? 'Skrýt filtry' : 'Zobrazit filtry';
+
+                // Animovat zobrazení/skrytí tlačítka Filtrovat
+                // Tlačítko "Zrušit filtry" zůstává viditelné pokud jsou filtry aktivní
+                if (filterSubmitBtn) {
+                    if (isActive) {
+                        filterSubmitBtn.style.display = 'inline-block';
+                        // Trigger reflow pro animaci
+                        filterSubmitBtn.offsetHeight;
+                        filterSubmitBtn.classList.add('visible');
+                    } else {
+                        filterSubmitBtn.classList.remove('visible');
+                        setTimeout(function() {
+                            filterSubmitBtn.style.display = 'none';
+                        }, 300); // Počkat na dokončení animace
+                    }
+                }
+            });
+        }
+
+        // Submit formuláře při kliknutí na tlačítko Filtrovat
+        if (filterSubmitBtn && filterForm) {
+            filterSubmitBtn.addEventListener('click', function() {
+                filterForm.submit();
             });
         }
     });
