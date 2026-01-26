@@ -309,51 +309,6 @@
                     <td class="client-col"><a href="{% url 'deal_detail' d.pk %}">{{ d.client_name }}</a></td>
                     <td class="loan-col">{{ d.loan_amount|floatformat:0 }} Kč</td>
 
-                    {# Zobrazení provizí - role-based #}
-                    <td class="commission-col">
-                        <span class="amount">{{ d.calculated_commission_referrer|floatformat:0 }} Kč</span>
-                        {% if d.paid_referrer %}
-                            <span class="badge badge-ready">paid</span>
-                        {% endif %}
-                    </td>
-                    {% if user.role != "REFERRER" %}
-                        <td class="commission-col">
-                            {% if d.calculated_commission_manager > 0 %}
-                                <span class="amount">{{ d.calculated_commission_manager|floatformat:0 }} Kč</span>
-                                {% if d.paid_manager %}
-                                    <span class="badge badge-ready">paid</span>
-                                {% endif %}
-                            {% else %}—{% endif %}
-                        </td>
-                    {% endif %}
-                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
-                        <td class="commission-col">
-                            {% if d.calculated_commission_office > 0 %}
-                                <span class="amount">{{ d.calculated_commission_office|floatformat:0 }} Kč</span>
-                                {% if d.paid_office %}
-                                    <span class="badge badge-ready">paid</span>
-                                {% endif %}
-                            {% else %}—{% endif %}
-                        </td>
-                    {% endif %}
-                    {% if user.role == "ADVISOR" or user.is_superuser %}
-                        <td class="commission-col">
-                            {% if d.calculated_commission_advisor > 0 %}
-                                <span class="amount">{{ d.calculated_commission_advisor|floatformat:0 }} Kč</span>
-                            {% else %}—{% endif %}
-                        </td>
-                    {% endif %}
-
-                    {# Sloupec Poradce pro admin advisors #}
-                    {% if user.role == "ADVISOR" and user.has_admin_access %}
-                        <td class="person-col">
-                            {% if d.advisor_id %}
-                                <a href="{% url 'advisor_detail' d.advisor_id %}">{{ d.advisor_name }}</a>
-                            {% else %}
-                                —
-                            {% endif %}
-                        </td>
-                    {% endif %}
 
                     {% if show_referrer_col %}
                         <td class="person-col">
@@ -404,6 +359,53 @@
                         <span class="badge badge-warning">Čekání na provizi</span>
                     {% endif %}
                     </td>
+
+                    {# Zobrazení provizí - role-based #}
+                    <td class="commission-col">
+                        <span class="amount">{{ d.calculated_commission_referrer|floatformat:0 }} Kč</span>
+                        {% if d.paid_referrer %}
+                            <span class="badge badge-ready">paid</span>
+                        {% endif %}
+                    </td>
+                    {% if user.role != "REFERRER" %}
+                    <td class="commission-col">
+                        {% if d.calculated_commission_manager > 0 %}
+                            <span class="amount">{{ d.calculated_commission_manager|floatformat:0 }} Kč</span>
+                            {% if d.paid_manager %}
+                                <span class="badge badge-ready">paid</span>
+                            {% endif %}
+                        {% else %}—{% endif %}
+                    </td>
+                    {% endif %}
+                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+                    <td class="commission-col">
+                        {% if d.calculated_commission_office > 0 %}
+                            <span class="amount">{{ d.calculated_commission_office|floatformat:0 }} Kč</span>
+                            {% if d.paid_office %}
+                                <span class="badge badge-ready">paid</span>
+                            {% endif %}
+                        {% else %}—{% endif %}
+                    </td>
+                    {% endif %}
+                    {% if user.role == "ADVISOR" or user.is_superuser %}
+                        <td class="commission-col">
+                            {% if d.calculated_commission_advisor > 0 %}
+                                <span class="amount">{{ d.calculated_commission_advisor|floatformat:0 }} Kč</span>
+                            {% else %}—{% endif %}
+                        </td>
+                    {% endif %}
+
+                    {# Sloupec Poradce pro admin advisors #}
+                    {% if user.role == "ADVISOR" and user.has_admin_access %}
+                        <td class="person-col">
+                            {% if d.advisor_id %}
+                                <a href="{% url 'advisor_detail' d.advisor_id %}">{{ d.advisor_name }}</a>
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                    {% endif %}
+
 
                 </tr>
             {% endfor %}
