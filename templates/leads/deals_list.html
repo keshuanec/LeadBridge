@@ -106,12 +106,15 @@
         max-height: 2.8em !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
+    }
+
+    .table-wrapper > table.deals-table .note-col:not(.note-col-hidden) {
         display: -webkit-box !important;
         -webkit-line-clamp: 2 !important;
         -webkit-box-orient: vertical !important;
     }
 
-    .note-col-hidden {
+    .table-wrapper > table.deals-table .note-col.note-col-hidden {
         display: none !important;
     }
 
