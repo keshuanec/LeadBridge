@@ -412,14 +412,6 @@ class ListFilterService:
         Returns:
             List of Lead objects with added helper attributes
         """
-        # Prefetch notes for efficiency
-        from leads.models import LeadNote
-        from django.db.models import Prefetch
-
-        leads_qs = leads_qs.prefetch_related(
-            Prefetch('notes', queryset=LeadNote.objects.order_by('-created_at')[:1])
-        )
-
         leads = []
         for lead in leads_qs:
             # Přidání poslední poznámky pro zobrazení v tabulce
