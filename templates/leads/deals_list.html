@@ -233,23 +233,6 @@
                         </a>
                     </th>
 
-                    {# Provize - role-based zobrazení #}
-                    <th class="commission-col">Prov. makl.</th>
-                    {% if user.role != "REFERRER" %}
-                        <th class="commission-col">Prov. man.</th>
-                    {% endif %}
-                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
-                        <th class="commission-col">Prov. kanc.</th>
-                    {% endif %}
-                    {% if user.role == "ADVISOR" or user.is_superuser %}
-                        <th class="commission-col">Prov. porad.</th>
-                    {% endif %}
-
-                    {# Sloupec Poradce pro admin advisors #}
-                    {% if user.role == "ADVISOR" and user.has_admin_access %}
-                        <th class="person-col">Poradce</th>
-                    {% endif %}
-
                     {% if show_referrer_col %}
                         <th class="person-col">
                             <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=referrer&dir={% if current_sort == 'referrer' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
@@ -299,6 +282,24 @@
                             {% endif %}
                         </a>
                     </th>
+
+                    {# Provize - role-based zobrazení #}
+                    <th class="commission-col">Prov. makl.</th>
+                    {% if user.role != "REFERRER" %}
+                        <th class="commission-col">Prov. man.</th>
+                    {% endif %}
+                    {% if user.role == "OFFICE" or user.role == "ADVISOR" or user.is_superuser %}
+                        <th class="commission-col">Prov. kanc.</th>
+                    {% endif %}
+                    {% if user.role == "ADVISOR" or user.is_superuser %}
+                        <th class="commission-col">Prov. porad.</th>
+                    {% endif %}
+
+                    {# Sloupec Poradce pro admin advisors #}
+                    {% if user.role == "ADVISOR" and user.has_admin_access %}
+                        <th class="person-col">Poradce</th>
+                    {% endif %}
+
                 </tr>
             </thead>
             <tbody>
