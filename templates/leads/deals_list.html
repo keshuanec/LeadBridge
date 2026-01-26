@@ -96,6 +96,25 @@
         line-height: 1.3 !important;
     }
 
+    /* Sloupec Poznámka */
+    .table-wrapper > table.deals-table .note-col {
+        width: 400px !important;
+        white-space: normal !important;
+        font-size: 12px !important;
+        padding: 6px 8px !important;
+        line-height: 1.4 !important;
+        max-height: 2.8em !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+    }
+
+    .note-col-hidden {
+        display: none !important;
+    }
+
     /* Barevné podbarvení řádků podle statusu */
     .deal-row-completed {
         background-color: #e8f5e9 !important; /* Lehce zelená */
@@ -199,6 +218,7 @@
 
     <button type="submit" class="btn btn-primary">Filtrovat</button>
     <a href="{% url 'deals_list' %}" class="btn btn-secondary">Zrušit filtry</a>
+    <button type="button" class="btn btn-secondary" id="toggleNotesBtn">Zobrazit poznámky</button>
     </div>
 </form>
 
@@ -232,6 +252,8 @@
                             {% endif %}
                         </a>
                     </th>
+
+                    <th class="note-col note-col-hidden">Poznámka</th>
 
                     {% if show_referrer_col %}
                         <th class="person-col">
@@ -309,6 +331,13 @@
                     <td class="client-col"><a href="{% url 'deal_detail' d.pk %}">{{ d.client_name }}</a></td>
                     <td class="loan-col">{{ d.loan_amount|floatformat:0 }} Kč</td>
 
+                    <td class="note-col note-col-hidden">
+                        {% if d.last_note_text %}
+                            {{ d.last_note_text }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
 
                     {% if show_referrer_col %}
                         <td class="person-col">
@@ -416,4 +445,28 @@
         <p>Zatím nemáte žádné obchody.</p>
     {% endif %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('toggleNotesBtn');
+    const noteCols = document.querySelectorAll('.note-col');
+    let notesVisible = false;
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            notesVisible = !notesVisible;
+
+            noteCols.forEach(function(col) {
+                if (notesVisible) {
+                    col.classList.remove('note-col-hidden');
+                } else {
+                    col.classList.add('note-col-hidden');
+                }
+            });
+
+            toggleBtn.textContent = notesVisible ? 'Skrýt poznámky' : 'Zobrazit poznámky';
+        });
+    }
+});
+</script>
 {% endblock %}

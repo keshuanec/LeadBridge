@@ -389,6 +389,13 @@ class ListFilterService:
                 # Admin/Advisor vidí všechny
                 d.user_commissions_paid = d.all_commissions_paid
 
+            # Přidání poslední poznámky pro zobrazení v tabulce
+            try:
+                last_note = d.lead.notes.first() if hasattr(d.lead, 'notes') else None
+                d.last_note_text = last_note.text if last_note else None
+            except Exception:
+                d.last_note_text = None
+
             deals.append(d)
 
         return deals
