@@ -72,10 +72,42 @@
         line-height: 1.3 !important;
     }
 
-    /* Sloupec klient - max 2 řádky */
+    /* Sloupec klient */
     .table-wrapper > table.leads-table .client-col {
-        max-height: 2.6em !important;
+        width: 90px !important;
+        white-space: normal !important;
+        padding: 6px 8px !important;
+        line-height: 1.3 !important;
+    }
+
+    /* Sloupce s jmény osob (Doporučitel, Poradce, Manažer, Kancelář) */
+    .table-wrapper > table.leads-table .person-col {
+        width: 70px !important;
+        white-space: normal !important;
+        font-size: 13px !important;
+        padding: 6px 8px !important;
+        line-height: 1.3 !important;
+    }
+
+    /* Sloupec Stav komunikace */
+    .table-wrapper > table.leads-table .status-col {
+        width: 85px !important;
+        white-space: normal !important;
+        padding: 6px 4px !important;
+        line-height: 1.3 !important;
         overflow: hidden !important;
+    }
+
+    .table-wrapper > table.leads-table .status-col .badge {
+        font-size: 10px !important;
+        padding: 3px 5px !important;
+        white-space: normal !important;
+    }
+
+    /* Sloupec Vytvořeno */
+    .table-wrapper > table.leads-table .date-col {
+        width: 85px !important;
+        white-space: nowrap !important;
     }
 </style>
 
@@ -169,7 +201,7 @@
     <table class="leads-table">
         <thead>
         <tr>
-            <th>
+            <th class="client-col">
                 <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=client&dir={% if current_sort == 'client' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                     Klient
                     {% if current_sort == 'client' %}
@@ -181,7 +213,7 @@
             <th class="note-col note-col-hidden">Poznámka</th>
 
             {% if show_referrer_col %}
-            <th>
+            <th class="person-col">
                 <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=referrer&dir={% if current_sort == 'referrer' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                     Doporučitel
                     {% if current_sort == 'referrer' %}
@@ -192,7 +224,7 @@
             {% endif %}
 
             {% if show_advisor_col %}
-            <th>
+            <th class="person-col">
                 <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=advisor&dir={% if current_sort == 'advisor' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                     Poradce
                     {% if current_sort == 'advisor' %}
@@ -203,7 +235,7 @@
             {% endif %}
 
             {% if show_manager_col %}
-            <th>
+            <th class="person-col">
                 <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=manager&dir={% if current_sort == 'manager' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                     Manažer
                     {% if current_sort == 'manager' %}
@@ -214,7 +246,7 @@
             {% endif %}
 
             {% if show_office_col %}
-            <th>
+            <th class="person-col">
                 <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=office&dir={% if current_sort == 'office' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                     Kancelář
                     {% if current_sort == 'office' %}
@@ -224,7 +256,7 @@
             </th>
             {% endif %}
 
-            <th>
+            <th class="status-col">
                 <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=comm_status&dir={% if current_sort == 'comm_status' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                     Stav komunikace
                     {% if current_sort == 'comm_status' %}
@@ -233,7 +265,7 @@
                 </a>
             </th>
 
-            <th>
+            <th class="date-col">
                 <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=created_at&dir={% if current_sort == 'created_at' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                     Vytvořeno
                     {% if current_sort == 'created_at' %}
@@ -266,7 +298,7 @@
             </td>
 
             {% if show_referrer_col %}
-            <td>
+            <td class="person-col">
                 {% if lead.referrer %}
                     <a href="{% url 'user_detail' lead.referrer.pk %}">{{ lead.referrer }}</a>
                 {% else %}
@@ -276,7 +308,7 @@
             {% endif %}
 
             {% if show_advisor_col %}
-            <td>
+            <td class="person-col">
                 {% if lead.advisor %}
                     <a href="{% url 'advisor_detail' lead.advisor.pk %}">{{ lead.advisor }}</a>
                 {% else %}
@@ -286,7 +318,7 @@
             {% endif %}
 
             {% if show_manager_col %}
-            <td>
+            <td class="person-col">
                 {% if lead.is_personal_contact %}
                     <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
                 {% elif lead.referrer_manager %}
@@ -298,7 +330,7 @@
             {% endif %}
 
             {% if show_office_col %}
-            <td>
+            <td class="person-col">
                 {% if lead.is_personal_contact %}
                     <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
                 {% elif lead.referrer.referrer_profile.manager.manager_profile.office %}
@@ -315,8 +347,8 @@
             </td>
             {% endif %}
 
-            <td><span class="badge">{{ lead.get_communication_status_display }}</span></td>
-            <td>{{ lead.created_at|date:"d.m.Y H:i" }}</td>
+            <td class="status-col"><span class="badge">{{ lead.get_communication_status_display }}</span></td>
+            <td class="date-col">{{ lead.created_at|date:"d.m.Y H:i" }}</td>
         </tr>
         {% endfor %}
         </tbody>

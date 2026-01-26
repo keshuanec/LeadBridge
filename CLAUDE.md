@@ -31,6 +31,10 @@ python manage.py process_scheduled_callbacks  # Zpracování callbacků (cron)
   - `events.py` - Zaznamenávání událostí (historie + notifikace)
   - `notifications.py` - Email notifikace (427 řádků)
 - **Email šablony**: `templates/emails/` (11 šablon)
+- **List Templates**: `templates/leads/my_leads.html`, `templates/leads/deals_list.html`
+  - Kolapsibilní filtry s animacemi
+  - Toggleable note column pro poznámky
+  - Fixované šířky sloupců pro mobilní zobrazení
 
 ## Business Flow
 
@@ -169,6 +173,17 @@ LeadEventService.record_commission_paid(deal, user, recipient_type, changes, all
 - Vždy použij `select_related()` pro ForeignKey
 - Vždy použij `prefetch_related()` pro ManyToMany
 - Viz příklady v `leads/views.py`
+
+### UI Komponenty & Mobilní Zobrazení
+- **Kolapsibilní filtry**: Filtry se defaultně skrývají, rozbalí se tlačítkem "Zobrazit filtry"
+- **Toggleable poznámky**: Sloupec poznámek se zobrazí/skryje tlačítkem "Zobrazit poznámky"
+- **Fixované šířky sloupců**:
+  - `.client-col` - 90px pro jméno klienta
+  - `.person-col` - 70px pro jména osob (Doporučitel, Poradce, Manažer, Kancelář)
+  - `.status-col` - 85px pro statusy
+  - `.date-col` - 85px pro data
+  - `.note-col` - 400px při zobrazení, 0px při skrytí (s animací)
+- **Mobilní optimalizace**: Tabulky používají `overflow-x: auto` a `table-layout: fixed` pro scroll na mobilech
 
 ## Environment Variables
 

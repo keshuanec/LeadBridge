@@ -355,7 +355,7 @@ Klíčové proměnné v `.env`:
 - **Python soubory**: 67
 - **HTML šablony**: 36
 - **Hlavní soubory**:
-  - `leads/views.py`: 2,148 řádků
+  - `leads/views.py`: 1,361 řádků (refaktorováno z původních 2,170)
   - `leads/models.py`: 561 řádků
   - `leads/services/notifications.py`: 427 řádků
   - `accounts/models.py`: 273 řádků
@@ -368,6 +368,34 @@ Klíčové proměnné v `.env`:
 4. **Form Customization** - Dynamická pole podle role uživatele
 5. **Environment-based Configuration** - Různé nastavení pro dev/prod
 6. **Personal Contacts Exclusion** - Vlastní kontakty poradce se vyloučují z referrer statistik pomocí `.exclude(is_personal_contact=True)`
+7. **Collapsible UI Components** - Kolapsibilní filtry a toggleable sloupce pro optimalizaci prostoru
+
+## UI Komponenty & Mobilní Zobrazení
+
+### List Views (Leady a Dealy)
+- **Kolapsibilní filtry**: Filtry se defaultně skrývají, rozbalí se tlačítkem "Zobrazit filtry"
+  - Animace při rozbalení/sbalení
+  - Tlačítka "Filtrovat" a "Zrušit filtry" se zobrazí pouze při rozbalených filtrech
+- **Toggleable poznámky**: Sloupec s posledními poznámkami
+  - Skrytý defaultně pro úsporu prostoru
+  - Zobrazí/skryje se tlačítkem "Zobrazit poznámky"
+  - Smooth CSS animace při přechodu
+  - Text limitován na 2 řádky s ellipsis
+
+### Mobilní Optimalizace
+- **Fixované šířky sloupců** pro prevenci prolínání na malých displejích:
+  - `.client-col` - 90px (jméno klienta)
+  - `.person-col` - 70px (Doporučitel, Poradce, Manažer, Kancelář)
+  - `.status-col` - 85px (statusy)
+  - `.date-col` - 85px (data)
+  - `.note-col` - 400px při zobrazení, 0px při skrytí (s CSS transition)
+  - `.commission-col` - 70px (provize v deals listu)
+  - `.loan-col` - 90px (výše úvěru)
+- **Tabulka nastavení**:
+  - `table-layout: fixed` - pevné rozložení
+  - `overflow-x: auto` - horizontální scroll na mobilech
+  - `white-space: normal` - zalamování textu v buňkách
+- **Kompaktní typography**: Menší font-size (12-13px) a line-height (1.3) pro efektivní využití prostoru
 
 ## Často Používané Helper Funkce
 
@@ -407,6 +435,6 @@ Uvedeno v `leads/models.py` Deal model:
 
 ---
 
-**Poslední aktualizace**: 2026-01-21
+**Poslední aktualizace**: 2026-01-26
 **Django verze**: 5.2.8
 **Python verze**: 3.12
