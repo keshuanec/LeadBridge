@@ -54,6 +54,9 @@ python manage.py process_scheduled_callbacks  # Zpracování callbacků (cron)
 ## Důležité Modely
 
 ### Lead
+- `client_first_name` (CharField, blank=True) - křestní jméno klienta (volitelné)
+- `client_last_name` (CharField, required) - příjmení klienta (povinné)
+- `client_name` (property) - vrací "Příjmení Křestní" nebo jen příjmení
 - `referrer` (FK User) - kdo vytvořil
 - `advisor` (FK User) - přiřazený poradce
 - `communication_status` - NEW, MEETING, SEARCHING_PROPERTY, WAITING_FOR_CLIENT, FAILED
@@ -63,6 +66,8 @@ python manage.py process_scheduled_callbacks  # Zpracování callbacků (cron)
 
 ### Deal
 - OneToOne s Lead
+- `client_first_name`, `client_last_name` - kopie jména z Lead (synchronizace přes signály)
+- `client_name` (property) - vrací "Příjmení Křestní" nebo jen příjmení
 - `loan_amount` - výše úvěru v Kč
 - `bank` - 11 podporovaných bank
 - `status` - 8 stupňů (PREPARATION → DRAWN)

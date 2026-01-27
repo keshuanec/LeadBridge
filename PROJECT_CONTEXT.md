@@ -88,7 +88,10 @@ Primární business entita pro správu kontaktů:
   - `advisor` (FK) - Přiřazený hypoteční poradce
   - OneToOne s Deal (po úspěšné konverzi)
 - **Klíčová pole**:
-  - Informace o klientovi (jméno, telefon, email)
+  - `client_first_name` - Křestní jméno klienta (volitelné, blank=True)
+  - `client_last_name` - Příjmení klienta (povinné)
+  - `client_name` - Property vrací "Příjmení Křestní" nebo jen příjmení
+  - `client_phone`, `client_email` - Kontaktní údaje
   - `communication_status` - Lifecycle stav leadu
   - `meeting_scheduled`, `meeting_done` - Tracking schůzek
   - `callback_scheduled_date` - Datum pro follow-up
@@ -99,6 +102,9 @@ Primární business entita pro správu kontaktů:
 Detaily hypotéky a provize:
 - OneToOne vztah s Lead
 - **Klíčová pole**:
+  - `client_first_name`, `client_last_name` - Kopie jména z Lead (synchronizace přes signály)
+  - `client_name` - Property vrací "Příjmení Křestní" nebo jen příjmení
+  - `client_phone`, `client_email` - Kontaktní údaje
   - `loan_amount` - Výše úvěru v Kč
   - `bank` - 11 podporovaných bank
   - `property_type` - OWN vs OTHER
@@ -347,8 +353,8 @@ Klíčové proměnné v `.env`:
 ## Databázové Migrace
 
 - **accounts app**: 21 migrací
-- **leads app**: 17 migrací
-- **Celkem**: 38 schema changes
+- **leads app**: 19 migrací (poslední 3: split client_name → client_first_name + client_last_name)
+- **Celkem**: 40 schema changes
 
 ## Code Statistics
 
@@ -363,12 +369,13 @@ Klíčové proměnné v `.env`:
 ## Návrhové Vzory
 
 1. **Service Layer Pattern** - Business logika v `/services/` adresářích
-2. **Signal-based Data Sync** - Automatická synchronizace Lead ↔ Deal
+2. **Signal-based Data Sync** - Automatická synchronizace Lead ↔ Deal (včetně client_first_name a client_last_name)
 3. **Role-based Query Filtering** - Konzistentní permission checking
 4. **Form Customization** - Dynamická pole podle role uživatele
 5. **Environment-based Configuration** - Různé nastavení pro dev/prod
 6. **Personal Contacts Exclusion** - Vlastní kontakty poradce se vyloučují z referrer statistik pomocí `.exclude(is_personal_contact=True)`
 7. **Collapsible UI Components** - Kolapsibilní filtry a toggleable sloupce pro optimalizaci prostoru
+8. **Client Name Pattern** - Jméno rozděleno na `client_first_name` (volitelné) a `client_last_name` (povinné), property `client_name` vrací "Příjmení Křestní" nebo jen příjmení pro zpětnou kompatibilitu
 
 ## UI Komponenty & Mobilní Zobrazení
 
@@ -435,6 +442,6 @@ Uvedeno v `leads/models.py` Deal model:
 
 ---
 
-**Poslední aktualizace**: 2026-01-26
+**Poslední aktualizace**: 2026-01-27
 **Django verze**: 5.2.8
 **Python verze**: 3.12
