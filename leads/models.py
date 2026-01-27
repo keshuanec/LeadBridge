@@ -28,7 +28,8 @@ class Lead(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    client_name = models.CharField("Jméno klienta", max_length=255)
+    client_first_name = models.CharField("Křestní jméno klienta", max_length=255, blank=True)
+    client_last_name = models.CharField("Příjmení klienta", max_length=255)
     client_phone = models.CharField("Telefon klienta", max_length=50, blank=True)
     client_email = models.EmailField("E-mail klienta", blank=True)
 
@@ -96,6 +97,12 @@ class Lead(models.Model):
     callback_scheduled_date = models.DateField("Datum plánovaného hovoru", null=True, blank=True)
     callback_note = models.TextField("Poznámka k hovoru", blank=True)
 
+    @property
+    def client_name(self):
+        """Vrací celé jméno klienta ve formátu 'Příjmení Křestní' nebo jen příjmení"""
+        if self.client_first_name:
+            return f"{self.client_last_name} {self.client_first_name}"
+        return self.client_last_name
 
     @property
     def referrer_manager(self):
@@ -236,7 +243,8 @@ class Deal(models.Model):
     )
 
     # kopie klienta v okamžiku založení obchodu (ať se to historicky nemění)
-    client_name = models.CharField("Jméno klienta", max_length=255)
+    client_first_name = models.CharField("Křestní jméno klienta", max_length=255, blank=True)
+    client_last_name = models.CharField("Příjmení klienta", max_length=255)
     client_phone = models.CharField("Telefon klienta", max_length=50, blank=True)
     client_email = models.EmailField("E-mail klienta", blank=True)
 
@@ -268,6 +276,13 @@ class Deal(models.Model):
     paid_referrer = models.BooleanField("Vyplacen makléř", default=False)
     paid_manager = models.BooleanField("Vyplacen manažer", default=False)
     paid_office = models.BooleanField("Vyplacena kancelář", default=False)
+
+    @property
+    def client_name(self):
+        """Vrací celé jméno klienta ve formátu 'Příjmení Křestní' nebo jen příjmení"""
+        if self.client_first_name:
+            return f"{self.client_last_name} {self.client_first_name}"
+        return self.client_last_name
 
     def __str__(self):
         return f"Obchod – {self.client_name} ({self.get_status_display()})"

@@ -19,10 +19,18 @@
         {% csrf_token %}
 
         <div class="form-group">
-            <label for="{{ form.client_name.id_for_label }}">Jméno klienta</label>
-            {{ form.client_name }}
-            {% if form.client_name.errors %}
-                <div class="alert alert-error">{{ form.client_name.errors }}</div>
+            <label for="{{ form.client_first_name.id_for_label }}">Křestní jméno (volitelné)</label>
+            {{ form.client_first_name }}
+            {% if form.client_first_name.errors %}
+                <div class="alert alert-error">{{ form.client_first_name.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.client_last_name.id_for_label }}">Příjmení</label>
+            {{ form.client_last_name }}
+            {% if form.client_last_name.errors %}
+                <div class="alert alert-error">{{ form.client_last_name.errors }}</div>
             {% endif %}
         </div>
 

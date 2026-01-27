@@ -13,8 +13,13 @@
         {% csrf_token %}
 
         <div class="form-group">
-            <label>{{ form.client_name.label }}</label>
-            {{ form.client_name }}
+            <label>{{ form.client_first_name.label }}</label>
+            {{ form.client_first_name }}
+        </div>
+
+        <div class="form-group">
+            <label>{{ form.client_last_name.label }}</label>
+            {{ form.client_last_name }}
         </div>
 
         <div class="form-group">

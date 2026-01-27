@@ -12,7 +12,8 @@ class LeadForm(forms.ModelForm):
     class Meta:
         model = Lead
         fields = [
-            "client_name",
+            "client_first_name",
+            "client_last_name",
             "client_phone",
             "client_email",
             "advisor",
@@ -22,7 +23,8 @@ class LeadForm(forms.ModelForm):
             "description",
         ]
         labels = {
-            "client_name": "Jméno klienta",
+            "client_first_name": "Křestní jméno",
+            "client_last_name": "Příjmení",
             "client_phone": "Telefon klienta",
             "client_email": "E-mail klienta",
             "advisor": "Poradce",
@@ -321,9 +323,10 @@ class LeadMeetingForm(forms.ModelForm):
 class DealCreateForm(forms.ModelForm):
     class Meta:
         model = Deal
-        fields = ["client_name", "client_phone", "client_email", "loan_amount", "bank", "property_type"]
+        fields = ["client_first_name", "client_last_name", "client_phone", "client_email", "loan_amount", "bank", "property_type"]
         labels = {
-            "client_name": "Jméno klienta",
+            "client_first_name": "Křestní jméno",
+            "client_last_name": "Příjmení",
             "client_phone": "Telefon",
             "client_email": "E-mail",
             "loan_amount": "Výše úvěru",
@@ -337,12 +340,14 @@ class DealCreateForm(forms.ModelForm):
 
         # klientské údaje jen jako „předvyplněné" – můžeš je dát readonly
         if lead is not None and not self.instance.pk:
-            self.fields["client_name"].initial = lead.client_name
+            self.fields["client_first_name"].initial = lead.client_first_name
+            self.fields["client_last_name"].initial = lead.client_last_name
             self.fields["client_phone"].initial = lead.client_phone
             self.fields["client_email"].initial = lead.client_email
 
         # pokud chceš zakázat editaci klienta v dealu:
-        self.fields["client_name"].disabled = True
+        self.fields["client_first_name"].disabled = True
+        self.fields["client_last_name"].disabled = True
         self.fields["client_phone"].disabled = True
         self.fields["client_email"].disabled = True
 
@@ -357,7 +362,8 @@ class DealEditForm(forms.ModelForm):
     class Meta:
         model = Deal
         fields = [
-            "client_name",
+            "client_first_name",
+            "client_last_name",
             "client_phone",
             "client_email",
             "loan_amount",
@@ -366,7 +372,8 @@ class DealEditForm(forms.ModelForm):
             "status",
         ]
         labels = {
-            "client_name": "Jméno klienta",
+            "client_first_name": "Křestní jméno",
+            "client_last_name": "Příjmení",
             "client_phone": "Telefon",
             "client_email": "E-mail",
             "loan_amount": "Výše úvěru (Kč)",

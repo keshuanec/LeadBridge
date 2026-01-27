@@ -18,7 +18,8 @@ def lead_pre_save(sender, instance, **kwargs):
         try:
             old_lead = Lead.objects.get(pk=instance.pk)
             _lead_old_values[instance.pk] = {
-                'client_name': old_lead.client_name,
+                'client_first_name': old_lead.client_first_name,
+                'client_last_name': old_lead.client_last_name,
                 'client_phone': old_lead.client_phone,
                 'client_email': old_lead.client_email,
                 'communication_status': old_lead.communication_status,
@@ -56,8 +57,10 @@ def sync_lead_to_deal(sender, instance, created, **kwargs):
         old_values = _lead_old_values[instance.pk]
         changes = {}
 
-        if old_values['client_name'] != instance.client_name:
-            changes['Jméno klienta'] = {'old': old_values['client_name'], 'new': instance.client_name}
+        if old_values['client_first_name'] != instance.client_first_name:
+            changes['Křestní jméno'] = {'old': old_values['client_first_name'], 'new': instance.client_first_name}
+        if old_values['client_last_name'] != instance.client_last_name:
+            changes['Příjmení'] = {'old': old_values['client_last_name'], 'new': instance.client_last_name}
         if old_values['client_phone'] != instance.client_phone:
             changes['Telefon'] = {'old': old_values['client_phone'], 'new': instance.client_phone}
         if old_values['client_email'] != instance.client_email:
@@ -98,7 +101,8 @@ def sync_lead_to_deal(sender, instance, created, **kwargs):
         return
 
     Deal.objects.filter(pk=deal.pk).update(
-        client_name=instance.client_name,
+        client_first_name=instance.client_first_name,
+        client_last_name=instance.client_last_name,
         client_phone=instance.client_phone,
         client_email=instance.client_email,
     )
@@ -111,7 +115,8 @@ def deal_pre_save(sender, instance, **kwargs):
         try:
             old_deal = Deal.objects.get(pk=instance.pk)
             _deal_old_values[instance.pk] = {
-                'client_name': old_deal.client_name,
+                'client_first_name': old_deal.client_first_name,
+                'client_last_name': old_deal.client_last_name,
                 'client_phone': old_deal.client_phone,
                 'client_email': old_deal.client_email,
                 'status': old_deal.status,
@@ -152,8 +157,10 @@ def sync_deal_to_lead(sender, instance, created, **kwargs):
         old_values = _deal_old_values[instance.pk]
         changes = {}
 
-        if old_values['client_name'] != instance.client_name:
-            changes['Jméno klienta'] = {'old': old_values['client_name'], 'new': instance.client_name}
+        if old_values['client_first_name'] != instance.client_first_name:
+            changes['Křestní jméno'] = {'old': old_values['client_first_name'], 'new': instance.client_first_name}
+        if old_values['client_last_name'] != instance.client_last_name:
+            changes['Příjmení'] = {'old': old_values['client_last_name'], 'new': instance.client_last_name}
         if old_values['client_phone'] != instance.client_phone:
             changes['Telefon'] = {'old': old_values['client_phone'], 'new': instance.client_phone}
         if old_values['client_email'] != instance.client_email:
@@ -184,7 +191,8 @@ def sync_deal_to_lead(sender, instance, created, **kwargs):
     # Synchronizace s Lead
     lead = instance.lead
     Lead.objects.filter(pk=lead.pk).update(
-        client_name=instance.client_name,
+        client_first_name=instance.client_first_name,
+        client_last_name=instance.client_last_name,
         client_phone=instance.client_phone,
         client_email=instance.client_email,
     )

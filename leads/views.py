@@ -921,7 +921,8 @@ def deal_create_from_lead(request, pk: int):
             deal.lead = lead
 
             # kopie klienta z leadu (protože pole jsou disabled)
-            deal.client_name = lead.client_name
+            deal.client_first_name = lead.client_first_name
+            deal.client_last_name = lead.client_last_name
             deal.client_phone = lead.client_phone
             deal.client_email = lead.client_email
             deal.save()
@@ -1145,10 +1146,11 @@ def deal_edit(request, pk: int):
             updated = form.save()
 
             # sync klientských údajů do leadu
-            lead.client_name = updated.client_name
+            lead.client_first_name = updated.client_first_name
+            lead.client_last_name = updated.client_last_name
             lead.client_phone = updated.client_phone
             lead.client_email = updated.client_email
-            lead.save(update_fields=["client_name", "client_phone", "client_email", "updated_at"])
+            lead.save(update_fields=["client_first_name", "client_last_name", "client_phone", "client_email", "updated_at"])
 
             # historie (do leadu)
             changes = []
