@@ -363,20 +363,22 @@ class UserStatsService:
         meetings_planned = leads_qs.filter(meeting_scheduled=True).count()
         meetings_done = leads_qs.filter(meeting_done=True).count()
 
-        # Deals statistics (exclude personal contacts)
+        # Deals statistics (exclude personal contacts AND personal deals)
         deals_qs = Deal.objects.filter(lead__advisor=advisor).exclude(
-            lead__is_personal_contact=True, lead__referrer=advisor
+            Q(lead__is_personal_contact=True, lead__referrer=advisor) |
+            Q(is_personal_deal=True)
         )
         deals_qs = UserStatsService.apply_date_filter(deals_qs, date_from, date_to)
 
         deals_created = deals_qs.count()
         deals_completed = deals_qs.filter(status=Deal.DealStatus.DRAWN).count()
 
-        # Personal deals statistics (where advisor is also the referrer)
+        # Personal deals statistics (personal contacts OR personal deals)
         personal_deals_qs = Deal.objects.filter(
-            lead__advisor=advisor,
-            lead__is_personal_contact=True,
-            lead__referrer=advisor
+            lead__advisor=advisor
+        ).filter(
+            Q(lead__is_personal_contact=True, lead__referrer=advisor) |
+            Q(is_personal_deal=True)
         )
         personal_deals_qs = UserStatsService.apply_date_filter(
             personal_deals_qs, date_from, date_to
