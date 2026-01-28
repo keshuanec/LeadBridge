@@ -587,8 +587,12 @@ class UserStatsService:
         - leads_received: Number of leads assigned to advisor (excluding personal contacts)
         - meetings_planned: Number of leads with meetings scheduled
         - meetings_done: Number of leads with meetings completed
-        - deals_created: Number of deals created
-        - deals_completed: Number of deals with status=DRAWN
+        - deals_created: Number of unique leads with at least one deal
+        - deals_completed: Number of unique leads with at least one completed deal
+
+        Note: deals_created and deals_completed count unique LEADS with deals,
+        not total number of deals (one lead may have multiple deals).
+        This ensures consistency with meetings counts.
 
         Args:
             date_from: Optional start date for filtering
@@ -621,12 +625,12 @@ class UserStatsService:
         if date_to:
             lead_subquery = lead_subquery.filter(created_at__lt=date_to + timedelta(days=1))
 
-        # Build deal subquery that excludes personal contacts
+        # Build deal subquery that excludes personal contacts AND personal deals
         deal_subquery = Deal.objects.filter(
             lead__advisor=OuterRefDjango('pk')
         ).exclude(
-            lead__is_personal_contact=True,
-            lead__referrer=F('lead__advisor')
+            Q(lead__is_personal_contact=True, lead__referrer=F('lead__advisor')) |
+            Q(is_personal_deal=True)
         )
 
         if date_from:
@@ -645,10 +649,10 @@ class UserStatsService:
                 lead_subquery.filter(meeting_done=True).values('advisor').annotate(count=Count('id')).values('count')[:1]
             ),
             deals_created=Subquery(
-                deal_subquery.values('lead__advisor').annotate(count=Count('id')).values('count')[:1]
+                deal_subquery.values('lead__advisor').annotate(count=Count('lead', distinct=True)).values('count')[:1]
             ),
             deals_completed=Subquery(
-                deal_subquery.filter(status=Deal.DealStatus.DRAWN).values('lead__advisor').annotate(count=Count('id')).values('count')[:1]
+                deal_subquery.filter(status=Deal.DealStatus.DRAWN).values('lead__advisor').annotate(count=Count('lead', distinct=True)).values('count')[:1]
             ),
         ).order_by('last_name', 'first_name')
 
