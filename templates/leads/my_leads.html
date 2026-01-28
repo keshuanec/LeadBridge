@@ -56,6 +56,19 @@
         width: 100% !important;
     }
 
+    /* Soukromá poznámka - žluté pozadí a oranžový border */
+    .table-wrapper > table.leads-table .note-col .note-content.private-note {
+        background-color: #FFF9E6;
+        border-left: 3px solid #F39C12;
+        padding-left: 6px;
+    }
+
+    .table-wrapper > table.leads-table .note-col .note-content .private-badge {
+        color: #F39C12;
+        font-weight: 600;
+        margin-right: 4px;
+    }
+
     /* Kompaktní řádky tabulky - max 2 řádky textu */
     .table-wrapper > table.leads-table td {
         font-size: 13px !important;
@@ -288,9 +301,9 @@
             </td>
 
             <td class="note-col note-col-hidden">
-                <div class="note-content">
+                <div class="note-content{% if lead.last_note_is_private %} private-note{% endif %}">
                     {% if lead.last_note_text %}
-                        {{ lead.last_note_text }}
+                        {% if lead.last_note_is_private %}<span class="private-badge">🔒</span>{% endif %}{{ lead.last_note_text }}
                     {% else %}
                         —
                     {% endif %}

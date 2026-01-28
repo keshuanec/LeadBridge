@@ -390,11 +390,30 @@ class ListFilterService:
                 d.user_commissions_paid = d.all_commissions_paid
 
             # Přidání poslední poznámky pro zobrazení v tabulce
+            # Filtruje poznámky podle oprávnění uživatele
             try:
-                last_note = d.lead.notes.first() if hasattr(d.lead, 'notes') else None
-                d.last_note_text = last_note.text if last_note else None
+                if hasattr(d.lead, 'notes'):
+                    # Pro superusery zobrazit všechny poznámky
+                    if self.user.is_superuser:
+                        visible_notes = d.lead.notes.all()
+                    else:
+                        # Ostatní uživatelé vidí pouze:
+                        # - Veřejné poznámky
+                        # - Své vlastní soukromé poznámky
+                        visible_notes = d.lead.notes.filter(
+                            Q(is_private=False) |  # Veřejné poznámky vidí všichni
+                            Q(author=self.user)    # Soukromé poznámky vidí pouze autor
+                        )
+
+                    last_note = visible_notes.first()
+                    d.last_note_text = last_note.text if last_note else None
+                    d.last_note_is_private = last_note.is_private if last_note else False
+                else:
+                    d.last_note_text = None
+                    d.last_note_is_private = False
             except Exception:
                 d.last_note_text = None
+                d.last_note_is_private = False
 
             deals.append(d)
 
@@ -415,11 +434,30 @@ class ListFilterService:
         leads = []
         for lead in leads_qs:
             # Přidání poslední poznámky pro zobrazení v tabulce
+            # Filtruje poznámky podle oprávnění uživatele
             try:
-                last_note = lead.notes.first() if hasattr(lead, 'notes') else None
-                lead.last_note_text = last_note.text if last_note else None
+                if hasattr(lead, 'notes'):
+                    # Pro superusery zobrazit všechny poznámky
+                    if self.user.is_superuser:
+                        visible_notes = lead.notes.all()
+                    else:
+                        # Ostatní uživatelé vidí pouze:
+                        # - Veřejné poznámky
+                        # - Své vlastní soukromé poznámky
+                        visible_notes = lead.notes.filter(
+                            Q(is_private=False) |  # Veřejné poznámky vidí všichni
+                            Q(author=self.user)    # Soukromé poznámky vidí pouze autor
+                        )
+
+                    last_note = visible_notes.first()
+                    lead.last_note_text = last_note.text if last_note else None
+                    lead.last_note_is_private = last_note.is_private if last_note else False
+                else:
+                    lead.last_note_text = None
+                    lead.last_note_is_private = False
             except Exception:
                 lead.last_note_text = None
+                lead.last_note_is_private = False
 
             leads.append(lead)
 

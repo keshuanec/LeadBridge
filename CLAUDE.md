@@ -64,6 +64,16 @@ python manage.py process_scheduled_callbacks  # Zpracování callbacků (cron)
 - `meeting_scheduled`, `meeting_done` - tracking schůzek
 - OneToOne s Deal
 
+### LeadNote
+- `lead` (FK Lead) - vztah k leadu
+- `author` (FK User) - autor poznámky
+- `text` (TextField) - text poznámky
+- `is_private` (BooleanField) - soukromá poznámka
+- **Oprávnění pro zobrazení**:
+  - Veřejné poznámky (`is_private=False`) - vidí všichni s přístupem k leadu
+  - Soukromé poznámky (`is_private=True`) - vidí pouze autor a admin
+  - V seznamech leadů/dealů se filtrují automaticky přes `ListFilterService`
+
 ### Deal
 - OneToOne s Lead
 - `client_first_name`, `client_last_name` - kopie jména z Lead (synchronizace přes signály)
@@ -124,7 +134,16 @@ filter_params = filter_service.get_filter_params()
 allowed = filter_service.get_allowed_filters()
 queryset = filter_service.apply_filters(queryset, allowed, filter_params)
 queryset, sort, direction = filter_service.apply_sorting(queryset)
+
+# Post-processing pro šablony (přidává last_note_text a last_note_is_private)
+leads = filter_service.process_leads_for_template(leads_qs)
+deals = filter_service.process_deals_for_template(deals_qs)
 ```
+
+**Filtrování poznámek podle oprávnění:**
+- `process_leads_for_template()` a `process_deals_for_template()` automaticky filtrují poznámky
+- Uživatel vidí pouze veřejné poznámky + své vlastní soukromé poznámky
+- Admin vidí všechny poznámky
 
 **4. LeadHierarchyHelper** - Procházení hierarchie referrer → manager → office
 ```python
@@ -182,6 +201,8 @@ LeadEventService.record_commission_paid(deal, user, recipient_type, changes, all
 ### UI Komponenty & Mobilní Zobrazení
 - **Kolapsibilní filtry**: Filtry se defaultně skrývají, rozbalí se tlačítkem "Zobrazit filtry"
 - **Toggleable poznámky**: Sloupec poznámek se zobrazí/skryje tlačítkem "Zobrazit poznámky"
+  - Zobrazuje pouze poznámky, které má uživatel právo vidět (veřejné + vlastní soukromé)
+  - Soukromé poznámky jsou označeny žlutým pozadím (#FFF9E6), oranžovým borderem (#F39C12) a ikonou 🔒
 - **Fixované šířky sloupců**:
   - `.client-col` - 90px pro jméno klienta
   - `.person-col` - 70px pro jména osob (Doporučitel, Poradce, Manažer, Kancelář)

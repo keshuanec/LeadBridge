@@ -142,6 +142,19 @@
         width: 100% !important;
     }
 
+    /* Soukromá poznámka - žluté pozadí a oranžový border */
+    .table-wrapper > table.deals-table .note-col .note-content.private-note {
+        background-color: #FFF9E6;
+        border-left: 3px solid #F39C12;
+        padding-left: 6px;
+    }
+
+    .table-wrapper > table.deals-table .note-col .note-content .private-badge {
+        color: #F39C12;
+        font-weight: 600;
+        margin-right: 4px;
+    }
+
     /* Barevné podbarvení řádků podle statusu */
     .deal-row-completed {
         background-color: #e8f5e9 !important; /* Lehce zelená */
@@ -363,9 +376,9 @@
                     <td class="loan-col">{{ d.loan_amount|floatformat:0 }} Kč</td>
 
                     <td class="note-col note-col-hidden">
-                        <div class="note-content">
+                        <div class="note-content{% if d.last_note_is_private %} private-note{% endif %}">
                             {% if d.last_note_text %}
-                                {{ d.last_note_text }}
+                                {% if d.last_note_is_private %}<span class="private-badge">🔒</span>{% endif %}{{ d.last_note_text }}
                             {% else %}
                                 —
                             {% endif %}

@@ -52,13 +52,17 @@ Lead_Bridge/
 │
 ├── leads/                   # Core business logic
 │   ├── models.py            # Lead, Deal, LeadNote, LeadHistory, ActivityLog
-│   ├── views.py             # 2,148 řádků - hlavní business logika
+│   ├── views.py             # 1,361 řádků - hlavní business logika
 │   ├── forms.py             # 8+ Django forms s dynamickou logikou
 │   ├── signals.py           # Auto-sync Lead ↔ Deal
 │   ├── middleware.py        # Login/logout tracking
 │   ├── services/
-│   │   ├── notifications.py # Email notification systém (427 řádků)
-│   │   └── user_stats.py    # Výpočty statistik
+│   │   ├── access_control.py  # Role-based access control
+│   │   ├── user_stats.py      # Výpočty statistik
+│   │   ├── filters.py         # Filtrování, řazení a post-processing (vč. note filtering)
+│   │   ├── model_helpers.py   # Helper pro procházení modelových vztahů
+│   │   ├── events.py          # Zaznamenávání událostí (historie + notifikace)
+│   │   └── notifications.py   # Email notification systém (427 řádků)
 │   └── management/commands/
 │       └── process_scheduled_callbacks.py  # Cron job pro zpracování callbacků
 │
@@ -119,7 +123,16 @@ Detaily hypotéky a provize:
 - **ReferrerProfile** - Propojuje makléře s manažery a poradci
 - **Office** - Entity realitních kanceláří
 - **ManagerProfile** - Propojuje manažery s kancelářemi
-- **LeadNote** - Poznámky k leadům (podporuje private notes)
+- **LeadNote** - Poznámky k leadům s podporou soukromých poznámek
+  - `lead` (FK) - vztah k leadu
+  - `author` (FK) - autor poznámky
+  - `text` - text poznámky
+  - `is_private` - soukromá poznámka
+  - **Oprávnění zobrazení**:
+    - Veřejné poznámky (`is_private=False`) - vidí všichni s přístupem k leadu
+    - Soukromé poznámky (`is_private=True`) - vidí pouze autor a admin/superuser
+    - Filtrování v seznamech zajištěno přes `ListFilterService.process_leads_for_template()` a `process_deals_for_template()`
+  - **Vizuální označení**: Soukromé poznámky mají žluté pozadí (#FFF9E6), oranžový border (#F39C12) a ikonu 🔒
 - **LeadHistory** - Audit trail všech změn leadů
 - **ActivityLog** - Systémový log všech aktivit (login, CRUD operace) s IP adresami
 
@@ -373,9 +386,10 @@ Klíčové proměnné v `.env`:
 3. **Role-based Query Filtering** - Konzistentní permission checking
 4. **Form Customization** - Dynamická pole podle role uživatele
 5. **Environment-based Configuration** - Různé nastavení pro dev/prod
-6. **Personal Contacts Exclusion** - Vlastní kontakty poradce se vyloučují z referrer statistik pomocí `.exclude(is_personal_contact=True)`
+6. **Personal Contacts Exclusion** - Vlastní kontakty poradce se vyloučají z referrer statistik pomocí `.exclude(is_personal_contact=True)`
 7. **Collapsible UI Components** - Kolapsibilní filtry a toggleable sloupce pro optimalizaci prostoru
 8. **Client Name Pattern** - Jméno rozděleno na `client_first_name` (volitelné) a `client_last_name` (povinné), property `client_name` vrací "Příjmení Křestní" nebo jen příjmení pro zpětnou kompatibilitu
+9. **Privacy-Aware Note Filtering** - Automatické filtrování poznámek podle oprávnění uživatele v seznamových views (pouze veřejné + vlastní soukromé poznámky)
 
 ## UI Komponenty & Mobilní Zobrazení
 
@@ -388,6 +402,14 @@ Klíčové proměnné v `.env`:
   - Zobrazí/skryje se tlačítkem "Zobrazit poznámky"
   - Smooth CSS animace při přechodu
   - Text limitován na 2 řádky s ellipsis
+  - **Automatické filtrování podle oprávnění**: Zobrazují se pouze poznámky, které má uživatel právo vidět
+    - Veřejné poznámky - vidí všichni
+    - Soukromé poznámky - vidí pouze autor a admin
+  - **Vizuální označení soukromých poznámek**:
+    - Žluté pozadí (#FFF9E6)
+    - Oranžový levý border (3px, #F39C12)
+    - Ikona zámku 🔒 před textem
+    - Stejný styl jako v detailu leadu/dealu
 
 ### Mobilní Optimalizace
 - **Fixované šířky sloupců** pro prevenci prolínání na malých displejích:
@@ -442,6 +464,6 @@ Uvedeno v `leads/models.py` Deal model:
 
 ---
 
-**Poslední aktualizace**: 2026-01-27
+**Poslední aktualizace**: 2026-01-28
 **Django verze**: 5.2.8
 **Python verze**: 3.12
