@@ -104,6 +104,19 @@ class Lead(models.Model):
             return f"{self.client_last_name} {self.client_first_name}"
         return self.client_last_name
 
+    def get_latest_deal(self):
+        """Vrací nejnovější deal nebo None"""
+        return self.deals.order_by('-created_at').first()
+
+    def has_any_deal(self):
+        """Kontrola, zda Lead má alespoň jeden deal"""
+        return self.deals.exists()
+
+    @property
+    def deal_count(self):
+        """Počet dealů u tohoto leadu"""
+        return self.deals.count()
+
     @property
     def referrer_manager(self):
         rp = getattr(self.referrer, "referrer_profile", None)
@@ -235,10 +248,10 @@ class Deal(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
-    lead = models.OneToOneField(
+    lead = models.ForeignKey(
         "Lead",
         on_delete=models.PROTECT,
-        related_name="deal",
+        related_name="deals",
         verbose_name="Lead",
     )
 
@@ -264,6 +277,12 @@ class Deal(models.Model):
     commission_referrer = models.PositiveIntegerField("Provize makléř (Kč)", null=True, blank=True)
     commission_manager = models.PositiveIntegerField("Provize manažer (Kč)", null=True, blank=True)
     commission_office = models.PositiveIntegerField("Provize kancelář (Kč)", null=True, blank=True)
+
+    is_personal_deal = models.BooleanField(
+        "Vlastní obchod",
+        default=False,
+        help_text="Obchod je výsledkem dlouhodobé práce poradce (bez provize pro strukturu)."
+    )
 
     commission_status = models.CharField(
         "Stav provize",

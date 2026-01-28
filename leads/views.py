@@ -910,9 +910,8 @@ def deal_create_from_lead(request, pk: int):
     if not (user.is_superuser or user.role == User.Role.ADMIN or user.role == User.Role.ADVISOR):
         return HttpResponseForbidden("Nemáš oprávnění založit obchod.")
 
-    # pokud už obchod existuje, pošli rovnou do seznamu nebo detailu (zatím do seznamu)
-    if hasattr(lead, "deal"):
-        return redirect("deals_list")
+    # Žádná kontrola - vždy povolit vytvoření dalšího dealu
+    # (UI zobrazí počet existujících dealů)
 
     if request.method == "POST":
         form = DealCreateForm(request.POST, lead=lead)

@@ -92,14 +92,67 @@
         {% endif %}
 
         {% if can_create_deal %}
-            {% if lead.deal %}
-                <a href="{% url 'deal_detail' lead.deal.pk %}" class="btn btn-primary" title="Přejít na obchod">💼 Přejít na obchod</a>
-            {% else %}
-                <a href="{% url 'deal_create_from_lead' lead.pk %}" class="btn btn-primary" title="Založit obchod">➕ Založit obchod</a>
-            {% endif %}
+            <a href="{% url 'deal_create_from_lead' lead.pk %}" class="btn btn-primary">
+                ➕ {% if lead.deals.exists %}Založit další obchod{% else %}Založit obchod{% endif %}
+            </a>
         {% endif %}
     </div>
 </div>
+
+<!-- Sekce: Obchody leadu -->
+{% if lead.deals.exists %}
+<div class="card" style="margin-top: 20px;">
+    <h3>Obchody ({{ lead.deals.count }})</h3>
+    <div style="overflow-x: auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Typ</th>
+                    <th>Datum</th>
+                    <th>Banka</th>
+                    <th>Výše úvěru</th>
+                    <th>Stav</th>
+                    <th>Provize</th>
+                    <th>Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for deal in lead.deals.all %}
+                <tr {% if deal.is_personal_deal %}style="background-color: #f0f8ff;"{% endif %}>
+                    <td>
+                        {% if deal.is_personal_deal %}
+                            <span class="badge" style="background-color: #4a90e2; color: white;">👤 Vlastní</span>
+                        {% else %}
+                            <span class="badge" style="background-color: #50c878; color: white;">💼 Provizovaný</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ deal.created_at|date:"d.m.Y" }}</td>
+                    <td>{{ deal.get_bank_display }}</td>
+                    <td>{{ deal.loan_amount|intcomma }} Kč</td>
+                    <td>
+                        <span class="badge">{{ deal.get_status_display }}</span>
+                    </td>
+                    <td>
+                        {% if deal.is_personal_deal %}
+                            <span class="badge" style="background-color: #ddd;">Bez provize</span>
+                        {% elif deal.paid_referrer and deal.paid_manager and deal.paid_office %}
+                            <span class="badge badge-ready">✅ Vyplaceno</span>
+                        {% elif deal.commission_status == "READY" %}
+                            <span class="badge badge-ready">Připraveno</span>
+                        {% else %}
+                            <span class="badge">Čeká</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'deal_detail' deal.pk %}" class="btn btn-sm btn-secondary">Detail</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
 
 <div class="card" id="note-form">
     <h3>Přidat poznámku</h3>

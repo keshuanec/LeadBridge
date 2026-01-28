@@ -94,13 +94,12 @@ def sync_lead_to_deal(sender, instance, created, **kwargs):
         # Vyčistit cache
         del _lead_old_values[instance.pk]
 
-    # Synchronizace s Deal
-    try:
-        deal = instance.deal
-    except Deal.DoesNotExist:
+    # Synchronizace do VŠECH dealů
+    deals = instance.deals.all()
+    if not deals.exists():
         return
 
-    Deal.objects.filter(pk=deal.pk).update(
+    deals.update(
         client_first_name=instance.client_first_name,
         client_last_name=instance.client_last_name,
         client_phone=instance.client_phone,

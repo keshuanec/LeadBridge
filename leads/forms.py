@@ -323,7 +323,7 @@ class LeadMeetingForm(forms.ModelForm):
 class DealCreateForm(forms.ModelForm):
     class Meta:
         model = Deal
-        fields = ["client_first_name", "client_last_name", "client_phone", "client_email", "loan_amount", "bank", "property_type"]
+        fields = ["client_first_name", "client_last_name", "client_phone", "client_email", "loan_amount", "bank", "property_type", "is_personal_deal"]
         labels = {
             "client_first_name": "Křestní jméno",
             "client_last_name": "Příjmení",
@@ -337,6 +337,7 @@ class DealCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         lead = kwargs.pop("lead", None)
         super().__init__(*args, **kwargs)
+        self.lead = lead
 
         # klientské údaje jen jako „předvyplněné" – můžeš je dát readonly
         if lead is not None and not self.instance.pk:
@@ -344,6 +345,44 @@ class DealCreateForm(forms.ModelForm):
             self.fields["client_last_name"].initial = lead.client_last_name
             self.fields["client_phone"].initial = lead.client_phone
             self.fields["client_email"].initial = lead.client_email
+
+            # Info o existujících dealech
+            existing_count = lead.deals.count()
+            if existing_count > 0:
+                self.fields["bank"].help_text = (
+                    f"Tento klient již má {existing_count} obchod(ů). "
+                    "Vyberte banku pro další úvěr."
+                )
+
+            # LOGIKA PRO "Vlastní obchod" checkbox
+            # Zobrazit pouze pokud:
+            # 1. Lead NENÍ osobní kontakt (is_personal_contact=False)
+            # 2. Lead už má alespoň 1 deal (druhý+ deal)
+            show_personal_checkbox = (
+                not lead.is_personal_contact
+                and existing_count > 0
+            )
+
+            if show_personal_checkbox:
+                # Zobrazit checkbox s popisem
+                self.fields["is_personal_deal"].widget = forms.CheckboxInput()
+                self.fields["is_personal_deal"].help_text = (
+                    "Zaškrtněte, pokud je tento obchod výsledkem dlouhodobé práce "
+                    "poradce (bez provize pro strukturu). Obchod se nezobrazí "
+                    "doporučiteli, manažerovi ani kanceláři."
+                )
+                self.fields["is_personal_deal"].label = "Vlastní obchod (bez provize)"
+            else:
+                # Skrýt checkbox
+                self.fields["is_personal_deal"].widget = forms.HiddenInput()
+
+                # Auto-set hodnoty
+                if lead.is_personal_contact:
+                    # Lead je osobní kontakt → všechny dealy jsou osobní
+                    self.fields["is_personal_deal"].initial = True
+                else:
+                    # První deal je vždy provizovaný
+                    self.fields["is_personal_deal"].initial = False
 
         # pokud chceš zakázat editaci klienta v dealu:
         self.fields["client_first_name"].disabled = True
@@ -358,6 +397,14 @@ class DealCreateForm(forms.ModelForm):
             # Nastavíme defaultní hodnotu, aby byla validace v pořádku
             self.fields["property_type"].initial = Deal.PropertyType.OWN
 
+        # Pokud editujeme existující deal, zakázat změnu is_personal_deal
+        if self.instance.pk:
+            if "is_personal_deal" in self.fields:
+                self.fields["is_personal_deal"].disabled = True
+                self.fields["is_personal_deal"].help_text = (
+                    "Nelze změnit po vytvoření dealu."
+                )
+
 class DealEditForm(forms.ModelForm):
     class Meta:
         model = Deal
@@ -370,6 +417,7 @@ class DealEditForm(forms.ModelForm):
             "bank",
             "property_type",
             "status",
+            "is_personal_deal",
         ]
         labels = {
             "client_first_name": "Křestní jméno",
@@ -387,6 +435,16 @@ class DealEditForm(forms.ModelForm):
         widget=forms.Textarea(attrs={"rows": 3}),
         required=False,
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Zakázat editaci is_personal_deal (nelze změnit po vytvoření)
+        if self.instance.pk and "is_personal_deal" in self.fields:
+            self.fields["is_personal_deal"].disabled = True
+            self.fields["is_personal_deal"].help_text = (
+                "Nelze změnit po vytvoření dealu."
+            )
 
 class MeetingResultForm(forms.Form):
     """Formulář pro záznam výsledku schůzky"""

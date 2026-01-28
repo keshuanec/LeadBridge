@@ -9,6 +9,13 @@
         <div class="alert alert-error">{{ form.non_field_errors }}</div>
     {% endif %}
 
+    {% if lead.deals.exists %}
+    <div class="alert alert-info" style="margin-bottom: 20px;">
+        <strong>📋 Tento klient již má {{ lead.deals.count }} obchod{% if lead.deals.count > 1 %}y{% endif %}.</strong>
+        Vytváříte další obchod pro stejného klienta.
+    </div>
+    {% endif %}
+
     <form method="post">
         {% csrf_token %}
 

@@ -134,18 +134,22 @@ class LeadAccessService:
         elif user.role == User.Role.REFERRER:
             return base_qs.filter(lead__referrer=user)
 
-        # REFERRER_MANAGER: Team deals + own deals (exclude personal contacts)
+        # REFERRER_MANAGER: Team deals + own deals (exclude personal contacts and personal deals)
         elif user.role == User.Role.REFERRER_MANAGER:
             return base_qs.filter(
                 Q(lead__referrer__referrer_profile__manager=user) | Q(lead__referrer=user)
-            ).exclude(lead__is_personal_contact=True).distinct()
+            ).exclude(
+                Q(lead__is_personal_contact=True) | Q(is_personal_deal=True)
+            ).distinct()
 
-        # OFFICE: Office hierarchy deals (exclude personal contacts)
+        # OFFICE: Office hierarchy deals (exclude personal contacts and personal deals)
         elif user.role == User.Role.OFFICE:
             return base_qs.filter(
                 Q(lead__referrer__referrer_profile__manager__manager_profile__office__owner=user) |
                 Q(lead__referrer=user)
-            ).exclude(lead__is_personal_contact=True).distinct()
+            ).exclude(
+                Q(lead__is_personal_contact=True) | Q(is_personal_deal=True)
+            ).distinct()
 
         # Default: No access
         from leads.models import Deal

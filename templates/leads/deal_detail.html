@@ -8,6 +8,38 @@
     <p><strong>Telefon:</strong> {{ deal.client_phone|default:"—" }}</p>
     <p><strong>E-mail:</strong> {{ deal.client_email|default:"—" }}</p>
 
+    <!-- Typ obchodu -->
+    <p>
+        <strong>Typ obchodu:</strong>
+        {% if deal.is_personal_deal %}
+            <span class="badge" style="background-color: #4a90e2; color: white;">👤 Vlastní obchod (bez provize)</span>
+        {% else %}
+            <span class="badge" style="background-color: #50c878; color: white;">💼 Provizovaný obchod</span>
+        {% endif %}
+    </p>
+
+    <!-- Pokud má lead více dealů, zobraz info -->
+    {% if lead.deals.count > 1 %}
+    <div class="alert alert-info" style="margin: 15px 0; padding: 12px; background-color: #e7f3ff; border-left: 3px solid #2196F3;">
+        <strong>ℹ️ Tento klient má celkem {{ lead.deals.count }} obchod{% if lead.deals.count > 1 %}y{% endif %}.</strong>
+        <ul style="margin-top: 10px; margin-bottom: 0;">
+            {% for other_deal in lead.deals.all %}
+                {% if other_deal.pk != deal.pk %}
+                <li>
+                    <a href="{% url 'deal_detail' other_deal.pk %}">
+                        {{ other_deal.get_bank_display }} - {{ other_deal.loan_amount|intcomma }} Kč
+                        ({{ other_deal.get_status_display }})
+                        {% if other_deal.is_personal_deal %}
+                            <span class="badge" style="background-color: #4a90e2; color: white;">👤 Vlastní</span>
+                        {% endif %}
+                    </a>
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
     {% if show_referrer %}
         <p><strong>Doporučitel:</strong>
             {% if lead.referrer.role == "ADVISOR" %}

@@ -182,8 +182,8 @@ class UserStatsService:
         ).exclude(is_personal_contact=True)
         team_leads_qs = UserStatsService.apply_date_filter(team_leads_qs, date_from, date_to)
 
-        # Calculate team statistics
-        team_stats_obj = UserStatsService._lead_stats(team_leads_qs)
+        # Calculate team statistics (exclude personal deals)
+        team_stats_obj = UserStatsService._lead_stats(team_leads_qs, exclude_personal_deals=True)
         return UserStatsService.stats_to_dict(team_stats_obj)
 
     @staticmethod
@@ -216,7 +216,7 @@ class UserStatsService:
         ).exclude(is_personal_contact=True)
         office_leads_qs = UserStatsService.apply_date_filter(office_leads_qs, date_from, date_to)
 
-        office_stats_obj = UserStatsService._lead_stats(office_leads_qs)
+        office_stats_obj = UserStatsService._lead_stats(office_leads_qs, exclude_personal_deals=True)
         return UserStatsService.stats_to_dict(office_stats_obj)
 
     @staticmethod
@@ -281,7 +281,7 @@ class UserStatsService:
     # -------------------------
 
     @staticmethod
-    def _lead_stats(qs: QuerySet) -> Stats:
+    def _lead_stats(qs: QuerySet, exclude_personal_deals: bool = False) -> Stats:
         """
         Calculate basic statistics from a Lead queryset.
 
@@ -289,6 +289,8 @@ class UserStatsService:
 
         Args:
             qs: Lead queryset
+            exclude_personal_deals: If True, exclude deals with is_personal_deal=True
+                                   (used for referrer/manager/office stats)
 
         Returns:
             Stats dataclass with calculated values
@@ -301,10 +303,13 @@ class UserStatsService:
 
         meetings_done = qs.filter(meeting_done=True).count()
 
-        deals_created = Deal.objects.filter(lead__in=qs).count()
+        deals_qs = Deal.objects.filter(lead__in=qs)
+        if exclude_personal_deals:
+            deals_qs = deals_qs.exclude(is_personal_deal=True)
 
-        deals_success = Deal.objects.filter(
-            lead__in=qs,
+        deals_created = deals_qs.count()
+
+        deals_success = deals_qs.filter(
             status=Deal.DealStatus.DRAWN,
         ).count()
 
@@ -442,8 +447,8 @@ class UserStatsService:
         meetings_planned = referrer_leads_qs.filter(meeting_scheduled=True).count()
         meetings_done = referrer_leads_qs.filter(meeting_done=True).count()
 
-        # Deals statistics (exclude personal contacts)
-        referrer_deals_qs = Deal.objects.filter(lead__in=referrer_leads_qs)
+        # Deals statistics (exclude personal contacts and personal deals)
+        referrer_deals_qs = Deal.objects.filter(lead__in=referrer_leads_qs).exclude(is_personal_deal=True)
         referrer_deals_qs = UserStatsService.apply_date_filter(
             referrer_deals_qs, date_from, date_to
         )
@@ -472,7 +477,7 @@ class UserStatsService:
             Basic Stats dataclass
         """
         qs = Lead.objects.filter(referrer=user).exclude(is_personal_contact=True)
-        return UserStatsService._lead_stats(qs)
+        return UserStatsService._lead_stats(qs, exclude_personal_deals=True)
 
     # -------------------------
     # MANAGER STATISTICS
@@ -504,8 +509,8 @@ class UserStatsService:
         ).exclude(referrer=user).exclude(is_personal_contact=True)
 
         return {
-            "personal_referrer": UserStatsService._lead_stats(personal_qs),
-            "team": UserStatsService._lead_stats(team_qs),
+            "personal_referrer": UserStatsService._lead_stats(personal_qs, exclude_personal_deals=True),
+            "team": UserStatsService._lead_stats(team_qs, exclude_personal_deals=True),
         }
 
     # -------------------------
@@ -540,8 +545,8 @@ class UserStatsService:
         ).exclude(referrer=user).exclude(is_personal_contact=True)
 
         return {
-            "personal_referrer": UserStatsService._lead_stats(personal_qs),
-            "team": UserStatsService._lead_stats(team_qs),
+            "personal_referrer": UserStatsService._lead_stats(personal_qs, exclude_personal_deals=True),
+            "team": UserStatsService._lead_stats(team_qs, exclude_personal_deals=True),
         }
 
     # -------------------------

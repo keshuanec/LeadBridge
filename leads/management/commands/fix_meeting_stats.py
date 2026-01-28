@@ -25,7 +25,7 @@ class Command(BaseCommand):
         leads_to_fix = []
 
         for lead in all_leads:
-            if hasattr(lead, 'deal'):
+            if lead.deals.exists():
                 if not lead.meeting_scheduled or not lead.meeting_done:
                     leads_to_fix.append(lead)
 
@@ -76,7 +76,7 @@ class Command(BaseCommand):
         total_with_deals = 0
         correctly_set = 0
         for lead in Lead.objects.all():
-            if hasattr(lead, 'deal'):
+            if lead.deals.exists():
                 total_with_deals += 1
                 if lead.meeting_scheduled and lead.meeting_done:
                     correctly_set += 1
