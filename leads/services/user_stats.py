@@ -24,33 +24,45 @@ from leads.models import Lead, Deal
 
 @dataclass(frozen=True)
 class Stats:
-    """Basic statistics data class"""
+    """Basic statistics data class
+
+    Note: deals_created and deals_success count unique LEADS with deals,
+    not total number of deals (one lead may have multiple deals).
+    """
     contacts: int
     meetings_planned: int
     meetings_done: int
-    deals_created: int
-    deals_success: int
+    deals_created: int  # Number of unique leads with at least one deal
+    deals_success: int  # Number of unique leads with at least one completed deal
 
 
 @dataclass(frozen=True)
 class AdvisorStatsDetailed:
-    """Detailed statistics for advisors including personal contacts"""
+    """Detailed statistics for advisors including personal contacts
+
+    Note: All deal counts represent unique LEADS with deals,
+    not total number of deals (one lead may have multiple deals).
+    """
     leads_received: int
     meetings_planned: int
     meetings_done: int
-    deals_created: int
-    deals_completed: int
-    deals_created_personal: int
-    deals_completed_personal: int
+    deals_created: int  # Number of unique leads with at least one deal
+    deals_completed: int  # Number of unique leads with at least one completed deal
+    deals_created_personal: int  # Number of unique leads with at least one personal deal
+    deals_completed_personal: int  # Number of unique leads with at least one completed personal deal
 
 
 @dataclass(frozen=True)
 class ReferrerStatsDetailed:
-    """Detailed statistics for referrers"""
+    """Detailed statistics for referrers
+
+    Note: deals_done counts unique LEADS with completed deals,
+    not total number of deals (one lead may have multiple deals).
+    """
     leads_sent: int
     meetings_planned: int
     meetings_done: int
-    deals_done: int
+    deals_done: int  # Number of unique leads with at least one completed deal
 
 
 class UserStatsService:
@@ -307,11 +319,12 @@ class UserStatsService:
         if exclude_personal_deals:
             deals_qs = deals_qs.exclude(is_personal_deal=True)
 
-        deals_created = deals_qs.count()
+        # Count unique leads with deals (one lead may have multiple deals)
+        deals_created = deals_qs.values('lead').distinct().count()
 
         deals_success = deals_qs.filter(
             status=Deal.DealStatus.DRAWN,
-        ).count()
+        ).values('lead').distinct().count()
 
         return Stats(
             contacts=contacts,
@@ -364,16 +377,21 @@ class UserStatsService:
         meetings_done = leads_qs.filter(meeting_done=True).count()
 
         # Deals statistics (exclude personal contacts AND personal deals)
+        # Count unique LEADS with deals, not total number of deals
         deals_qs = Deal.objects.filter(lead__advisor=advisor).exclude(
             Q(lead__is_personal_contact=True, lead__referrer=advisor) |
             Q(is_personal_deal=True)
         )
         deals_qs = UserStatsService.apply_date_filter(deals_qs, date_from, date_to)
 
-        deals_created = deals_qs.count()
-        deals_completed = deals_qs.filter(status=Deal.DealStatus.DRAWN).count()
+        # Count unique leads (one lead may have multiple deals)
+        deals_created = deals_qs.values('lead').distinct().count()
+        deals_completed = deals_qs.filter(
+            status=Deal.DealStatus.DRAWN
+        ).values('lead').distinct().count()
 
         # Personal deals statistics (personal contacts OR personal deals)
+        # Count unique LEADS with personal deals
         personal_deals_qs = Deal.objects.filter(
             lead__advisor=advisor
         ).filter(
@@ -384,10 +402,11 @@ class UserStatsService:
             personal_deals_qs, date_from, date_to
         )
 
-        deals_created_personal = personal_deals_qs.count()
+        # Count unique leads (one lead may have multiple personal deals)
+        deals_created_personal = personal_deals_qs.values('lead').distinct().count()
         deals_completed_personal = personal_deals_qs.filter(
             status=Deal.DealStatus.DRAWN
-        ).count()
+        ).values('lead').distinct().count()
 
         return AdvisorStatsDetailed(
             leads_received=leads_received,
@@ -455,7 +474,10 @@ class UserStatsService:
             referrer_deals_qs, date_from, date_to
         )
 
-        deals_done = referrer_deals_qs.filter(status=Deal.DealStatus.DRAWN).count()
+        # Count unique leads with completed deals (one lead may have multiple deals)
+        deals_done = referrer_deals_qs.filter(
+            status=Deal.DealStatus.DRAWN
+        ).values('lead').distinct().count()
 
         return ReferrerStatsDetailed(
             leads_sent=leads_sent,
