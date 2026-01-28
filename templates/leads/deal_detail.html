@@ -20,12 +20,11 @@
     </p>
 
     <!-- Pokud má lead více dealů, zobraz info -->
-    {% if lead.deals.count > 1 %}
+    {% if other_deals %}
     <div class="alert alert-info" style="margin: 15px 0; padding: 12px; background-color: #e7f3ff; border-left: 3px solid #2196F3;">
-        <strong>ℹ️ Tento klient má celkem {{ lead.deals.count }} obchod{% if lead.deals.count > 1 %}y{% endif %}.</strong>
+        <strong>ℹ️ Tento klient má další obchod{% if other_deals.count > 1 %}y{% endif %}.</strong>
         <ul style="margin-top: 10px; margin-bottom: 0;">
-            {% for other_deal in lead.deals.all %}
-                {% if other_deal.pk != deal.pk %}
+            {% for other_deal in other_deals %}
                 <li>
                     <a href="{% url 'deal_detail' other_deal.pk %}">
                         {{ other_deal.get_bank_display }} - {{ other_deal.loan_amount|intcomma }} Kč
@@ -35,7 +34,6 @@
                         {% endif %}
                     </a>
                 </li>
-                {% endif %}
             {% endfor %}
         </ul>
     </div>

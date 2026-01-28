@@ -94,16 +94,16 @@
 
         {% if can_create_deal %}
             <a href="{% url 'deal_create_from_lead' lead.pk %}" class="btn btn-primary">
-                ➕ {% if lead.deals.exists %}Založit další obchod{% else %}Založit obchod{% endif %}
+                ➕ {% if deals %}Založit další obchod{% else %}Založit obchod{% endif %}
             </a>
         {% endif %}
     </div>
 </div>
 
 <!-- Sekce: Obchody leadu -->
-{% if lead.deals.exists %}
+{% if deals %}
 <div class="card" style="margin-top: 20px;">
-    <h3>Obchody ({{ lead.deals.count }})</h3>
+    <h3>Obchody ({{ deals.count }})</h3>
     <div style="overflow-x: auto;">
         <table class="table">
             <thead>
@@ -117,7 +117,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for deal in lead.deals.all %}
+                {% for deal in deals %}
                 <tr {% if deal.is_personal_deal %}style="background-color: #f0f8ff;"{% endif %}>
                     <td>{{ deal.created_at|date:"d.m.Y" }}</td>
                     <td>{{ deal.get_bank_display }}</td>

@@ -259,6 +259,19 @@ def lead_detail(request, pk: int):
     can_create_deal = LeadAccessService.can_create_deal(user, lead)
     can_schedule_callback = LeadAccessService.can_schedule_callback(user, lead)
 
+    # Filtrování dealů podle oprávnění
+    deals = lead.deals.all()
+    if user.role == User.Role.REFERRER:
+        # Referrer nevidí personal deals
+        deals = deals.exclude(is_personal_deal=True)
+    elif user.role == User.Role.REFERRER_MANAGER:
+        # Manager nevidí personal deals
+        deals = deals.exclude(is_personal_deal=True)
+    elif user.role == User.Role.OFFICE:
+        # Office nevidí personal deals
+        deals = deals.exclude(is_personal_deal=True)
+    # ADVISOR a ADMIN vidí všechny dealy
+
     if request.method == "POST":
         # Přidání poznámky
         note_form = LeadNoteForm(request.POST)
@@ -277,6 +290,7 @@ def lead_detail(request, pk: int):
 
     context = {
         "lead": lead,
+        "deals": deals,
         "notes": notes,
         "history": history,
         "note_form": note_form,
@@ -1001,6 +1015,19 @@ def deal_detail(request, pk: int):
     # vlastní provize pro přihlášeného uživatele
     user_own_commission = deal.get_own_commission(user)
 
+    # Filtrování ostatních dealů podle oprávnění
+    other_deals = lead.deals.exclude(pk=deal.pk)
+    if user.role == User.Role.REFERRER:
+        # Referrer nevidí personal deals
+        other_deals = other_deals.exclude(is_personal_deal=True)
+    elif user.role == User.Role.REFERRER_MANAGER:
+        # Manager nevidí personal deals
+        other_deals = other_deals.exclude(is_personal_deal=True)
+    elif user.role == User.Role.OFFICE:
+        # Office nevidí personal deals
+        other_deals = other_deals.exclude(is_personal_deal=True)
+    # ADVISOR a ADMIN vidí všechny dealy
+
     # přidání poznámky (LeadNote)
     if request.method == "POST":
         note_form = LeadNoteForm(request.POST)
@@ -1020,6 +1047,7 @@ def deal_detail(request, pk: int):
     context = {
         "deal": deal,
         "lead": lead,
+        "other_deals": other_deals,
         "notes": notes,
         "history": history,
         "note_form": note_form,

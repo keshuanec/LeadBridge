@@ -130,9 +130,9 @@ class LeadAccessService:
             else:
                 return base_qs.filter(lead__advisor=user)
 
-        # REFERRER: Deals from their own leads
+        # REFERRER: Deals from their own leads (exclude personal deals)
         elif user.role == User.Role.REFERRER:
-            return base_qs.filter(lead__referrer=user)
+            return base_qs.filter(lead__referrer=user).exclude(is_personal_deal=True)
 
         # REFERRER_MANAGER: Team deals + own deals (exclude personal contacts and personal deals)
         elif user.role == User.Role.REFERRER_MANAGER:
