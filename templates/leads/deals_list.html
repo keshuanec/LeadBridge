@@ -280,7 +280,6 @@
                             {% endif %}
                         </a>
                     </th>
-                    <th style="width: 60px;">Typ</th>
                     <th class="client-col">
                         <a href="?{% if qs_keep %}{{ qs_keep }}&{% endif %}sort=client&dir={% if current_sort == 'client' and current_dir == 'asc' %}desc{% else %}asc{% endif %}">
                             Klient
@@ -373,13 +372,6 @@
             {% for d in deals %}
                 <tr class="{% if d.status == 'FAILED' %}deal-row-failed{% elif d.status == 'SIGNED' or d.status == 'SIGNED_NO_PROPERTY' or d.status == 'DRAWN' %}deal-row-completed{% else %}deal-row-pending{% endif %}">
                     <td class="status-deal-col"><a href="{% url 'deal_detail' d.pk %}"><span class="badge">{{ d.get_status_display }}</span></a></td>
-                    <td style="text-align: center;">
-                        {% if d.is_personal_deal %}
-                            <span class="badge" style="background-color: #4a90e2; color: white;" title="Vlastní obchod">👤</span>
-                        {% else %}
-                            <span class="badge" style="background-color: #50c878; color: white;" title="Provizovaný obchod">💼</span>
-                        {% endif %}
-                    </td>
                     <td class="client-col"><a href="{% url 'deal_detail' d.pk %}">{{ d.client_name }}</a></td>
                     <td class="loan-col">{{ d.loan_amount|floatformat:0 }} Kč</td>
 

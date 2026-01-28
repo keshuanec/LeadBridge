@@ -313,12 +313,13 @@ class Deal(models.Model):
 
         Všechny procenta se berou z referrera (ne z manažera/kanceláře).
 
-        Pokud je lead označen jako "vlastní kontakt", nepočítají se žádné provize.
+        Pokud je lead označen jako "vlastní kontakt" nebo deal jako "vlastní obchod",
+        struktura (referrer, manager, office) nedostává žádné provize.
         """
         referrer = self.lead.referrer
 
-        # Vlastní kontakt poradce - žádné provize
-        if self.lead.is_personal_contact:
+        # Vlastní kontakt poradce NEBO vlastní obchod - žádné provize pro strukturu
+        if self.lead.is_personal_contact or self.is_personal_deal:
             return {
                 'referrer': 0,
                 'manager': 0,
