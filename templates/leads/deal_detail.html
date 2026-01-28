@@ -50,7 +50,7 @@
             {% endif %}
         </p>
     {% endif %}
-    {% if lead.is_personal_contact %}
+    {% if lead.is_personal_contact or deal.is_personal_deal %}
         <p><strong>Typ kontaktu:</strong> <span style="color: #666; font-style: italic;">Vlastní kontakt</span></p>
     {% else %}
         {% if lead.referrer_manager %}
@@ -67,12 +67,12 @@
 
     <p><strong>Výše úvěru:</strong> {{ deal.loan_amount }} Kč</p>
     <p><strong>Banka:</strong> {{ deal.get_bank_display }}</p>
-    {% if not lead.is_personal_contact %}
+    {% if not lead.is_personal_contact and not deal.is_personal_deal %}
         <p><strong>Nemovitost:</strong> {{ deal.get_property_type_display }}</p>
     {% endif %}
     <p><strong>Stav obchodu:</strong> <span class="badge">{{ deal.get_status_display }}</span></p>
 
-    {% if not lead.is_personal_contact %}
+    {% if not lead.is_personal_contact and not deal.is_personal_deal %}
         <hr>
 
         {# Zobrazení provizí - role-based #}
