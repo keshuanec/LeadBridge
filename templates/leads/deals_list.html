@@ -397,7 +397,7 @@
 
                     {% if show_manager_col %}
                         <td class="person-col">
-                            {% if d.lead.is_personal_contact %}
+                            {% if d.lead.is_personal_contact or d.is_personal_deal %}
                                 <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
                             {% elif d.manager_id %}
                                 <a href="{% url 'user_detail' d.manager_id %}">{{ d.manager_name }}</a>
@@ -409,7 +409,7 @@
 
                     {% if show_office_col %}
                         <td class="person-col">
-                            {% if d.lead.is_personal_contact %}
+                            {% if d.lead.is_personal_contact or d.is_personal_deal %}
                                 <span style="color: #666; font-style: italic;">Vlastní kontakt</span>
                             {% elif d.office_owner_id %}
                                 <a href="{% url 'user_detail' d.office_owner_id %}">{{ d.office_name }}</a>

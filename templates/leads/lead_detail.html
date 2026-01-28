@@ -108,7 +108,6 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Typ</th>
                     <th>Datum</th>
                     <th>Banka</th>
                     <th>Výše úvěru</th>
@@ -120,13 +119,6 @@
             <tbody>
                 {% for deal in lead.deals.all %}
                 <tr {% if deal.is_personal_deal %}style="background-color: #f0f8ff;"{% endif %}>
-                    <td>
-                        {% if deal.is_personal_deal %}
-                            <span class="badge" style="background-color: #4a90e2; color: white;">👤 Vlastní</span>
-                        {% else %}
-                            <span class="badge" style="background-color: #50c878; color: white;">💼 Provizovaný</span>
-                        {% endif %}
-                    </td>
                     <td>{{ deal.created_at|date:"d.m.Y" }}</td>
                     <td>{{ deal.get_bank_display }}</td>
                     <td>{{ deal.loan_amount|intcomma }} Kč</td>
