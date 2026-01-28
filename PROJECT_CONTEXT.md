@@ -90,7 +90,7 @@ Primární business entita pro správu kontaktů:
 - **Vztahy**:
   - `referrer` (FK) - Makléř, který lead vytvořil
   - `advisor` (FK) - Přiřazený hypoteční poradce
-  - OneToOne s Deal (po úspěšné konverzi)
+  - OneToMany s Deal (jeden lead může mít více dealů)
 - **Klíčová pole**:
   - `client_first_name` - Křestní jméno klienta (volitelné, blank=True)
   - `client_last_name` - Příjmení klienta (povinné)
@@ -104,17 +104,19 @@ Primární business entita pro správu kontaktů:
 
 ### Deal (leads.Deal)
 Detaily hypotéky a provize:
-- OneToOne vztah s Lead
+- OneToMany vztah z Lead (jeden lead může mít více dealů)
 - **Klíčová pole**:
   - `client_first_name`, `client_last_name` - Kopie jména z Lead (synchronizace přes signály)
   - `client_name` - Property vrací "Příjmení Křestní" nebo jen příjmení
   - `client_phone`, `client_email` - Kontaktní údaje
   - `loan_amount` - Výše úvěru v Kč
-  - `bank` - 11 podporovaných bank
+  - `bank` - 11 podporovaných bank a stavebních spořitelen
   - `property_type` - OWN vs OTHER
-  - `status` - 8 stupňů procesu dealu
+  - `status` - 9 stupňů procesu dealu
+  - `is_personal_deal` - Vlastní obchod poradce (bez provize pro strukturu)
   - Vypočítané provize pro každou stranu
   - Payment tracking flags (`paid_referrer`, `paid_manager`, `paid_office`)
+- **Viditelnost**: Personal deals vidí pouze advisors a admins (referrers, managers, office je nevidí)
 - **Provizní modely**:
   1. FULL_MINUS_STRUCTURE - Plná provize minus náklady struktury
   2. NET_WITH_STRUCTURE - Čistá provize (struktura se platí zvlášť)
@@ -142,7 +144,8 @@ Detaily hypotéky a provize:
 
 **1. REFERRER (Realitní makléř)**
 - Vytváří leady a přiřazuje je dostupným poradcům
-- Vidí pouze své vlastní leady
+- Vidí pouze své vlastní leady a jejich dealy
+- **Nevidí** personal deals (`is_personal_deal=True`)
 - Může označit schůzku jako dokončenou
 - Dostává notifikace o svých leadech
 
@@ -151,15 +154,16 @@ Detaily hypotéky a provize:
 - Plánuje schůzky, vytváří dealy
 - S `has_admin_access=True`: vidí leady podřízených referrerů
 - Spravuje osobní kontakty (bez dělení provize)
+- **Vidí všechny dealy** včetně personal deals
 
 **3. REFERRER_MANAGER**
 - Vidí všechny leady od řízených referrerů + vlastní referrer leady
-- Nevidí osobní kontakty poradců
+- **Nevidí** osobní kontakty poradců ani personal deals
 - Dostává provizi z dealů svého týmu
 
 **4. OFFICE (Vlastník kanceláře)**
 - Vidí všechny leady v hierarchii své kanceláře
-- Nevidí osobní kontakty poradců
+- **Nevidí** osobní kontakty poradců ani personal deals
 - Dostává procento provize z kanceláře
 
 **5. ADMIN/Superuser**
@@ -199,19 +203,24 @@ Detaily hypotéky a provize:
 - Celkový počet kontaktů
 - Naplánované schůzky
 - Dokončené schůzky
-- Vytvořené dealy
-- Úspěšné dealy (status=DRAWN)
+- **Vytvořené dealy** - počet unique leadů s alespoň jedním dealem (ne celkový počet dealů)
+- **Úspěšné dealy** - počet unique leadů s alespoň jedním dokončeným dealem (status=DRAWN)
+
+**Poznámka k počítání dealů:**
+Kvůli OneToMany vztahu Lead→Deal může jeden lead mít více dealů. Statistiky proto počítají **unique leady s dealy**, nikoli celkový počet dealů. To zajišťuje konzistenci se statistikami schůzek a leadů.
 
 **Filtrování dat:**
 - Vše, Tento rok, Tento měsíc, Vlastní rozsah
 
 **Důležité výjimky:**
-- **Vlastní kontakty** (`is_personal_contact=True`) se **nezahrnují** do běžných statistik jako doporučitel
-- Vlastní kontakty se zobrazují **pouze** v dedikovaných položkách u poradců:
+- **Vlastní kontakty** (`is_personal_contact=True`) a **vlastní dealy** (`is_personal_deal=True`) se **nezahrnují** do běžných statistik
+- Vlastní kontakty a dealy se zobrazují **pouze** v dedikovaných položkách u poradců:
   - "Založené obchody (vlastní)" (`deals_created_personal`)
   - "Dokončené obchody (vlastní)" (`deals_completed_personal`)
-- Implementováno pomocí `.exclude(is_personal_contact=True)` ve všech quersetech pro referrer statistiky
-- Platí pro všechny views: `advisor_detail()`, `user_detail()` a statistické funkce v `user_stats.py`
+- Implementováno pomocí:
+  - `.exclude(is_personal_contact=True)` - vyloučení osobních kontaktů
+  - `.exclude(is_personal_deal=True)` - vyloučení osobních dealů
+- Platí pro všechny views: `advisor_detail()`, `advisor_list()`, `user_detail()` a statistické funkce v `user_stats.py`
 
 ### Session Management
 
@@ -365,9 +374,9 @@ Klíčové proměnné v `.env`:
 
 ## Databázové Migrace
 
-- **accounts app**: 21 migrací
-- **leads app**: 19 migrací (poslední 3: split client_name → client_first_name + client_last_name)
-- **Celkem**: 40 schema changes
+- **accounts app**: 17 migrací
+- **leads app**: 20 migrací (poslední 3: split client_name → client_first_name + client_last_name + přidání is_personal_deal)
+- **Celkem**: 37 schema changes
 
 ## Code Statistics
 
@@ -386,7 +395,7 @@ Klíčové proměnné v `.env`:
 3. **Role-based Query Filtering** - Konzistentní permission checking
 4. **Form Customization** - Dynamická pole podle role uživatele
 5. **Environment-based Configuration** - Různé nastavení pro dev/prod
-6. **Personal Contacts Exclusion** - Vlastní kontakty poradce se vyloučají z referrer statistik pomocí `.exclude(is_personal_contact=True)`
+6. **Personal Contacts & Deals Exclusion** - Vlastní kontakty (`is_personal_contact=True`) a vlastní dealy (`is_personal_deal=True`) se vyloučují ze standardních statistik a jsou viditelné pouze pro advisors a admins
 7. **Collapsible UI Components** - Kolapsibilní filtry a toggleable sloupce pro optimalizaci prostoru
 8. **Client Name Pattern** - Jméno rozděleno na `client_first_name` (volitelné) a `client_last_name` (povinné), property `client_name` vrací "Příjmení Křestní" nebo jen příjmení pro zpětnou kompatibilitu
 9. **Privacy-Aware Note Filtering** - Automatické filtrování poznámek podle oprávnění uživatele v seznamových views (pouze veřejné + vlastní soukromé poznámky)
@@ -432,26 +441,41 @@ Klíčové proměnné v `.env`:
 - `get_deal_for_user_or_404()` - Role-based přístup k dealům
 - Komplexní query filtry podle role uživatele
 
-## Podporované Banky (11)
+## Podporované Banky a Stavební Spořitelny (11)
 
 Uvedeno v `leads/models.py` Deal model:
-- Česká spořitelna, ČSOB, Komerční banka, Moneta, Raiffeisen, UniCredit, Air Bank, Hypoteční banka, Fio banka, mBank, Equa Bank
+
+**Banky (7):**
+- Česká spořitelna
+- ČSOB Hypoteční banka
+- Komerční banka
+- mBank
+- Oberbank
+- Raiffeisenbank
+- Unicredit bank
+
+**Stavební spořitelny (4):**
+- Stavební spořitelna České spořitelny
+- Modrá pyramida
+- ČSOB stavební spořitelna
+- Raiffeisen stavební spořitelna
 
 ## Property Types
 
 - **OWN** - Vlastní nemovitost
 - **OTHER** - Cizí nemovitost
 
-## Deal Status Flow (8 stupňů)
+## Deal Status Flow (9 stupňů)
 
-1. PREPARATION - Příprava podkladů
-2. SENT_TO_BANK - Odesláno do banky
-3. SENT_TO_RU - Odesláno k realitní úvěrové expertize
-4. APPROVED - Schváleno
-5. SIGNING - Podepisování
-6. DRAWN - Čerpáno (úspěšný deal)
-7. CANCELLED - Zrušeno
-8. REJECTED - Zamítnuto
+1. REQUEST_IN_BANK - Žádost v bance
+2. WAITING_FOR_APPRAISAL - Čekání na odhad
+3. PREP_APPROVAL - Příprava schvalování
+4. APPROVAL - Schvalování
+5. SIGN_PLANNING - Plánování podpisu
+6. SIGNED - Podepsaná smlouva
+7. SIGNED_NO_PROPERTY - Podepsáno bez nemovitosti
+8. DRAWN - Načerpáno (úspěšný deal)
+9. FAILED - Neúspěšný
 
 ## Poznámky pro Další Vývoj
 

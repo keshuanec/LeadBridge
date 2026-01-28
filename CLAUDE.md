@@ -45,11 +45,11 @@ python manage.py process_scheduled_callbacks  # Zpracování callbacků (cron)
 
 ## 5 Rolí & Oprávnění
 
-- **ADMIN**: Plný přístup + activity logs
-- **ADVISOR**: Vidí přiřazené leady + osobní kontakty (`has_admin_access` vidí i podřízené)
-- **REFERRER**: Vytváří leady, vidí pouze své
-- **REFERRER_MANAGER**: Vidí leady svého týmu + vlastní
-- **OFFICE**: Vidí všechny leady v hierarchii kanceláře
+- **ADMIN**: Plný přístup + activity logs, vidí všechny dealy včetně personal deals
+- **ADVISOR**: Vidí přiřazené leady + osobní kontakty + všechny dealy (včetně personal deals); `has_admin_access` vidí i podřízené
+- **REFERRER**: Vytváří leady, vidí pouze své; **nevidí** personal deals
+- **REFERRER_MANAGER**: Vidí leady svého týmu + vlastní; **nevidí** osobní kontakty ani personal deals
+- **OFFICE**: Vidí všechny leady v hierarchii kanceláře; **nevidí** osobní kontakty ani personal deals
 
 ## Důležité Modely
 
@@ -62,7 +62,7 @@ python manage.py process_scheduled_callbacks  # Zpracování callbacků (cron)
 - `communication_status` - NEW, MEETING, SEARCHING_PROPERTY, WAITING_FOR_CLIENT, FAILED
 - `is_personal_contact` - osobní kontakt poradce (bez provize)
 - `meeting_scheduled`, `meeting_done` - tracking schůzek
-- OneToOne s Deal
+- OneToMany s Deal (jeden lead může mít více dealů)
 
 ### LeadNote
 - `lead` (FK Lead) - vztah k leadu
@@ -75,14 +75,16 @@ python manage.py process_scheduled_callbacks  # Zpracování callbacků (cron)
   - V seznamech leadů/dealů se filtrují automaticky přes `ListFilterService`
 
 ### Deal
-- OneToOne s Lead
+- OneToMany vztah s Lead (jeden lead může mít více dealů)
 - `client_first_name`, `client_last_name` - kopie jména z Lead (synchronizace přes signály)
 - `client_name` (property) - vrací "Příjmení Křestní" nebo jen příjmení
 - `loan_amount` - výše úvěru v Kč
-- `bank` - 11 podporovaných bank
-- `status` - 8 stupňů (PREPARATION → DRAWN)
+- `bank` - 11 podporovaných bank a stavebních spořitelen
+- `status` - 9 stupňů (REQUEST_IN_BANK → DRAWN)
+- `is_personal_deal` - vlastní obchod poradce (bez provize pro strukturu)
 - Provizní fieldy: `commission_referrer`, `commission_manager`, `commission_office`
 - Payment tracking: `paid_referrer`, `paid_manager`, `paid_office`
+- **Viditelnost**: Personal deals vidí pouze advisors a admins
 
 ### User (Custom)
 - 5 rolí: ADMIN, ADVISOR, REFERRER, REFERRER_MANAGER, OFFICE
@@ -121,6 +123,11 @@ stats_dict = UserStatsService.advisor_stats_to_dict(advisor_stats)
 team_stats = UserStatsService.get_team_stats(manager, date_from, date_to)
 office_stats = UserStatsService.get_office_stats(office_owner, date_from, date_to)
 ```
+
+**Důležité poznámky k statistikám:**
+- `deals_created`, `deals_completed`: Počítají se **unique leady** s alespoň jedním dealem (ne celkový počet dealů)
+- Personal contacts (`is_personal_contact=True`) a personal deals (`is_personal_deal=True`) se **vyloučují** ze standardních statistik
+- Personal statistiky se zobrazují v dedikovaných položkách: `deals_created_personal`, `deals_completed_personal`
 
 **3. ListFilterService** - Filtrování a řazení
 ```python
