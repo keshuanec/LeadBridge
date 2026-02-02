@@ -938,6 +938,12 @@ def deal_create_from_lead(request, pk: int):
             deal.client_last_name = lead.client_last_name
             deal.client_phone = lead.client_phone
             deal.client_email = lead.client_email
+
+            # Zajistit, že personal contact lead vytvoří personal deal
+            # (důležité kvůli hidden input, který nemusí vždy projít POSTem)
+            if lead.is_personal_contact:
+                deal.is_personal_deal = True
+
             deal.save()
 
             # Lead -> stav Založen obchod

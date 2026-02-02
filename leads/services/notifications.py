@@ -23,10 +23,13 @@ def get_notification_recipients(lead, event_type, deal=None, exclude_user=None):
 
     Logika příjemců:
     - lead_change: makléř + poradce (manažer a kancelář NE)
-    - deal_created: makléř + poradce + manažer + kancelář
-    - commission_change: makléř + poradce + manažer + kancelář
+    - deal_created: makléř + poradce + manažer + kancelář (POKUD není personal deal)
+    - commission_change: makléř + poradce + manažer + kancelář (POKUD není personal deal)
     """
     recipients = []
+
+    # Zjistit, zda je deal personal (pokud je předán)
+    is_personal_deal = deal.is_personal_deal if deal else False
 
     # Získání souvisejících uživatelů
     referrer = lead.referrer
@@ -39,14 +42,17 @@ def get_notification_recipients(lead, event_type, deal=None, exclude_user=None):
     office = getattr(manager_profile, "office", None) if manager_profile else None
     office_owner = getattr(office, "owner", None) if office else None
 
-    # Makléř a poradce dostanou všechny notifikace
-    if referrer and referrer != exclude_user:
-        recipients.append(referrer)
+    # Makléř a poradce dostanou notifikace, pokud není personal deal
+    # (u personal deals je referrer=advisor, takže stačí poslat advisorovi)
+    if not is_personal_deal:
+        if referrer and referrer != exclude_user:
+            recipients.append(referrer)
     if advisor and advisor != exclude_user:
         recipients.append(advisor)
 
     # Manažer a kancelář dostanou notifikace o provizích a vytvoření obchodů
-    if event_type in ['commission_change', 'deal_created']:
+    # POUZE pokud není personal deal
+    if event_type in ['commission_change', 'deal_created'] and not is_personal_deal:
         if manager and manager != exclude_user:
             recipients.append(manager)
         if office_owner and office_owner != exclude_user:
