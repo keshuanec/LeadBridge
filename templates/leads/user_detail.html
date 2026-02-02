@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load custom_filters %}
 
 {% block title %}Detail uživatele{% endblock %}
 
@@ -30,7 +31,7 @@
         <div>
             <p><strong>Jméno:</strong> {{ viewed_user.get_full_name }}</p>
 
-            <p><strong>E-mail:</strong> {{ viewed_user.email|default:"—" }}</p>
+            <p><strong>E-mail:</strong> {% if viewed_user.email %}{{ viewed_user.email|mailto }}{% else %}—{% endif %}</p>
 
             <p><strong>Telefon:</strong> {{ viewed_user.phone|default:"—" }}</p>
 

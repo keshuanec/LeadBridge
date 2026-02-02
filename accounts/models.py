@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.conf import settings
+from leads.utils import normalize_phone_number
 
 
 
@@ -109,9 +110,14 @@ class User(AbstractUser):
     )
 
     def clean(self):
-        """Validace, že součet procent provizí nepřekročí 100%"""
+        """Validace provizí a normalizace telefonního čísla"""
         from django.core.exceptions import ValidationError
 
+        # Normalizace telefonního čísla
+        if self.phone:
+            self.phone = normalize_phone_number(self.phone)
+
+        # Validace součtu procent provizí
         total = (
             self.commission_referrer_pct
             + self.commission_manager_pct

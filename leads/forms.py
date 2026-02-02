@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from accounts.models import ReferrerProfile
 from .models import Lead, LeadNote, Deal
 from django.db.models import Q
+from .utils import normalize_phone_number
 
 
 User = get_user_model()
@@ -275,6 +276,13 @@ class LeadForm(forms.ModelForm):
             self.fields["is_personal_contact"].widget = forms.HiddenInput()
             self.fields["is_personal_contact"].initial = False
 
+    def clean_client_phone(self):
+        """Normalizuje telefonní číslo klienta"""
+        phone = self.cleaned_data.get("client_phone")
+        if phone:
+            return normalize_phone_number(phone)
+        return phone
+
     def clean(self):
         """Validace a automatické nastavení referrer pro vlastní kontakty"""
         cleaned_data = super().clean()
@@ -405,6 +413,13 @@ class DealCreateForm(forms.ModelForm):
                     "Nelze změnit po vytvoření dealu."
                 )
 
+    def clean_client_phone(self):
+        """Normalizuje telefonní číslo klienta"""
+        phone = self.cleaned_data.get("client_phone")
+        if phone:
+            return normalize_phone_number(phone)
+        return phone
+
 class DealEditForm(forms.ModelForm):
     class Meta:
         model = Deal
@@ -445,6 +460,13 @@ class DealEditForm(forms.ModelForm):
             self.fields["is_personal_deal"].help_text = (
                 "Nelze změnit po vytvoření dealu."
             )
+
+    def clean_client_phone(self):
+        """Normalizuje telefonní číslo klienta"""
+        phone = self.cleaned_data.get("client_phone")
+        if phone:
+            return normalize_phone_number(phone)
+        return phone
 
 class MeetingResultForm(forms.Form):
     """Formulář pro záznam výsledku schůzky"""

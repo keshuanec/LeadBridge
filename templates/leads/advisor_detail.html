@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load custom_filters %}
 
 {% block title %}Detail poradce{% endblock %}
 
@@ -30,7 +31,7 @@
         <div>
             <p><strong>Jméno:</strong> {{ advisor.get_full_name }}</p>
 
-            <p><strong>E-mail:</strong> {{ advisor.email|default:"—" }}</p>
+            <p><strong>E-mail:</strong> {% if advisor.email %}{{ advisor.email|mailto }}{% else %}—{% endif %}</p>
 
             <p><strong>Telefon:</strong> {{ advisor.phone|default:"—" }}</p>
 

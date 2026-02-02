@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load humanize %}
+{% load custom_filters %}
 
 {% block title %}Detail leadu{% endblock %}
 
@@ -9,7 +10,7 @@
 
     <p>
         <strong>Telefon:</strong> {{ lead.client_phone|default:"—" }}<br>
-        <strong>E-mail:</strong> {{ lead.client_email|default:"—" }}<br>
+        <strong>E-mail:</strong> {% if lead.client_email %}{{ lead.client_email|mailto }}{% else %}—{% endif %}<br>
 
         <strong>Doporučitel:</strong>
         {% if lead.referrer.role == "ADVISOR" %}

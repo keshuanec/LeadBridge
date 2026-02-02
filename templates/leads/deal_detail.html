@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load humanize %}
+{% load custom_filters %}
 {% block title %}Detail obchodu{% endblock %}
 
 {% block content %}
@@ -7,7 +8,7 @@
     <h2>{{ deal.client_name }}</h2>
 
     <p><strong>Telefon:</strong> {{ deal.client_phone|default:"—" }}</p>
-    <p><strong>E-mail:</strong> {{ deal.client_email|default:"—" }}</p>
+    <p><strong>E-mail:</strong> {% if deal.client_email %}{{ deal.client_email|mailto }}{% else %}—{% endif %}</p>
 
     <!-- Pokud má lead více dealů, zobraz info -->
     {% if other_deals %}

@@ -1,4 +1,5 @@
 {% extends "emails/base.html" %}
+{% load custom_filters %}
 
 {% block title %}Nový lead: {{ lead.client_name }}{% endblock %}
 
@@ -25,7 +26,7 @@
                 </tr>
                 <tr>
                     <td style="padding: 8px 0; color: #6C757D; font-size: 14px; font-weight: 600;">Email:</td>
-                    <td style="padding: 8px 0; color: #212529; font-size: 14px;">{{ lead.client_email|default:"—" }}</td>
+                    <td style="padding: 8px 0; color: #212529; font-size: 14px;">{% if lead.client_email %}{{ lead.client_email|mailto }}{% else %}—{% endif %}</td>
                 </tr>
                 <tr>
                     <td style="padding: 8px 0; color: #6C757D; font-size: 14px; font-weight: 600;">Doporučitel:</td>
