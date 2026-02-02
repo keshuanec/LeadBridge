@@ -30,6 +30,10 @@ python manage.py process_scheduled_callbacks  # Zpracování callbacků (cron)
   - `model_helpers.py` - Helper pro procházení modelových vztahů
   - `events.py` - Zaznamenávání událostí (historie + notifikace)
   - `notifications.py` - Email notifikace (427 řádků)
+- **Utilities**: `leads/utils.py`
+  - `normalize_phone_number()` - Normalizace telefonních čísel (odstraní mezery, pomlčky; zachová + pro mezinárodní předvolby)
+- **Template Filters**: `leads/templatetags/custom_filters.py`
+  - `mailto` - Převede email na klikatelný mailto: odkaz
 - **Email šablony**: `templates/emails/` (11 šablon)
 - **List Templates**: `templates/leads/my_leads.html`, `templates/leads/deals_list.html`
   - Kolapsibilní filtry s animacemi
@@ -204,6 +208,25 @@ LeadEventService.record_commission_paid(deal, user, recipient_type, changes, all
 - Vždy použij `select_related()` pro ForeignKey
 - Vždy použij `prefetch_related()` pro ManyToMany
 - Viz příklady v `leads/views.py`
+
+### Data Processing & Normalization
+
+**Automatická normalizace telefonních čísel:**
+- Implementováno v `leads/utils.py::normalize_phone_number()`
+- Aplikováno automaticky při ukládání v:
+  - `LeadForm.clean_client_phone()` - vytváření/editace leadů
+  - `DealCreateForm.clean_client_phone()` - vytváření dealů
+  - `DealEditForm.clean_client_phone()` - editace dealů
+  - `User.clean()` - uživatelské profily (accounts/models.py)
+- **Pravidla normalizace**:
+  - Odstraní mezery, pomlčky, tečky a jiné ne-číselné znaky
+  - Zachová znak `+` na začátku pro mezinárodní předvolby
+  - Příklady: `605 877 000` → `605877000`, `+421 905 123 456` → `+421905123456`
+
+**Template Filtry:**
+- `mailto` filter pro klikatelné email odkazy
+- Použití: `{% load custom_filters %}{{ email|mailto }}`
+- Aplikováno v: lead_detail, deal_detail, user_detail, advisor_detail, user_settings, email notifikace
 
 ### UI Komponenty & Mobilní Zobrazení
 - **Kolapsibilní filtry**: Filtry se defaultně skrývají, rozbalí se tlačítkem "Zobrazit filtry"

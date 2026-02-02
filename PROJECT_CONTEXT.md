@@ -56,6 +56,7 @@ Lead_Bridge/
 │   ├── forms.py             # 8+ Django forms s dynamickou logikou
 │   ├── signals.py           # Auto-sync Lead ↔ Deal
 │   ├── middleware.py        # Login/logout tracking
+│   ├── utils.py             # Utility funkce (normalizace telefonů)
 │   ├── services/
 │   │   ├── access_control.py  # Role-based access control
 │   │   ├── user_stats.py      # Výpočty statistik
@@ -63,6 +64,9 @@ Lead_Bridge/
 │   │   ├── model_helpers.py   # Helper pro procházení modelových vztahů
 │   │   ├── events.py          # Zaznamenávání událostí (historie + notifikace)
 │   │   └── notifications.py   # Email notification systém (427 řádků)
+│   ├── templatetags/
+│   │   ├── __init__.py
+│   │   └── custom_filters.py # Template filtry (mailto)
 │   └── management/commands/
 │       └── process_scheduled_callbacks.py  # Cron job pro zpracování callbacků
 │
@@ -399,6 +403,8 @@ Klíčové proměnné v `.env`:
 7. **Collapsible UI Components** - Kolapsibilní filtry a toggleable sloupce pro optimalizaci prostoru
 8. **Client Name Pattern** - Jméno rozděleno na `client_first_name` (volitelné) a `client_last_name` (povinné), property `client_name` vrací "Příjmení Křestní" nebo jen příjmení pro zpětnou kompatibilitu
 9. **Privacy-Aware Note Filtering** - Automatické filtrování poznámek podle oprávnění uživatele v seznamových views (pouze veřejné + vlastní soukromé poznámky)
+10. **Automatic Data Normalization** - Automatická normalizace dat při ukládání (telefonní čísla odstraní mezery, pomlčky; zachová + pro mezinárodní předvolby). Implementováno v `leads/utils.py` a aplikováno ve form clean metodách
+11. **Template Filters for UX** - Custom template filtry pro lepší UX (mailto pro klikatelné emaily). Implementováno v `leads/templatetags/custom_filters.py`
 
 ## UI Komponenty & Mobilní Zobrazení
 
@@ -437,9 +443,20 @@ Klíčové proměnné v `.env`:
 
 ## Často Používané Helper Funkce
 
+**Access Control:**
 - `get_lead_for_user_or_404()` - Role-based přístup k leadům
 - `get_deal_for_user_or_404()` - Role-based přístup k dealům
 - Komplexní query filtry podle role uživatele
+
+**Data Processing (leads/utils.py):**
+- `normalize_phone_number(phone)` - Normalizuje telefonní čísla (odstraní mezery, pomlčky; zachová + pro mezinárodní předvolby)
+  - Příklady: `"605 877 000"` → `"605877000"`, `"+421 905 123 456"` → `"+421905123456"`
+  - Automaticky aplikováno ve form clean metodách (LeadForm, DealCreateForm, DealEditForm, User.clean)
+
+**Template Filters (leads/templatetags/custom_filters.py):**
+- `mailto` - Převede email na klikatelný `<a href="mailto:...">` odkaz
+  - Použití: `{% load custom_filters %}{{ email|mailto }}`
+  - Aplikováno v: lead_detail, deal_detail, user_detail, advisor_detail, user_settings
 
 ## Podporované Banky a Stavební Spořitelny (11)
 
@@ -488,6 +505,6 @@ Uvedeno v `leads/models.py` Deal model:
 
 ---
 
-**Poslední aktualizace**: 2026-01-28
+**Poslední aktualizace**: 2026-02-02
 **Django verze**: 5.2.8
 **Python verze**: 3.12
