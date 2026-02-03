@@ -696,6 +696,18 @@
         }
     }
 
+    /* === FORMÁTOVÁNÍ TELEFONNÍCH ČÍSEL === */
+    /* Vizuální mezery mezi částmi telefonu, které se při kopírování nezkopírují */
+    .phone-formatted {
+        display: inline;
+        white-space: nowrap;
+    }
+
+    .phone-part:not(:last-child)::after {
+        content: " ";
+        white-space: pre;
+    }
+
 </style>
 
 </head>

@@ -33,7 +33,7 @@
 
             <p><strong>E-mail:</strong> {% if advisor.email %}{{ advisor.email|mailto }}{% else %}—{% endif %}</p>
 
-            <p><strong>Telefon:</strong> {{ advisor.phone|default:"—" }}</p>
+            <p><strong>Telefon:</strong> {% if advisor.phone %}{{ advisor.phone|format_phone }}{% else %}—{% endif %}</p>
 
             {% if user == advisor %}
             <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #ddd; display: flex; gap: 12px;">

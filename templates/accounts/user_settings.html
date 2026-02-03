@@ -19,7 +19,7 @@
         <h3 style="margin-bottom: 16px;">Osobní údaje</h3>
         <p><strong>Jméno:</strong> {{ user.get_full_name }}</p>
         <p><strong>E-mail:</strong> {% if user.email %}{{ user.email|mailto }}{% else %}—{% endif %}</p>
-        <p><strong>Telefon:</strong> {{ user.phone|default:"—" }}</p>
+        <p><strong>Telefon:</strong> {% if user.phone %}{{ user.phone|format_phone }}{% else %}—{% endif %}</p>
         <p><strong>Role:</strong> {{ user.get_role_display }}</p>
 
         <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap;">

@@ -9,7 +9,7 @@
     <h2>{{ lead.client_name }}</h2>
 
     <p>
-        <strong>Telefon:</strong> {{ lead.client_phone|default:"—" }}<br>
+        <strong>Telefon:</strong> {% if lead.client_phone %}{{ lead.client_phone|format_phone }}{% else %}—{% endif %}<br>
         <strong>E-mail:</strong> {% if lead.client_email %}{{ lead.client_email|mailto }}{% else %}—{% endif %}<br>
 
         <strong>Doporučitel:</strong>

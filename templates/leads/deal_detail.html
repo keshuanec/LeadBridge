@@ -7,7 +7,7 @@
 <div class="card">
     <h2>{{ deal.client_name }}</h2>
 
-    <p><strong>Telefon:</strong> {{ deal.client_phone|default:"—" }}</p>
+    <p><strong>Telefon:</strong> {% if deal.client_phone %}{{ deal.client_phone|format_phone }}{% else %}—{% endif %}</p>
     <p><strong>E-mail:</strong> {% if deal.client_email %}{{ deal.client_email|mailto }}{% else %}—{% endif %}</p>
 
     <!-- Pokud má lead více dealů, zobraz info -->

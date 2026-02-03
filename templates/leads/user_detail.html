@@ -33,7 +33,7 @@
 
             <p><strong>E-mail:</strong> {% if viewed_user.email %}{{ viewed_user.email|mailto }}{% else %}—{% endif %}</p>
 
-            <p><strong>Telefon:</strong> {{ viewed_user.phone|default:"—" }}</p>
+            <p><strong>Telefon:</strong> {% if viewed_user.phone %}{{ viewed_user.phone|format_phone }}{% else %}—{% endif %}</p>
 
             <p><strong>Role:</strong> {{ viewed_user.get_role_display }}</p>
 
