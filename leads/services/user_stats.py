@@ -28,12 +28,14 @@ class Stats:
 
     Note: deals_created and deals_success count unique LEADS with deals,
     not total number of deals (one lead may have multiple deals).
+
+    Completed deals are those with status: DRAWN, SIGNED, or SIGNED_NO_PROPERTY.
     """
     contacts: int
     meetings_planned: int
     meetings_done: int
     deals_created: int  # Number of unique leads with at least one deal
-    deals_success: int  # Number of unique leads with at least one completed deal
+    deals_success: int  # Number of unique leads with at least one completed deal (DRAWN, SIGNED, SIGNED_NO_PROPERTY)
 
 
 @dataclass(frozen=True)
@@ -42,14 +44,16 @@ class AdvisorStatsDetailed:
 
     Note: All deal counts represent unique LEADS with deals,
     not total number of deals (one lead may have multiple deals).
+
+    Completed deals are those with status: DRAWN, SIGNED, or SIGNED_NO_PROPERTY.
     """
     leads_received: int
     meetings_planned: int
     meetings_done: int
     deals_created: int  # Number of unique leads with at least one deal
-    deals_completed: int  # Number of unique leads with at least one completed deal
+    deals_completed: int  # Number of unique leads with at least one completed deal (DRAWN, SIGNED, SIGNED_NO_PROPERTY)
     deals_created_personal: int  # Number of unique leads with at least one personal deal
-    deals_completed_personal: int  # Number of unique leads with at least one completed personal deal
+    deals_completed_personal: int  # Number of unique leads with at least one completed personal deal (DRAWN, SIGNED, SIGNED_NO_PROPERTY)
 
 
 @dataclass(frozen=True)
@@ -58,11 +62,13 @@ class ReferrerStatsDetailed:
 
     Note: deals_done counts unique LEADS with completed deals,
     not total number of deals (one lead may have multiple deals).
+
+    Completed deals are those with status: DRAWN, SIGNED, or SIGNED_NO_PROPERTY.
     """
     leads_sent: int
     meetings_planned: int
     meetings_done: int
-    deals_done: int  # Number of unique leads with at least one completed deal
+    deals_done: int  # Number of unique leads with at least one completed deal (DRAWN, SIGNED, SIGNED_NO_PROPERTY)
 
 
 class UserStatsService:
@@ -72,6 +78,14 @@ class UserStatsService:
     This service consolidates all statistics logic from views, eliminating
     duplication and providing a single source of truth for stats calculations.
     """
+
+    # Deal statuses that are considered "completed" for statistics
+    # Includes: signed contracts and drawn loans
+    COMPLETED_DEAL_STATUSES = [
+        Deal.DealStatus.DRAWN,              # Načerpáno
+        Deal.DealStatus.SIGNED,             # Podepsaná smlouva
+        Deal.DealStatus.SIGNED_NO_PROPERTY, # Podeps. bez nem.
+    ]
 
     # -------------------------
     # HELPER METHODS
@@ -323,7 +337,7 @@ class UserStatsService:
         deals_created = deals_qs.values('lead').distinct().count()
 
         deals_success = deals_qs.filter(
-            status=Deal.DealStatus.DRAWN,
+            status__in=UserStatsService.COMPLETED_DEAL_STATUSES,
         ).values('lead').distinct().count()
 
         return Stats(
@@ -387,7 +401,7 @@ class UserStatsService:
         # Count unique leads (one lead may have multiple deals)
         deals_created = deals_qs.values('lead').distinct().count()
         deals_completed = deals_qs.filter(
-            status=Deal.DealStatus.DRAWN
+            status__in=UserStatsService.COMPLETED_DEAL_STATUSES
         ).values('lead').distinct().count()
 
         # Personal deals statistics (personal contacts OR personal deals)
@@ -405,7 +419,7 @@ class UserStatsService:
         # Count unique leads (one lead may have multiple personal deals)
         deals_created_personal = personal_deals_qs.values('lead').distinct().count()
         deals_completed_personal = personal_deals_qs.filter(
-            status=Deal.DealStatus.DRAWN
+            status__in=UserStatsService.COMPLETED_DEAL_STATUSES
         ).values('lead').distinct().count()
 
         return AdvisorStatsDetailed(
@@ -476,7 +490,7 @@ class UserStatsService:
 
         # Count unique leads with completed deals (one lead may have multiple deals)
         deals_done = referrer_deals_qs.filter(
-            status=Deal.DealStatus.DRAWN
+            status__in=UserStatsService.COMPLETED_DEAL_STATUSES
         ).values('lead').distinct().count()
 
         return ReferrerStatsDetailed(
@@ -652,7 +666,7 @@ class UserStatsService:
                 deal_subquery.values('lead__advisor').annotate(count=Count('lead', distinct=True)).values('count')[:1]
             ),
             deals_completed=Subquery(
-                deal_subquery.filter(status=Deal.DealStatus.DRAWN).values('lead__advisor').annotate(count=Count('lead', distinct=True)).values('count')[:1]
+                deal_subquery.filter(status__in=UserStatsService.COMPLETED_DEAL_STATUSES).values('lead__advisor').annotate(count=Count('lead', distinct=True)).values('count')[:1]
             ),
         ).order_by('last_name', 'first_name')
 
@@ -666,7 +680,7 @@ class UserStatsService:
         - leads_sent: Number of leads sent (excluding personal contacts)
         - meetings_planned: Number of leads with meetings scheduled
         - meetings_done: Number of leads with meetings completed
-        - deals_done: Number of deals with status=DRAWN
+        - deals_done: Number of completed deals (status: DRAWN, SIGNED, or SIGNED_NO_PROPERTY)
 
         IMPORTANT: All counts exclude personal contacts (is_personal_contact=True).
 
@@ -713,6 +727,6 @@ class UserStatsService:
                 lead_subquery.filter(meeting_done=True).values('referrer').annotate(count=Count('id')).values('count')[:1]
             ),
             deals_done=Subquery(
-                deal_subquery.filter(status=Deal.DealStatus.DRAWN).values('lead__referrer').annotate(count=Count('id')).values('count')[:1]
+                deal_subquery.filter(status__in=UserStatsService.COMPLETED_DEAL_STATUSES).values('lead__referrer').annotate(count=Count('id')).values('count')[:1]
             ),
         ).order_by('last_name', 'first_name')
