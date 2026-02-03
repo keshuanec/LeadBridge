@@ -309,7 +309,7 @@ def lead_edit(request, pk: int):
     # Zatím necháme stejné role jako pro prohlížení.
 
     # Uložíme si původní hodnoty pro log změn
-    tracked_fields = ["client_name", "client_phone", "client_email", "description", "communication_status", "advisor"]
+    tracked_fields = ["client_first_name", "client_last_name", "client_phone", "client_email", "description", "communication_status", "advisor"]
     old_values = {field: getattr(lead, field) for field in tracked_fields}
 
     if request.method == "POST":
@@ -317,18 +317,21 @@ def lead_edit(request, pk: int):
         if form.is_valid():
             updated_lead = form.save(commit=False)
 
-            # Bezpečnostní zajištění referrer/advisor podle role
+            # Bezpečnostní zajištění referrer podle role
+            # (referrer by se při editaci neměl měnit)
             if user.role == User.Role.REFERRER:
                 updated_lead.referrer = user
-            elif user.role == User.Role.ADVISOR:
-                updated_lead.advisor = user
+            # POZOR: Pro advisora NEnastavujeme advisor = user při editaci,
+            # protože by to přepsalo legitimní změnu advisora ve formuláři.
+            # Advisor může měnit advisora pokud má příslušná oprávnění v LeadForm.
 
             updated_lead.save()
 
             # Zjistíme, co se změnilo
             changes = []
             labels = {
-                "client_name": "Jméno klienta",
+                "client_first_name": "Křestní jméno",
+                "client_last_name": "Příjmení",
                 "client_phone": "Telefon",
                 "client_email": "E-mail",
                 "description": "Poznámka",
